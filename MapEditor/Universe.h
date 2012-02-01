@@ -16,8 +16,10 @@ public:
 	vector<Item*> items;
 	vector<MapObject*> mapObjects;
 	int cameraX, cameraY;
+	int cursorX, cursorY;
+	int screenWidth, screenHeight;
 
-	void DDraw(Location* location, int cursorX, int cursorY);
+	void DDraw(Location* location);
 
 	bool GraphicsInit();
 	void SelectLocation(Location* location);

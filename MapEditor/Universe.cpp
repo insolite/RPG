@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Universe.h"
 
-#define CELL_SIZE 32
+#define CELL_SIZE 64
 
 GLfloat angle;
 int Pix2Index(int pos)
@@ -24,6 +24,8 @@ Universe::Universe(void)
 {
 	cameraX = 0;
 	cameraY = 0;
+	screenWidth = 800;
+	screenHeight = 600;
 }
 
 Universe::~Universe(void)
@@ -52,12 +54,12 @@ bool Universe::GraphicsInit()
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
  
-	SDL_SetVideoMode(800, 600, 32, flags);
+	SDL_SetVideoMode(screenWidth, screenHeight, 32, flags);
 
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, screenWidth, screenHeight);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, 800, 0, 600, -100, 100);
+	glOrtho(0, screenWidth, 0, screenHeight, -100, 100);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -69,15 +71,21 @@ bool Universe::GraphicsInit()
 
 void Universe::CameraMove(int x, int y)
 {
-	if ((cameraX + x) >= 0 && (cameraY - y) >= 0)
+	if ((cameraX + x) >= 0 && (cameraY + y) >= 0 && 
+		((cameraX + x - 1) * CELL_SIZE + screenWidth) < currentLocation->width * CELL_SIZE && 
+		((cameraY + y - 1) * CELL_SIZE + screenHeight) < currentLocation->height * CELL_SIZE)
 	{
 		cameraX += x;
-		cameraY -= y;
+		cameraY += y;
+		cursorX += x;
+		cursorY += y;
 	}
+	Sleep(64);
 }
 
 void Universe::DrawScene()
 {
+	/*
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glBindTexture(GL_TEXTURE_2D, texture[1].texID);
 	glLoadIdentity();
@@ -89,22 +97,20 @@ void Universe::DrawScene()
 	glVertex2d(10, 10);
 	glVertex2d(10, -10);
 	glEnd();
+	*/
 }
 
-void Universe::DDraw(Location* location, int cursorX, int cursorY)
+void Universe::DDraw(Location* location)
 {
 	int i, j;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glBindTexture(GL_TEXTURE_2D, texture[1].texID);
 	glLoadIdentity();
-	//glTranslatef(100.5f, 100.5f, -1.0f);
-	if ((PixRound(cursorX - cameraX) >=0 && PixRound(cursorX - cameraX) < 16) || ((PixRound(cursorY + cameraY) >=0) && PixRound(cursorY + cameraY)<16) )
-		glTranslated(0 + cameraX, 600 + cameraY, 0);
-	else
-		glTranslated(0, 600, 0);
-	glRotatef(180,1.0f,0.0f,0.0f);
-	//glTranslated(0, 0, -10);
+	glTranslated(0, screenHeight, 0);
+	glTranslated(-cameraX * CELL_SIZE, cameraY * CELL_SIZE, 0); //Camera positioning
+	glRotatef(180, 1.0f, 0.0f, 0.0f);
+
 	glBegin(GL_QUADS);
 	for (i = 0; i < location->width; i++)
 	{
@@ -130,15 +136,12 @@ void Universe::DDraw(Location* location, int cursorX, int cursorY)
 	glEnd();
 	glBegin(GL_QUADS);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-		if ((cursorX - cameraX) >=0 && (cursorY + cameraY) >= 0)
-		{
-			glVertex2d(PixRound(cursorX - cameraX) + CELL_SIZE, PixRound(cursorY + cameraY) + CELL_SIZE);
-			glVertex2d(PixRound(cursorX - cameraX) + CELL_SIZE, PixRound(cursorY + cameraY));
-			glVertex2d(PixRound(cursorX - cameraX), PixRound(cursorY + cameraY));
-			glVertex2d(PixRound(cursorX - cameraX), PixRound(cursorY + cameraY) + CELL_SIZE);
-		}
+		glVertex2d(cursorX * CELL_SIZE + CELL_SIZE, cursorY * CELL_SIZE + CELL_SIZE);
+		glVertex2d(cursorX * CELL_SIZE + CELL_SIZE, cursorY * CELL_SIZE);
+		glVertex2d(cursorX * CELL_SIZE, cursorY * CELL_SIZE);
+		glVertex2d(cursorX * CELL_SIZE, cursorY * CELL_SIZE + CELL_SIZE);
 	glEnd();
-	angle+=0.1;
+	angle += 0.1;
 }
 
 void Universe::SelectLocation(Location* location)
@@ -179,50 +182,52 @@ void Universe::Run()
 		//CAMERA UP LEFT
 		else if (keys[SDLK_UP] && keys[SDLK_LEFT])
 		{
-			CameraMove(1, 1);
+			CameraMove(-1, -1);
 		}
 		//CAMERA UP RIGHT
 		else if (keys[SDLK_UP] && keys[SDLK_RIGHT])
 		{
-			CameraMove(-1, 1);
+			CameraMove(1, -1);
 		}
 		//CAMERA DOWN LEFT
 		else if (keys[SDLK_DOWN] && keys[SDLK_LEFT])
 		{
-			CameraMove(1, -1);
+			CameraMove(-1, 1);
 		}
 		//CAMERA DOWN RIGHT
 		else if (keys[SDLK_DOWN] && keys[SDLK_RIGHT])
 		{
-			CameraMove(-1, -1);
+			CameraMove(1, 1);
 		}
 		//CAMERA UP
 		else if (keys[SDLK_UP])
 		{
-			CameraMove(0, 1);
+			CameraMove(0, -1);
 		}
 		//CAMERA DOWN
 		else if (keys[SDLK_DOWN])
 		{
-			CameraMove(0, -1);
+			CameraMove(0, 1);
 		}
 		//CAMERA LEFT
 		else if (keys[SDLK_LEFT])
 		{
-			CameraMove(1, 0);
+			CameraMove(-1, 0);
 		}
 		//CAMERA RIGHT
 		else if (keys[SDLK_RIGHT])
 		{
-			CameraMove(-1, 0);
+			CameraMove(1, 0);
 		}
 		
 		if (event.type == SDL_MOUSEMOTION)
 		{
 			SDL_GetMouseState(&mouseX, &mouseY);
+			cursorX = cameraX + Pix2Index(mouseX);
+			cursorY = cameraY + Pix2Index(mouseY);
 		}
 
-		DDraw(currentLocation, mouseX, mouseY);
+		DDraw(currentLocation);
 		//DrawScene();
 		glFlush();
 		SDL_GL_SwapBuffers();
