@@ -14,13 +14,12 @@ Thumbs.db
 *.suo
 *.tlb
 *.tlh
+*.sln
 *.bak
 *.cache
 *.ilk
 *.log
 [Bb]in
-[Dd]ebug*/
-*.lib
 *.sbr
 obj/
 [Rr]elease*/
