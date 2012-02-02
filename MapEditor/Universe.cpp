@@ -1,35 +1,34 @@
 #include "StdAfx.h"
 #include "Universe.h"
 
-#define CELL_SIZE 64
-
-GLfloat angle;
-int Pix2Index(int pos)
-{
-	return pos / CELL_SIZE;
-}
-
-int Index2Pix(int pos)
-{
-	return pos * CELL_SIZE;
-}
-
-int PixRound(int pos)
-{
-	return Index2Pix(Pix2Index(pos));
-}
-
-
 Universe::Universe(void)
 {
 	cameraX = 0;
 	cameraY = 0;
 	screenWidth = 800;
 	screenHeight = 600;
+	cellSize = 64;
+	//currentBrush = CellProperty::Free;
+	currentBrush = CellProperty::Locked;
 }
 
 Universe::~Universe(void)
 {
+}
+
+int Universe::Pix2Index(int pos)
+{
+	return pos / cellSize;
+}
+
+int Universe::Index2Pix(int pos)
+{
+	return pos * cellSize;
+}
+
+int Universe::PixRound(int pos)
+{
+	return Index2Pix(Pix2Index(pos));
 }
 
 bool Universe::GraphicsInit()
@@ -72,15 +71,13 @@ bool Universe::GraphicsInit()
 void Universe::CameraMove(int x, int y)
 {
 	if ((cameraX + x) >= 0 && (cameraY + y) >= 0 && 
-		((cameraX + x - 1) * CELL_SIZE + screenWidth) < currentLocation->width * CELL_SIZE && 
-		((cameraY + y - 1) * CELL_SIZE + screenHeight) < currentLocation->height * CELL_SIZE)
+		(cameraX + (x - 1) * cellSize + screenWidth) < currentLocation->width * cellSize && 
+		(cameraY + (y - 1) * cellSize + screenHeight) < currentLocation->height * cellSize)
 	{
 		cameraX += x;
 		cameraY += y;
-		cursorX += x;
-		cursorY += y;
 	}
-	Sleep(64);
+	//Sleep(8);
 }
 
 void Universe::DrawScene()
@@ -108,7 +105,8 @@ void Universe::DDraw(Location* location)
 	//glBindTexture(GL_TEXTURE_2D, texture[1].texID);
 	glLoadIdentity();
 	glTranslated(0, screenHeight, 0);
-	glTranslated(-cameraX * CELL_SIZE, cameraY * CELL_SIZE, 0); //Camera positioning
+	//glTranslated(-cameraX * cellSize, cameraY * cellSize, 0); //Camera positioning
+	glTranslated(-cameraX, cameraY, 0); //Camera positioning
 	glRotatef(180, 1.0f, 0.0f, 0.0f);
 
 	glBegin(GL_QUADS);
@@ -127,21 +125,20 @@ void Universe::DDraw(Location* location)
 			default:
 				glColor3d(1, 1, 1);
 			}
-			glVertex2d(i * CELL_SIZE, j * CELL_SIZE);
-			glVertex2d(i * CELL_SIZE, j * CELL_SIZE + CELL_SIZE);
-			glVertex2d(i * CELL_SIZE + CELL_SIZE, j * CELL_SIZE + CELL_SIZE);
-			glVertex2d(i * CELL_SIZE + CELL_SIZE, j * CELL_SIZE);
+			glVertex2d(i * cellSize, j * cellSize);
+			glVertex2d(i * cellSize, j * cellSize + cellSize);
+			glVertex2d(i * cellSize + cellSize, j * cellSize + cellSize);
+			glVertex2d(i * cellSize + cellSize, j * cellSize);
 		}
 	}
 	glEnd();
 	glBegin(GL_QUADS);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-		glVertex2d(cursorX * CELL_SIZE + CELL_SIZE, cursorY * CELL_SIZE + CELL_SIZE);
-		glVertex2d(cursorX * CELL_SIZE + CELL_SIZE, cursorY * CELL_SIZE);
-		glVertex2d(cursorX * CELL_SIZE, cursorY * CELL_SIZE);
-		glVertex2d(cursorX * CELL_SIZE, cursorY * CELL_SIZE + CELL_SIZE);
+		glVertex2d(PixRound(cameraX) + cursorX * cellSize + cellSize, PixRound(cameraY) + cursorY * cellSize + cellSize);
+		glVertex2d(PixRound(cameraX) + cursorX * cellSize + cellSize, PixRound(cameraY) + cursorY * cellSize);
+		glVertex2d(PixRound(cameraX) + cursorX * cellSize, PixRound(cameraY) + cursorY * cellSize);
+		glVertex2d(PixRound(cameraX) + cursorX * cellSize, PixRound(cameraY) + cursorY * cellSize + cellSize);
 	glEnd();
-	angle += 0.1;
 }
 
 void Universe::SelectLocation(Location* location)
@@ -168,7 +165,7 @@ void Universe::Run()
 	
 	mouseX = 0;
 	mouseY = 0;
-
+	
 	while (true)
 	{
 		SDL_PollEvent(&event);
@@ -223,8 +220,20 @@ void Universe::Run()
 		if (event.type == SDL_MOUSEMOTION)
 		{
 			SDL_GetMouseState(&mouseX, &mouseY);
-			cursorX = cameraX + Pix2Index(mouseX);
-			cursorY = cameraY + Pix2Index(mouseY);
+			//cursorX = Pix2Index(mouseX);
+			//cursorY = Pix2Index(mouseY);
+			cursorX = Pix2Index(mouseX + cameraX % cellSize);
+			cursorY = Pix2Index(mouseY + cameraY % cellSize);
+
+			//printf("%d\n", cursorX);
+		}
+		else if (event.type == SDL_MOUSEBUTTONDOWN)
+		{
+			currentLocation->mask[cursorX][cursorY].cellProperty = currentBrush;
+		}
+		else if (event.type == SDL_MOUSEBUTTONUP)
+		{
+			
 		}
 
 		DDraw(currentLocation);

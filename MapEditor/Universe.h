@@ -15,9 +15,11 @@ public:
 	vector<Player*> players;
 	vector<Item*> items;
 	vector<MapObject*> mapObjects;
-	int cameraX, cameraY;
-	int cursorX, cursorY;
-	int screenWidth, screenHeight;
+	int cameraX, cameraY; //pixels
+	int cursorX, cursorY; //points
+	int screenWidth, screenHeight; //pixels
+	int cellSize; //pixels
+	CellProperty currentBrush;
 
 	void DDraw(Location* location);
 
@@ -27,6 +29,9 @@ public:
 	void DrawScene();
 	void Run();
 	void CameraMove(int x, int y);
+	int Pix2Index(int pos);
+	int Index2Pix(int pos);
+	int PixRound(int pos);
 	
 	Universe(void);
 	~Universe(void);
