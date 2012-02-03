@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Universe.h"
+#include "Button1.h"
 
 Universe::Universe(void)
 {
@@ -70,14 +71,12 @@ bool Universe::GraphicsInit()
 
 void Universe::CameraMove(int x, int y)
 {
-	if ((cameraX + x) >= 0 && 
-		(cameraY + y) >= 0 && 
-		((cameraX + x)+screenWidth) < currentLocation->width*cellSize && 
-		((cameraY + y)+screenHeight) < currentLocation->height*cellSize)
-	{
-		cameraX += x;
-		cameraY += y;
-	}
+	if ((cameraX + x) < 0 || ((cameraX + x) + screenWidth) >= currentLocation->width * cellSize)
+		x = 0;
+	if ((cameraY + y) < 0 || ((cameraY + y) + screenHeight) >= currentLocation->height * cellSize)
+		y = 0;
+	cameraX += x;
+	cameraY += y;
 	//Sleep(8);
 }
 
@@ -156,24 +155,64 @@ void Universe::Run()
 	Uint8 *keys;
 	SDL_Event event;
 	int mouseX, mouseY;
+	bool continueFlag;
 
 	GraphicsInit();
 	LocationsInit();
 	
-	locations[0]->Print();
+	//locations[0]->Print();
 
 	mouseX = 0;
 	mouseY = 0;
+
+	continueFlag = true;
+
+	gcn::OpenGLGraphics* openGLGraphics = new gcn::OpenGLGraphics();
+	openGLGraphics->setTargetPlane(800, 600);
 	
-	while (true)
+	gcn::Container* mTop = new gcn::Container();
+	mTop->setBaseColor(gcn::Color(0x000000));
+	mTop->setDimension(gcn::Rectangle(0, 0, 320, 240));
+
+	gcn::Gui* mGui = new gcn::Gui();
+	mGui->setGraphics(openGLGraphics);
+	mGui->setTop(mTop);
+
+	gcn::OpenGLSDLImageLoader* mOpenGLSDLImageLoader = new gcn::OpenGLSDLImageLoader();
+	gcn::Image::setImageLoader(mOpenGLSDLImageLoader);
+
+	gcn::ImageFont* mFontWhite = new gcn::ImageFont("rpgfont.png", " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`'*#=[]\"");
+	//gcn::Widget::setGlobalFont(mFontWhite);
+	//gcn::Button::setGlobalFont(mFontWhite);
+
+	Button1* button;
+	button = new Button1("abc");
+	button->setFont(mFontWhite);
+
+	//Button1* button1 = new Button1();
+
+	mTop->add(button, 0, 0);
+	//gui->logic();
+	
+	//return;
+	//Gui guiInstance;
+	/*
+	SDL_Surface *image;
+	SDL_RWops *rwop;
+	rwop=SDL_RWFromFile("sample.png", "rb");
+	image=IMG_LoadPNG_RW(rwop);
+	*/
+	
+	while (continueFlag)
 	{
 		SDL_PollEvent(&event);
 		keys = SDL_GetKeyState(NULL);
 		SDL_PumpEvents();
+		
 		//EXIT
 		if (keys[SDLK_ESCAPE])
 		{
-			break;
+			continueFlag = false;
 		}
 		//CAMERA UP LEFT
 		else if (keys[SDLK_UP] && keys[SDLK_LEFT])
@@ -215,26 +254,28 @@ void Universe::Run()
 		{
 			CameraMove(1, 0);
 		}
-		
-		if (event.type == SDL_MOUSEMOTION)
+
+		switch (event.type)
 		{
-			SDL_GetMouseState(&mouseX, &mouseY);
+			case SDL_MOUSEMOTION:
+				SDL_GetMouseState(&mouseX, &mouseY);
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				currentLocation->mask[cursorY][cursorX].cellProperty = currentBrush;
+				break;
+			case SDL_MOUSEBUTTONUP:
+				break;
+			case SDL_QUIT:
+				continueFlag = false;
+				break;
 		}
-		
+
 		cursorX = Pix2Index(mouseX + cameraX);
 		cursorY = Pix2Index(mouseY + cameraY);
-		printf("%d : %d\n", cursorX,cursorY);
-
-		if (event.type == SDL_MOUSEBUTTONDOWN)
-		{
-			currentLocation->mask[cursorY][cursorX].cellProperty = currentBrush;
-		}
-		if (event.type == SDL_MOUSEBUTTONUP)
-		{
-			
-		}
+		//printf("%d : %d\n", cursorX, cursorY);
 
 		DDraw(currentLocation);
+		mGui->draw();
 		//DrawScene();
 		glFlush();
 		SDL_GL_SwapBuffers();

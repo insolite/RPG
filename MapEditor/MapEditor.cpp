@@ -4,8 +4,6 @@
 #include "stdafx.h"
 #include "Universe.h"
 
-using namespace ui;
-
 int main(int argc, char* argv[])
 {
 	(new Universe())->Run();
