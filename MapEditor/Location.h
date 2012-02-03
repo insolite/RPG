@@ -8,6 +8,7 @@ public:
 	int width, height;
 
 	void Load(char* filename);
+	void Print();
 
 	Location(void);
 	~Location(void);

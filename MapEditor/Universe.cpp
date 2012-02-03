@@ -55,24 +55,25 @@ bool Universe::GraphicsInit()
  
 	SDL_SetVideoMode(screenWidth, screenHeight, 32, flags);
 
-	glViewport(0, 0, screenWidth, screenHeight);
+	//glViewport(0, 0, screenWidth, screenHeight);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, screenWidth, 0, screenHeight, -100, 100);
+	gluOrtho2D(0, screenWidth, screenHeight, 0);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_BLEND);
 
-	return false;
+	return true;
 }
 
 void Universe::CameraMove(int x, int y)
 {
-	if ((cameraX + x) >= 0 && (cameraY + y) >= 0 && 
-		(cameraX + (x - 1) * cellSize + screenWidth) < currentLocation->width * cellSize && 
-		(cameraY + (y - 1) * cellSize + screenHeight) < currentLocation->height * cellSize)
+	if ((cameraX + x) >= 0 && 
+		(cameraY + y) >= 0 && 
+		((cameraX + x)+screenWidth) < currentLocation->width*cellSize && 
+		((cameraY + y)+screenHeight) < currentLocation->height*cellSize)
 	{
 		cameraX += x;
 		cameraY += y;
@@ -102,17 +103,13 @@ void Universe::DDraw(Location* location)
 	int i, j;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glBindTexture(GL_TEXTURE_2D, texture[1].texID);
 	glLoadIdentity();
-	glTranslated(0, screenHeight, 0);
-	//glTranslated(-cameraX * cellSize, cameraY * cellSize, 0); //Camera positioning
-	glTranslated(-cameraX, cameraY, 0); //Camera positioning
-	glRotatef(180, 1.0f, 0.0f, 0.0f);
-
+	glTranslated(-cameraX, -cameraY, 0); //Camera positioning
+	
 	glBegin(GL_QUADS);
-	for (i = 0; i < location->width; i++)
+	for (i = 0; i < location->height; i++)
 	{
-		for (j = 0; j < location->height; j++)
+		for (j = 0; j < location->width; j++)
 		{
 			switch (location->mask[i][j].cellProperty)
 			{
@@ -125,19 +122,19 @@ void Universe::DDraw(Location* location)
 			default:
 				glColor3d(1, 1, 1);
 			}
-			glVertex2d(i * cellSize, j * cellSize);
-			glVertex2d(i * cellSize, j * cellSize + cellSize);
-			glVertex2d(i * cellSize + cellSize, j * cellSize + cellSize);
-			glVertex2d(i * cellSize + cellSize, j * cellSize);
+			glVertex2d(j * cellSize, i * cellSize);
+			glVertex2d(j * cellSize, i * cellSize + cellSize);
+			glVertex2d(j * cellSize + cellSize, i * cellSize + cellSize);
+			glVertex2d(j * cellSize + cellSize, i * cellSize);
 		}
 	}
 	glEnd();
 	glBegin(GL_QUADS);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-		glVertex2d(PixRound(cameraX) + cursorX * cellSize + cellSize, PixRound(cameraY) + cursorY * cellSize + cellSize);
-		glVertex2d(PixRound(cameraX) + cursorX * cellSize + cellSize, PixRound(cameraY) + cursorY * cellSize);
-		glVertex2d(PixRound(cameraX) + cursorX * cellSize, PixRound(cameraY) + cursorY * cellSize);
-		glVertex2d(PixRound(cameraX) + cursorX * cellSize, PixRound(cameraY) + cursorY * cellSize + cellSize);
+		glVertex2d(Index2Pix(cursorX), Index2Pix(cursorY));
+		glVertex2d(Index2Pix(cursorX) + cellSize, Index2Pix(cursorY));
+		glVertex2d(Index2Pix(cursorX) + cellSize, Index2Pix(cursorY) + cellSize);
+		glVertex2d(Index2Pix(cursorX), Index2Pix(cursorY) + cellSize);
 	glEnd();
 }
 
@@ -163,6 +160,8 @@ void Universe::Run()
 	GraphicsInit();
 	LocationsInit();
 	
+	locations[0]->Print();
+
 	mouseX = 0;
 	mouseY = 0;
 	
@@ -220,18 +219,17 @@ void Universe::Run()
 		if (event.type == SDL_MOUSEMOTION)
 		{
 			SDL_GetMouseState(&mouseX, &mouseY);
-			//cursorX = Pix2Index(mouseX);
-			//cursorY = Pix2Index(mouseY);
-			cursorX = Pix2Index(mouseX + cameraX % cellSize);
-			cursorY = Pix2Index(mouseY + cameraY % cellSize);
+		}
+		
+		cursorX = Pix2Index(mouseX + cameraX);
+		cursorY = Pix2Index(mouseY + cameraY);
+		printf("%d : %d\n", cursorX,cursorY);
 
-			//printf("%d\n", cursorX);
-		}
-		else if (event.type == SDL_MOUSEBUTTONDOWN)
+		if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
-			currentLocation->mask[cursorX][cursorY].cellProperty = currentBrush;
+			currentLocation->mask[cursorY][cursorX].cellProperty = currentBrush;
 		}
-		else if (event.type == SDL_MOUSEBUTTONUP)
+		if (event.type == SDL_MOUSEBUTTONUP)
 		{
 			
 		}
