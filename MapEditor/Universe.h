@@ -20,6 +20,8 @@ public:
 	int screenWidth, screenHeight; //pixels
 	int cellSize; //pixels
 	CellProperty currentBrush;
+	int toolbarWidth; //pixels
+
 
 	void DDraw(Location* location);
 

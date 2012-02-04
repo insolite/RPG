@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Universe.h"
-#include "Button1.h"
+#include "MenuButton.h"
 
 Universe::Universe(void)
 {
@@ -11,6 +11,7 @@ Universe::Universe(void)
 	cellSize = 64;
 	//currentBrush = CellProperty::Free;
 	currentBrush = CellProperty::Locked;
+	toolbarWidth = 128;
 }
 
 Universe::~Universe(void)
@@ -71,7 +72,7 @@ bool Universe::GraphicsInit()
 
 void Universe::CameraMove(int x, int y)
 {
-	if ((cameraX + x) < 0 || ((cameraX + x) + screenWidth) >= currentLocation->width * cellSize)
+	if ((cameraX + x) < 0 || ((cameraX + x) + screenWidth - toolbarWidth) >= currentLocation->width * cellSize)
 		x = 0;
 	if ((cameraY + y) < 0 || ((cameraY + y) + screenHeight) >= currentLocation->height * cellSize)
 		y = 0;
@@ -167,44 +168,34 @@ void Universe::Run()
 
 	continueFlag = true;
 
-	gcn::OpenGLGraphics* openGLGraphics = new gcn::OpenGLGraphics();
-	openGLGraphics->setTargetPlane(800, 600);
-	
-	gcn::Container* mTop = new gcn::Container();
-	mTop->setBaseColor(gcn::Color(0x000000));
-	mTop->setDimension(gcn::Rectangle(0, 0, 320, 240));
+	//Input init
+	gcn::SDLInput* mSDLInput = new gcn::SDLInput();
 
-	gcn::Gui* mGui = new gcn::Gui();
-	mGui->setGraphics(openGLGraphics);
-	mGui->setTop(mTop);
+	//Container init
+	gcn::Container* toolbarContainer = new gcn::Container();
+	toolbarContainer->setBaseColor(gcn::Color(0x000000));
+	toolbarContainer->setDimension(gcn::Rectangle(screenWidth - toolbarWidth, 0, toolbarWidth, screenHeight));
 
-	gcn::OpenGLSDLImageLoader* mOpenGLSDLImageLoader = new gcn::OpenGLSDLImageLoader();
-	gcn::Image::setImageLoader(mOpenGLSDLImageLoader);
+	//GUI init
+	gcn::Gui* toolbar = new gcn::Gui();
+	toolbar->setGraphics(new gcn::OpenGLGraphics(screenWidth, screenHeight));
+	toolbar->setInput(mSDLInput);
+	toolbar->setTop(toolbarContainer);
 
+	//Font init
+	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
 	gcn::ImageFont* mFontWhite = new gcn::ImageFont("rpgfont.png", " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`'*#=[]\"");
 	//gcn::Widget::setGlobalFont(mFontWhite);
 	//gcn::Button::setGlobalFont(mFontWhite);
 
-	Button1* button;
-	button = new Button1("abc");
-	button->setFont(mFontWhite);
-
-	//Button1* button1 = new Button1();
-
-	mTop->add(button, 0, 0);
-	//gui->logic();
-	
-	//return;
-	//Gui guiInstance;
-	/*
-	SDL_Surface *image;
-	SDL_RWops *rwop;
-	rwop=SDL_RWFromFile("sample.png", "rb");
-	image=IMG_LoadPNG_RW(rwop);
-	*/
+	//GUI building
+	MenuButton* testButton = new MenuButton("Test");
+	testButton->setFont(mFontWhite);
+	toolbarContainer->add(testButton, 64, 64);
 	
 	while (continueFlag)
 	{
+		//TODO: while (SDL_PollEvent(&event)) {...}
 		SDL_PollEvent(&event);
 		keys = SDL_GetKeyState(NULL);
 		SDL_PumpEvents();
@@ -261,7 +252,8 @@ void Universe::Run()
 				SDL_GetMouseState(&mouseX, &mouseY);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				currentLocation->mask[cursorY][cursorX].cellProperty = currentBrush;
+				if (mouseX < (screenWidth - toolbarWidth)) //Prevents drawing cells with brush while mouse cursor is on the toolbar
+					currentLocation->mask[cursorY][cursorX].cellProperty = currentBrush;
 				break;
 			case SDL_MOUSEBUTTONUP:
 				break;
@@ -270,12 +262,17 @@ void Universe::Run()
 				break;
 		}
 
-		cursorX = Pix2Index(mouseX + cameraX);
-		cursorY = Pix2Index(mouseY + cameraY);
+		if (mouseX < (screenWidth - toolbarWidth)) //Prevents cursor moving while mouse cursor is on the toolbar
+		{
+			cursorX = Pix2Index(mouseX + cameraX);
+			cursorY = Pix2Index(mouseY + cameraY);
+		}
 		//printf("%d : %d\n", cursorX, cursorY);
 
 		DDraw(currentLocation);
-		mGui->draw();
+		mSDLInput->pushInput(event);
+		toolbar->logic();
+		toolbar->draw();
 		//DrawScene();
 		glFlush();
 		SDL_GL_SwapBuffers();

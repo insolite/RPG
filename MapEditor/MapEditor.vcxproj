@@ -78,7 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
-    <ClInclude Include="Button1.h" />
+    <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="MapObject.h" />
@@ -98,6 +98,7 @@
     <ClCompile Include="MapCell.h" />
     <ClCompile Include="MapEditor.cpp" />
     <ClCompile Include="MapObject.cpp" />
+    <ClCompile Include="MenuButton.cpp" />
     <ClCompile Include="Npc.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sprite.cpp" />
