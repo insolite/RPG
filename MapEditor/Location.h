@@ -7,7 +7,7 @@ public:
 	MapCell** mask;
 	int width, height;
 
-	void Load(char* filename);
+	bool Load(char* filename);
 	void Print();
 
 	Location(void);

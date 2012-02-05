@@ -18,16 +18,17 @@ public:
 	int cameraX, cameraY; //pixels
 	int cursorX, cursorY; //points
 	int screenWidth, screenHeight; //pixels
-	int cellSize; //pixels
-	CellProperty currentBrush;
 	int toolbarWidth; //pixels
-
-
-	void DDraw(Location* location);
-
+	int cellSize; //pixels
+	int locationsCount;
+	CellProperty currentBrush;
+	char* gameName;
+	gcn::Gui* toolbar;
+	
 	bool GraphicsInit();
+	bool GUIInit(gcn::SDLInput* &GUIInput);
+	bool LocationsInit();
 	void SelectLocation(Location* location);
-	void LocationsInit();
 	void DrawScene();
 	void Run();
 	void CameraMove(int x, int y);

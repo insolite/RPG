@@ -11,11 +11,6 @@
 #include <stdio.h>
 #include <windows.h>
 #include <vector>
-#include <deque>
-#include <list>
-#include <set>
-#include <map>
-#include <bitset>
 #include "../Include/SDL/SDL.h"
 #include "../Include/SDL/SDL_image.h"
 #include "../Include/gl/GL.h"

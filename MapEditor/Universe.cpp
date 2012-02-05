@@ -12,6 +12,8 @@ Universe::Universe(void)
 	//currentBrush = CellProperty::Free;
 	currentBrush = CellProperty::Locked;
 	toolbarWidth = 128;
+	gameName = new (char[32]);
+	sprintf(gameName, "testgame");
 }
 
 Universe::~Universe(void)
@@ -67,7 +69,79 @@ bool Universe::GraphicsInit()
 	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_BLEND);
 
-	return true;
+	return false;
+}
+
+bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
+{
+	char* fontCharacters;
+	char* path;
+	FILE* f;
+
+	//Input init
+	GUIInput = new gcn::SDLInput();
+
+	//Container init
+	gcn::Container* toolbarContainer = new gcn::Container();
+	toolbarContainer->setBaseColor(gcn::Color(0x000000));
+	toolbarContainer->setDimension(gcn::Rectangle(screenWidth - toolbarWidth, 0, toolbarWidth, screenHeight));
+
+	//GUI init
+	toolbar = new gcn::Gui();
+	toolbar->setGraphics(new gcn::OpenGLGraphics(screenWidth, screenHeight));
+	toolbar->setInput(GUIInput);
+	toolbar->setTop(toolbarContainer);
+
+	//Font init
+	//TODO: For map editor interface we have to load some 'system' font, not in-game font
+	path = new (char[256]);
+	sprintf(path, "game/%s/resource/interface/font/char.txt", gameName);
+	f = fopen(path, "rt");
+	if (!f)
+	{
+		delete path;
+		return true;
+	}
+	fontCharacters = new (char[256]);
+	fgets(fontCharacters, 256, f);
+	fclose(f);
+	sprintf(path, "game/%s/resource/interface/font/face.png", gameName);
+	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
+	gcn::ImageFont* mFontWhite = new gcn::ImageFont(path, fontCharacters);
+	gcn::Widget::setGlobalFont(mFontWhite);
+	delete path;
+	delete fontCharacters;
+
+	//GUI building
+	MenuButton* testButton = new MenuButton("Test");
+	toolbarContainer->add(testButton, 64, 64);
+
+	return false;
+}
+
+bool Universe::LocationsInit()
+{
+	char* path = new (char[256]);
+
+	//TODO: Load all locations
+	locationsCount = 1;
+	locations = new (Location*[locationsCount]);
+	for (int i = 0; i < locationsCount; i++)
+	{
+		sprintf(path, "game/%s/location/%d/ground.loc", gameName, i + 1);
+		locations[i] = new Location();
+		if (locations[i]->Load(path)) //LocationsInit fails if at least one location failed to load
+		{
+			for (int j = 0; j <= i; j++)
+				delete locations[i];
+			delete locations;
+			delete path;
+			return true;
+		}
+	}
+	SelectLocation(locations[0]);
+	delete path;
+	return false;
 }
 
 void Universe::CameraMove(int x, int y)
@@ -83,23 +157,6 @@ void Universe::CameraMove(int x, int y)
 
 void Universe::DrawScene()
 {
-	/*
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glBindTexture(GL_TEXTURE_2D, texture[1].texID);
-	glLoadIdentity();
-	glTranslatef(100.5f, 100.5f, -1.0f);
-	glColor3d(1, 1, 1);
-	glBegin(GL_QUADS);
-	glVertex2d(-10, -10);
-	glVertex2d(-10, 10);
-	glVertex2d(10, 10);
-	glVertex2d(10, -10);
-	glEnd();
-	*/
-}
-
-void Universe::DDraw(Location* location)
-{
 	int i, j;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -107,11 +164,11 @@ void Universe::DDraw(Location* location)
 	glTranslated(-cameraX, -cameraY, 0); //Camera positioning
 	
 	glBegin(GL_QUADS);
-	for (i = 0; i < location->height; i++)
+	for (i = 0; i < currentLocation->height; i++)
 	{
-		for (j = 0; j < location->width; j++)
+		for (j = 0; j < currentLocation->width; j++)
 		{
-			switch (location->mask[i][j].cellProperty)
+			switch (currentLocation->mask[i][j].cellProperty)
 			{
 			case CellProperty::Free:
 				glColor3d(0, 1, 0);
@@ -129,6 +186,7 @@ void Universe::DDraw(Location* location)
 		}
 	}
 	glEnd();
+
 	glBegin(GL_QUADS);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 		glVertex2d(Index2Pix(cursorX), Index2Pix(cursorY));
@@ -136,6 +194,11 @@ void Universe::DDraw(Location* location)
 		glVertex2d(Index2Pix(cursorX) + cellSize, Index2Pix(cursorY) + cellSize);
 		glVertex2d(Index2Pix(cursorX), Index2Pix(cursorY) + cellSize);
 	glEnd();
+
+	toolbar->draw();
+
+	glFlush();
+	SDL_GL_SwapBuffers();
 }
 
 void Universe::SelectLocation(Location* location)
@@ -143,22 +206,16 @@ void Universe::SelectLocation(Location* location)
 	currentLocation = location;
 }
 
-void Universe::LocationsInit()
-{
-	locations = new (Location*[1]);
-	locations[0] = new Location;
-	locations[0]->Load("test.loc");
-	SelectLocation(locations[0]);
-}
-
 void Universe::Run()
 {
 	Uint8 *keys;
 	SDL_Event event;
+	gcn::SDLInput* GUIInput;
 	int mouseX, mouseY;
 	bool continueFlag;
 
 	GraphicsInit();
+	GUIInit(GUIInput);
 	LocationsInit();
 	
 	//locations[0]->Print();
@@ -168,31 +225,6 @@ void Universe::Run()
 
 	continueFlag = true;
 
-	//Input init
-	gcn::SDLInput* mSDLInput = new gcn::SDLInput();
-
-	//Container init
-	gcn::Container* toolbarContainer = new gcn::Container();
-	toolbarContainer->setBaseColor(gcn::Color(0x000000));
-	toolbarContainer->setDimension(gcn::Rectangle(screenWidth - toolbarWidth, 0, toolbarWidth, screenHeight));
-
-	//GUI init
-	gcn::Gui* toolbar = new gcn::Gui();
-	toolbar->setGraphics(new gcn::OpenGLGraphics(screenWidth, screenHeight));
-	toolbar->setInput(mSDLInput);
-	toolbar->setTop(toolbarContainer);
-
-	//Font init
-	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
-	gcn::ImageFont* mFontWhite = new gcn::ImageFont("rpgfont.png", " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`'*#=[]\"");
-	//gcn::Widget::setGlobalFont(mFontWhite);
-	//gcn::Button::setGlobalFont(mFontWhite);
-
-	//GUI building
-	MenuButton* testButton = new MenuButton("Test");
-	testButton->setFont(mFontWhite);
-	toolbarContainer->add(testButton, 64, 64);
-	
 	while (continueFlag)
 	{
 		//TODO: while (SDL_PollEvent(&event)) {...}
@@ -269,12 +301,8 @@ void Universe::Run()
 		}
 		//printf("%d : %d\n", cursorX, cursorY);
 
-		DDraw(currentLocation);
-		mSDLInput->pushInput(event);
+		GUIInput->pushInput(event); //((gcn::SDLInput*)(toolbar->getInput()))->pushInput(event); //This code doing the same without defined pointer to GUIInput, but looks too bad...
 		toolbar->logic();
-		toolbar->draw();
-		//DrawScene();
-		glFlush();
-		SDL_GL_SwapBuffers();
+		DrawScene();
 	}
 }

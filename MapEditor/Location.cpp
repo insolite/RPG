@@ -23,12 +23,14 @@ void Location::Print()
 	}
 }
 
-void Location::Load(char* filename)
+bool Location::Load(char* filename)
 {
 	FILE *f;
 	int i, j;
 
 	f = fopen(filename, "rb");
+	if (!f)
+		return true;
 	width = fgetc(f) * 16 + fgetc(f);
 	height = fgetc(f) * 16 + fgetc(f);
 	
@@ -42,4 +44,5 @@ void Location::Load(char* filename)
 		}
 	}
 	fclose(f);
+	return false;
 }
