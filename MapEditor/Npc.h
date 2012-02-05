@@ -2,13 +2,13 @@
 #include "Sprite.h"
 #pragma once
 
-class Npc :
+class NPC :
 	public Actor
 {
 public:
 	Sprite* sprite;
 
-	Npc(void);
-	~Npc(void);
+	NPC(void);
+	~NPC(void);
 };
 

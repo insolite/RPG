@@ -1,6 +1,11 @@
 #include "StdAfx.h"
 #include "Universe.h"
 #include "MenuButton.h"
+#include "FloorListModel.h"
+#include "NPCListModel.h"
+#include "BrushListModel.h"
+#include "DropDownActionListener.h"
+#include "utilities.h"
 
 Universe::Universe(void)
 {
@@ -10,8 +15,8 @@ Universe::Universe(void)
 	screenHeight = 600;
 	cellSize = 64;
 	//currentBrush = CellProperty::Free;
-	currentBrush = CellProperty::Locked;
-	toolbarWidth = 128;
+	currentCellProperty = CellProperty::Locked;
+	toolbarWidth = 192;
 	gameName = new (char[32]);
 	sprintf(gameName, "testgame");
 }
@@ -112,9 +117,45 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	delete path;
 	delete fontCharacters;
 
+	//TODO: Move it to the class definition
+	int toolbarLeftMargin = 8; //pixels
+
 	//GUI building
 	MenuButton* testButton = new MenuButton("Test");
 	toolbarContainer->add(testButton, 64, 64);
+
+	FloorListModel* floorListModel = new FloorListModel();
+	gcn::DropDown* floorsDropDown = new gcn::DropDown(floorListModel);
+	floorsDropDown->setSelected(0);
+	toolbarContainer->add(floorsDropDown, toolbarLeftMargin, 8);
+
+	BrushesInit();
+
+	BrushListModel* brushListModel = new BrushListModel(brushes, brushesCount);
+	gcn::DropDown* brushesDropDown = new gcn::DropDown(brushListModel);
+	brushesDropDown->setSelected(0);
+	DropDownActionListener* brushesDropDownActionListener = new DropDownActionListener(brushesDropDown, currentBrush, brushes);
+	brushesDropDown->addActionListener(brushesDropDownActionListener);
+	toolbarContainer->add(brushesDropDown, toolbarLeftMargin, 32);
+
+	gcn::RadioButton* brushTypeRadioButton1 = new gcn::RadioButton("Typ", "Brush", true);
+	gcn::RadioButton* brushTypeRadioButton2 = new gcn::RadioButton("Tex", "Brush", false);
+	gcn::RadioButton* brushTypeRadioButton3 = new gcn::RadioButton("Npc", "Brush", false);
+	gcn::RadioButton* brushTypeRadioButton4 = new gcn::RadioButton("Obj", "Brush", false);
+	toolbarContainer->add(brushTypeRadioButton1, toolbarLeftMargin, 132);
+	toolbarContainer->add(brushTypeRadioButton2, toolbarLeftMargin, 148);
+	toolbarContainer->add(brushTypeRadioButton3, toolbarLeftMargin, 164);
+	toolbarContainer->add(brushTypeRadioButton4, toolbarLeftMargin, 180);
+
+	/*
+	NPCListModel* npcListModel = new NPCListModel();
+	gcn::ListBox* listBox = new gcn::ListBox(npcListModel);
+	gcn::ScrollArea* sa = new gcn::ScrollArea();
+	sa->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_ALWAYS);
+	sa->setContent(listBox);
+	toolbarContainer->add(listBox, 8, 256);
+	//toolbarContainer->add(sa, 8, 300);
+	*/
 
 	return false;
 }
@@ -189,10 +230,19 @@ void Universe::DrawScene()
 
 	glBegin(GL_QUADS);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-		glVertex2d(Index2Pix(cursorX), Index2Pix(cursorY));
-		glVertex2d(Index2Pix(cursorX) + cellSize, Index2Pix(cursorY));
-		glVertex2d(Index2Pix(cursorX) + cellSize, Index2Pix(cursorY) + cellSize);
-		glVertex2d(Index2Pix(cursorX), Index2Pix(cursorY) + cellSize);
+		for (i = 0; i < currentBrush->width; i++)
+		{
+			for (j = 0; j < currentBrush->width; j++)
+			{
+				if (currentBrush->mask[i][j])
+				{
+					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + i), Index2Pix(cursorY - currentBrush->width/2 + j));
+					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + i) + cellSize, Index2Pix(cursorY - currentBrush->width/2 + j));
+					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + i) + cellSize, Index2Pix(cursorY - currentBrush->width/2 + j) + cellSize);
+					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + i), Index2Pix(cursorY - currentBrush->width/2 + j) + cellSize);
+				}
+			}
+		}
 	glEnd();
 
 	toolbar->draw();
@@ -218,20 +268,24 @@ void Universe::Run()
 	GUIInit(GUIInput);
 	LocationsInit();
 	
-	//locations[0]->Print();
-
 	mouseX = 0;
 	mouseY = 0;
 
 	continueFlag = true;
+	
+	keys = SDL_GetKeyState(NULL);
 
 	while (continueFlag)
 	{
-		//TODO: while (SDL_PollEvent(&event)) {...}
-		SDL_PollEvent(&event);
-		keys = SDL_GetKeyState(NULL);
 		SDL_PumpEvents();
 		
+		while (SDL_PollEvent(&event))
+		{
+			GUIInput->pushInput(event); //((gcn::SDLInput*)(toolbar->getInput()))->pushInput(event); //This code doing the same without defined pointer to GUIInput, but looks too bad...
+			toolbar->logic();
+		}
+
+		//TODO: Put this inside the switch below
 		//EXIT
 		if (keys[SDLK_ESCAPE])
 		{
@@ -280,17 +334,32 @@ void Universe::Run()
 
 		switch (event.type)
 		{
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+				keys = SDL_GetKeyState(NULL);
+				break;
 			case SDL_MOUSEMOTION:
 				SDL_GetMouseState(&mouseX, &mouseY);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				if (mouseX < (screenWidth - toolbarWidth)) //Prevents drawing cells with brush while mouse cursor is on the toolbar
-					currentLocation->mask[cursorY][cursorX].cellProperty = currentBrush;
+				{
+					for (int i = 0; i < currentBrush->width; i++)
+						for (int j = 0; j < currentBrush->width; j++)
+							if ((cursorX - currentBrush->width/2 + j) >= 0 && 
+								(cursorY - currentBrush->width/2 + i) >= 0 && 
+								(cursorX - currentBrush->width/2 + j) < currentLocation->width && 
+								(cursorY - currentBrush->width/2 + i) < currentLocation->height
+								)
+								currentLocation->mask[cursorY - currentBrush->width/2 + i][cursorX - currentBrush->width/2 + j].cellProperty = currentCellProperty;
+				}
 				break;
 			case SDL_MOUSEBUTTONUP:
 				break;
 			case SDL_QUIT:
 				continueFlag = false;
+				break;
+			default:
 				break;
 		}
 
@@ -300,9 +369,36 @@ void Universe::Run()
 			cursorY = Pix2Index(mouseY + cameraY);
 		}
 		//printf("%d : %d\n", cursorX, cursorY);
-
-		GUIInput->pushInput(event); //((gcn::SDLInput*)(toolbar->getInput()))->pushInput(event); //This code doing the same without defined pointer to GUIInput, but looks too bad...
-		toolbar->logic();
+		
 		DrawScene();
 	}
+}
+
+bool Universe::BrushesInit()
+{
+	int i, count;
+	char** files;
+
+	//TODO: Remove it when ReadDir will work
+	brushes = new CursorBrush*[2];
+	brushes[0] = new CursorBrush(1);
+	brushes[1] = new CursorBrush(2);
+	brushesCount = 2;
+	currentBrush = brushes[0];
+	return false;
+
+	count = ReadDir("editor\\brush", files, false);
+	if (!count)
+		return true;
+	brushes = new CursorBrush*[count];
+	for (i = 0; i < count; i++)
+	{
+		files[i][strlen(files[i]) - 4] = '\0';
+		brushes[i] = new CursorBrush(Str2Int(files[i]));
+		delete files[i];
+	}
+	brushesCount = count;
+	currentBrush = brushes[0];
+	delete files;
+	return false;
 }

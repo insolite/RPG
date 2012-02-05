@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Item.h"
 #include "MapObject.h"
+#include "CursorBrush.h"
 #pragma once
 using namespace std;
 
@@ -11,7 +12,7 @@ class Universe
 public:
 	Location* currentLocation;
 	Location** locations;
-	vector<Npc*> npcs;
+	vector<NPC*> npcs;
 	vector<Player*> players;
 	vector<Item*> items;
 	vector<MapObject*> mapObjects;
@@ -21,12 +22,16 @@ public:
 	int toolbarWidth; //pixels
 	int cellSize; //pixels
 	int locationsCount;
-	CellProperty currentBrush;
+	CellProperty currentCellProperty;
+	CursorBrush** brushes;
+	CursorBrush* currentBrush;
+	int brushesCount;
 	char* gameName;
 	gcn::Gui* toolbar;
 	
 	bool GraphicsInit();
 	bool GUIInit(gcn::SDLInput* &GUIInput);
+	bool BrushesInit();
 	bool LocationsInit();
 	void SelectLocation(Location* location);
 	void DrawScene();

@@ -78,11 +78,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
+    <ClInclude Include="BrushListModel.h" />
+    <ClInclude Include="CursorBrush.h" />
+    <ClInclude Include="DropDownActionListener.h" />
+    <ClInclude Include="FloorListModel.h" />
     <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="MapObject.h" />
-    <ClInclude Include="Npc.h" />
+    <ClInclude Include="NPC.h" />
+    <ClInclude Include="NPCListModel.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteBase.h" />
@@ -90,16 +95,22 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Universe.h" />
+    <ClInclude Include="utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="BrushListModel.cpp" />
+    <ClCompile Include="CursorBrush.cpp" />
+    <ClCompile Include="DropDownActionListener.cpp" />
+    <ClCompile Include="FloorListModel.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="MapCell.h" />
     <ClCompile Include="MapEditor.cpp" />
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="MenuButton.cpp" />
-    <ClCompile Include="Npc.cpp" />
+    <ClCompile Include="NPC.cpp" />
+    <ClCompile Include="NPCListModel.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteBase.cpp" />
@@ -109,6 +120,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Universe.cpp" />
+    <ClCompile Include="utilities.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

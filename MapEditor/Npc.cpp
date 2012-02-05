@@ -2,11 +2,11 @@
 #include "Npc.h"
 
 
-Npc::Npc(void)
+NPC::NPC(void)
 {
 }
 
 
-Npc::~Npc(void)
+NPC::~NPC(void)
 {
 }

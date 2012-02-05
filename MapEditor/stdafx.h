@@ -21,6 +21,7 @@
 #include "../Include/guichan/guichan/sdl.hpp"
 #include "../Include/guichan/guichan/opengl/openglsdlimageloader.hpp"
 
+#pragma comment(lib, "kernel32.lib")
 #pragma comment(lib, "../Lib/opengl32.lib")
 #pragma comment(lib, "../Lib/glu32.lib")
 //#pragma comment(lib, "../Lib/ui.lib")
