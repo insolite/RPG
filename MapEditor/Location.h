@@ -6,8 +6,10 @@ class Location
 public:
 	MapCell** mask;
 	int width, height;
+	int id;
+	char *name;
 
-	bool Load(char* filename);
+	bool Init(char* gameName, int id);
 	void Print();
 
 	Location(void);

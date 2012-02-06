@@ -2,11 +2,9 @@
 #include "DropDownActionListener.h"
 
 
-DropDownActionListener::DropDownActionListener(gcn::DropDown* _dropDown, CursorBrush* &_currentBrush, CursorBrush** _brushes)
+DropDownActionListener::DropDownActionListener(Universe* _universe)
 {
-	dropDown = _dropDown;
-	currentBrush = &_currentBrush;
-	brushes = _brushes;
+	universe = _universe;
 }
 
 

@@ -4,6 +4,7 @@
 #include "FloorListModel.h"
 #include "NPCListModel.h"
 #include "BrushListModel.h"
+#include "LocationListModel.h"
 #include "DropDownActionListener.h"
 #include "utilities.h"
 
@@ -17,6 +18,7 @@ Universe::Universe(void)
 	//currentBrush = CellProperty::Free;
 	currentCellProperty = CellProperty::Locked;
 	toolbarWidth = 192;
+	toolbarLeftMargin = 8;
 	gameName = new (char[32]);
 	sprintf(gameName, "testgame");
 }
@@ -88,7 +90,7 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 
 	//Container init
 	gcn::Container* toolbarContainer = new gcn::Container();
-	toolbarContainer->setBaseColor(gcn::Color(0x000000));
+	toolbarContainer->setBaseColor(gcn::Color(0x7f7f7f));
 	toolbarContainer->setDimension(gcn::Rectangle(screenWidth - toolbarWidth, 0, toolbarWidth, screenHeight));
 
 	//GUI init
@@ -117,26 +119,33 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	delete path;
 	delete fontCharacters;
 
-	//TODO: Move it to the class definition
-	int toolbarLeftMargin = 8; //pixels
-
 	//GUI building
 	MenuButton* testButton = new MenuButton("Test");
-	toolbarContainer->add(testButton, 64, 64);
+	toolbarContainer->add(testButton, 64, 128);
 
+	DropDownActionListener* dropDownActionListener = new DropDownActionListener(this);
+	
 	FloorListModel* floorListModel = new FloorListModel();
 	gcn::DropDown* floorsDropDown = new gcn::DropDown(floorListModel);
 	floorsDropDown->setSelected(0);
 	toolbarContainer->add(floorsDropDown, toolbarLeftMargin, 8);
-
-	BrushesInit();
+	floorsDropDown->setFocusable(false);
 
 	BrushListModel* brushListModel = new BrushListModel(brushes, brushesCount);
 	gcn::DropDown* brushesDropDown = new gcn::DropDown(brushListModel);
 	brushesDropDown->setSelected(0);
-	DropDownActionListener* brushesDropDownActionListener = new DropDownActionListener(brushesDropDown, currentBrush, brushes);
-	brushesDropDown->addActionListener(brushesDropDownActionListener);
 	toolbarContainer->add(brushesDropDown, toolbarLeftMargin, 32);
+	brushesDropDown->setFocusable(false);
+	brushesDropDown->addActionListener(dropDownActionListener);
+	dropDownActionListener->brushesDropDown = brushesDropDown;
+	
+	LocationListModel* locationListModel = new LocationListModel(locations, locationsCount);
+	gcn::DropDown* locationsDropDown = new gcn::DropDown(locationListModel);
+	locationsDropDown->setSelected(0);
+	toolbarContainer->add(locationsDropDown, toolbarLeftMargin, 56);
+	locationsDropDown->setFocusable(false);
+	locationsDropDown->addActionListener(dropDownActionListener);
+	dropDownActionListener->locationsDropDown = locationsDropDown;
 
 	gcn::RadioButton* brushTypeRadioButton1 = new gcn::RadioButton("Typ", "Brush", true);
 	gcn::RadioButton* brushTypeRadioButton2 = new gcn::RadioButton("Tex", "Brush", false);
@@ -162,26 +171,29 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 
 bool Universe::LocationsInit()
 {
-	char* path = new (char[256]);
+	char locationsPath[256];
+	char **folders;
+	int id, i;
 
-	//TODO: Load all locations
-	locationsCount = 1;
+	sprintf(locationsPath, "game/%s/location", gameName);
+	locationsCount = ReadDir(locationsPath, folders, true);
 	locations = new (Location*[locationsCount]);
-	for (int i = 0; i < locationsCount; i++)
+	for (i = 0; i < locationsCount; i++)
 	{
-		sprintf(path, "game/%s/location/%d/ground.loc", gameName, i + 1);
+		sscanf(folders[i], "%d", &id);
+		delete folders[i];
 		locations[i] = new Location();
-		if (locations[i]->Load(path)) //LocationsInit fails if at least one location failed to load
+		if (locations[i]->Init(gameName, id)) //LocationsInit fails if at least one location failed to load
 		{
 			for (int j = 0; j <= i; j++)
 				delete locations[i];
 			delete locations;
-			delete path;
+			delete folders;
 			return true;
 		}
 	}
-	SelectLocation(locations[0]);
-	delete path;
+	delete folders;
+	SetLocation(locations[0]);
 	return false;
 }
 
@@ -236,10 +248,10 @@ void Universe::DrawScene()
 			{
 				if (currentBrush->mask[i][j])
 				{
-					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + i), Index2Pix(cursorY - currentBrush->width/2 + j));
-					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + i) + cellSize, Index2Pix(cursorY - currentBrush->width/2 + j));
-					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + i) + cellSize, Index2Pix(cursorY - currentBrush->width/2 + j) + cellSize);
-					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + i), Index2Pix(cursorY - currentBrush->width/2 + j) + cellSize);
+					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + j), Index2Pix(cursorY - currentBrush->width/2 + i));
+					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + j) + cellSize, Index2Pix(cursorY - currentBrush->width/2 + i));
+					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + j) + cellSize, Index2Pix(cursorY - currentBrush->width/2 + i) + cellSize);
+					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + j), Index2Pix(cursorY - currentBrush->width/2 + i) + cellSize);
 				}
 			}
 		}
@@ -251,8 +263,12 @@ void Universe::DrawScene()
 	SDL_GL_SwapBuffers();
 }
 
-void Universe::SelectLocation(Location* location)
+void Universe::SetLocation(Location* location)
 {
+	cameraX = 0;
+	cameraY = 0;
+	cursorX = 0;
+	cursorY = 0;
 	currentLocation = location;
 }
 
@@ -264,9 +280,11 @@ void Universe::Run()
 	int mouseX, mouseY;
 	bool continueFlag;
 
+	LocationsInit();
+	BrushesInit();
+
 	GraphicsInit();
 	GUIInit(GUIInput);
-	LocationsInit();
 	
 	mouseX = 0;
 	mouseY = 0;
@@ -343,16 +361,7 @@ void Universe::Run()
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				if (mouseX < (screenWidth - toolbarWidth)) //Prevents drawing cells with brush while mouse cursor is on the toolbar
-				{
-					for (int i = 0; i < currentBrush->width; i++)
-						for (int j = 0; j < currentBrush->width; j++)
-							if ((cursorX - currentBrush->width/2 + j) >= 0 && 
-								(cursorY - currentBrush->width/2 + i) >= 0 && 
-								(cursorX - currentBrush->width/2 + j) < currentLocation->width && 
-								(cursorY - currentBrush->width/2 + i) < currentLocation->height
-								)
-								currentLocation->mask[cursorY - currentBrush->width/2 + i][cursorX - currentBrush->width/2 + j].cellProperty = currentCellProperty;
-				}
+					Paint();
 				break;
 			case SDL_MOUSEBUTTONUP:
 				break;
@@ -376,29 +385,44 @@ void Universe::Run()
 
 bool Universe::BrushesInit()
 {
-	int i, count;
-	char** files;
-
-	//TODO: Remove it when ReadDir will work
-	brushes = new CursorBrush*[2];
-	brushes[0] = new CursorBrush(1);
-	brushes[1] = new CursorBrush(2);
-	brushesCount = 2;
-	currentBrush = brushes[0];
-	return false;
-
-	count = ReadDir("editor\\brush", files, false);
-	if (!count)
+	int i, j, k, count, width;
+	FILE* f;
+	
+	f = fopen("editor/brushes.dat", "rb");
+	if (!f)
 		return true;
-	brushes = new CursorBrush*[count];
-	for (i = 0; i < count; i++)
+	count = fgetc(f);
+	if (!count) //No brushes found
 	{
-		files[i][strlen(files[i]) - 4] = '\0';
-		brushes[i] = new CursorBrush(Str2Int(files[i]));
-		delete files[i];
+		fclose(f);
+		return true;
 	}
+	brushes = new CursorBrush*[count];
+	for (k = 0; k < count; k++)
+	{
+		brushes[k] = new CursorBrush();
+		brushes[k]->Init(fgetc(f));
+		for (i = 0; i < brushes[k]->width; i++)
+			for (j = 0; j < brushes[k]->width; j++)
+				brushes[k]->mask[i][j] = fgetc(f);
+	}
+	fclose(f);
 	brushesCount = count;
 	currentBrush = brushes[0];
-	delete files;
 	return false;
+}
+
+void Universe::Paint()
+{
+	int i, j;
+
+	for (i = 0; i < currentBrush->width; i++)
+		for (j = 0; j < currentBrush->width; j++)
+			if ((cursorX - currentBrush->width/2 + j) >= 0 && 
+				(cursorY - currentBrush->width/2 + i) >= 0 && 
+				(cursorX - currentBrush->width/2 + j) < currentLocation->width && 
+				(cursorY - currentBrush->width/2 + i) < currentLocation->height && 
+				currentBrush->mask[i][j]
+				)
+				currentLocation->mask[cursorY - currentBrush->width/2 + i][cursorX - currentBrush->width/2 + j].cellProperty = currentCellProperty;
 }

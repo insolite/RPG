@@ -23,21 +23,31 @@ void Location::Print()
 	}
 }
 
-bool Location::Load(char* filename)
+bool Location::Init(char* gameName, int _id)
 {
 	FILE *f;
 	int i, j;
+	char path[256];
 
-	f = fopen(filename, "rb");
+	id = _id;
+	sprintf(path, "game/%s/location/%d/ground.loc", gameName, id);
+	f = fopen(path, "rb");
 	if (!f)
 		return true;
-	width = fgetc(f) * 16 + fgetc(f);
-	height = fgetc(f) * 16 + fgetc(f);
+	name = new char[16];
+	//fgets(name, 15, f);
+	name[0] = fgetc(f);
+	for (i = 1; i < 15 && name[i - 1]; i++)
+		name[i] = fgetc(f);
+	width = fgetc(f) * 16;
+	width += fgetc(f);
+	height = fgetc(f) * 16;
+	height += fgetc(f);
 	
-	mask = new (MapCell*[width]);
+	mask = new MapCell*[height];
 	for (i = 0; i < height; i++)
 	{
-		mask[i] = new (MapCell[height]);
+		mask[i] = new MapCell[width];
 		for (j = 0; j < width; j++)
 		{
 			mask[i][j].cellProperty = (CellProperty)fgetc(f);

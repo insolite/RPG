@@ -5,7 +5,9 @@ public:
 	int width;
 	bool** mask;
 
-	CursorBrush(int id);
+	void Init(int _width, bool** _mask = NULL);
+
+	CursorBrush(void);
 	~CursorBrush(void);
 };
 

@@ -20,6 +20,7 @@ public:
 	int cursorX, cursorY; //points
 	int screenWidth, screenHeight; //pixels
 	int toolbarWidth; //pixels
+	int toolbarLeftMargin; //pixels
 	int cellSize; //pixels
 	int locationsCount;
 	CellProperty currentCellProperty;
@@ -33,10 +34,11 @@ public:
 	bool GUIInit(gcn::SDLInput* &GUIInput);
 	bool BrushesInit();
 	bool LocationsInit();
-	void SelectLocation(Location* location);
+	void SetLocation(Location* location);
 	void DrawScene();
 	void Run();
 	void CameraMove(int x, int y);
+	void Paint();
 	int Pix2Index(int pos);
 	int Index2Pix(int pos);
 	int PixRound(int pos);
