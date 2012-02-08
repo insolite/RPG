@@ -44,7 +44,7 @@ int ReadDir(char* path, char** &elements, bool directoriesOnly)
 	elementsV.clear();
 	return count;
 }
-
+/*
 int Str2Int(char *str)
 {
 	int i, num, decs;
@@ -107,3 +107,4 @@ char *Int2Str(int num)
 
 	return str;
 }
+*/

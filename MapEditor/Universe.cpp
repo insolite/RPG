@@ -10,8 +10,6 @@
 
 Universe::Universe(void)
 {
-	cameraX = 0;
-	cameraY = 0;
 	screenWidth = 800;
 	screenHeight = 600;
 	cellSize = 64;
@@ -40,6 +38,17 @@ int Universe::Index2Pix(int pos)
 int Universe::PixRound(int pos)
 {
 	return Index2Pix(Pix2Index(pos));
+}
+
+void Universe::CameraReset()
+{
+	cameraX = 0;
+	cameraY = 0;
+}
+void Universe::CursorReset()
+{
+	cursorX = 0;
+	cursorY = 0;
 }
 
 bool Universe::GraphicsInit()
@@ -102,7 +111,7 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	//Font init
 	//TODO: For map editor interface we have to load some 'system' font, not in-game font
 	path = new (char[256]);
-	sprintf(path, "game/%s/resource/interface/font/char.txt", gameName);
+	sprintf(path, "editor/font/char.txt");
 	f = fopen(path, "rt");
 	if (!f)
 	{
@@ -112,7 +121,7 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	fontCharacters = new (char[256]);
 	fgets(fontCharacters, 256, f);
 	fclose(f);
-	sprintf(path, "game/%s/resource/interface/font/face.png", gameName);
+	sprintf(path, "editor/font/face.bmp");
 	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
 	gcn::ImageFont* mFontWhite = new gcn::ImageFont(path, fontCharacters);
 	gcn::Widget::setGlobalFont(mFontWhite);
@@ -265,10 +274,8 @@ void Universe::DrawScene()
 
 void Universe::SetLocation(Location* location)
 {
-	cameraX = 0;
-	cameraY = 0;
-	cursorX = 0;
-	cursorY = 0;
+	CameraReset();
+	CursorReset();
 	currentLocation = location;
 }
 
@@ -283,9 +290,12 @@ void Universe::Run()
 	LocationsInit();
 	BrushesInit();
 
+	CameraReset();
+	CursorReset();
+
 	GraphicsInit();
 	GUIInit(GUIInput);
-	
+
 	mouseX = 0;
 	mouseY = 0;
 

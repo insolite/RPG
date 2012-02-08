@@ -21,7 +21,6 @@ Thumbs.db
 [Bb]in
 *.sbr
 obj/
-[Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
 
@@ -29,4 +28,6 @@ _ReSharper*/
 *.sdf
 *.tlog
 *.sln
+*.manifest
+*.embed.manifest.res
 ipch/

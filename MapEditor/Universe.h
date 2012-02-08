@@ -38,6 +38,8 @@ public:
 	void DrawScene();
 	void Run();
 	void CameraMove(int x, int y);
+	void CameraReset();
+	void CursorReset();
 	void Paint();
 	int Pix2Index(int pos);
 	int Index2Pix(int pos);

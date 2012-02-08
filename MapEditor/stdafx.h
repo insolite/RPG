@@ -15,7 +15,6 @@
 #include "../Include/SDL/SDL_image.h"
 #include "../Include/gl/GL.h"
 #include "../Include/gl/GLU.h"
-//#include "../Include/gl/gui/gui.h"
 #include "../Include/guichan/guichan.hpp"
 #include "../Include/guichan/guichan/opengl.hpp"
 #include "../Include/guichan/guichan/sdl.hpp"
@@ -24,8 +23,6 @@
 #pragma comment(lib, "kernel32.lib")
 #pragma comment(lib, "../Lib/opengl32.lib")
 #pragma comment(lib, "../Lib/glu32.lib")
-//#pragma comment(lib, "../Lib/ui.lib")
-//#pragma comment(lib, "../Lib/uid.lib")
 #pragma comment(lib, "../Lib/guichan.lib")
 #pragma comment(lib, "../Lib/guichan_opengl.lib")
 #pragma comment(lib, "../Lib/guichan_sdl.lib")
