@@ -79,11 +79,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
-    <ClInclude Include="BrushListModel.h" />
+    <ClInclude Include="BrushDropDown.h" />
     <ClInclude Include="CursorBrush.h" />
-    <ClInclude Include="DropDownActionListener.h" />
+    <ClInclude Include="FloorDropDown.h" />
     <ClInclude Include="FloorListModel.h" />
-    <ClInclude Include="LocationListModel.h" />
+    <ClInclude Include="LocationDropDown.h" />
     <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Location.h" />
@@ -95,19 +95,21 @@
     <ClInclude Include="SpriteBase.h" />
     <ClInclude Include="SpriteFrame.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="StringDropDown.h" />
+    <ClInclude Include="StringListModel.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Universe.h" />
     <ClInclude Include="utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="BrushListModel.cpp" />
+    <ClCompile Include="BrushDropDown.cpp" />
     <ClCompile Include="CursorBrush.cpp" />
-    <ClCompile Include="DropDownActionListener.cpp" />
+    <ClCompile Include="FloorDropDown.cpp" />
     <ClCompile Include="FloorListModel.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Location.cpp" />
-    <ClCompile Include="LocationListModel.cpp" />
+    <ClCompile Include="LocationDropDown.cpp" />
     <ClCompile Include="MapCell.h" />
     <ClCompile Include="MapEditor.cpp" />
     <ClCompile Include="MapObject.cpp" />
@@ -122,6 +124,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StringDropDown.cpp" />
+    <ClCompile Include="StringListModel.cpp" />
     <ClCompile Include="Universe.cpp" />
     <ClCompile Include="utilities.cpp" />
   </ItemGroup>

@@ -3,9 +3,9 @@
 #include "MenuButton.h"
 #include "FloorListModel.h"
 #include "NPCListModel.h"
-#include "BrushListModel.h"
-#include "LocationListModel.h"
-#include "DropDownActionListener.h"
+#include "FloorDropDown.h"
+#include "LocationDropDown.h"
+#include "BrushDropDown.h"
 #include "utilities.h"
 
 Universe::Universe(void)
@@ -90,72 +90,74 @@ bool Universe::GraphicsInit()
 
 bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 {
-	char* fontCharacters;
-	char* path;
+	char fontCharacters[256];
 	FILE* f;
 
 	//Input init
 	GUIInput = new gcn::SDLInput();
 
-	//Container init
+	//Toolbar container init
 	gcn::Container* toolbarContainer = new gcn::Container();
 	toolbarContainer->setBaseColor(gcn::Color(0x7f7f7f));
-	toolbarContainer->setDimension(gcn::Rectangle(screenWidth - toolbarWidth, 0, toolbarWidth, screenHeight));
-
+	//toolbarContainer->setDimension(gcn::Rectangle(screenWidth - toolbarWidth, 0, toolbarWidth, screenHeight));
+	toolbarContainer->setDimension(gcn::Rectangle(0, 0, toolbarWidth, screenHeight));
+	
+	//Main container init
+	gcn::Container* mainContainer = new gcn::Container();
+	mainContainer->setDimension(gcn::Rectangle(0, 0, screenWidth, screenHeight));
+	mainContainer->setOpaque(false);
+	mainContainer->add(toolbarContainer, screenWidth - toolbarWidth, 0);
+	
 	//GUI init
 	toolbar = new gcn::Gui();
 	toolbar->setGraphics(new gcn::OpenGLGraphics(screenWidth, screenHeight));
 	toolbar->setInput(GUIInput);
-	toolbar->setTop(toolbarContainer);
+	toolbar->setTop(mainContainer);
 
 	//Font init
-	//TODO: For map editor interface we have to load some 'system' font, not in-game font
-	path = new (char[256]);
-	sprintf(path, "editor/font/char.txt");
-	f = fopen(path, "rt");
+	f = fopen("editor/_font/char.txt", "rt");
 	if (!f)
-	{
-		delete path;
 		return true;
-	}
-	fontCharacters = new (char[256]);
 	fgets(fontCharacters, 256, f);
 	fclose(f);
-	sprintf(path, "editor/font/face.bmp");
 	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
-	gcn::ImageFont* mFontWhite = new gcn::ImageFont(path, fontCharacters);
+	gcn::ImageFont* mFontWhite = new gcn::ImageFont("editor/_font/face.png", fontCharacters);
 	gcn::Widget::setGlobalFont(mFontWhite);
-	delete path;
-	delete fontCharacters;
 
 	//GUI building
-	MenuButton* testButton = new MenuButton("Test");
-	toolbarContainer->add(testButton, 64, 128);
 
-	DropDownActionListener* dropDownActionListener = new DropDownActionListener(this);
-	
-	FloorListModel* floorListModel = new FloorListModel();
-	gcn::DropDown* floorsDropDown = new gcn::DropDown(floorListModel);
+	//Floor control DropDown
+	FloorDropDown* floorsDropDown = new FloorDropDown(this);
+	floorsDropDown->add("outside");
+	floorsDropDown->add("first fl.");
 	floorsDropDown->setSelected(0);
-	toolbarContainer->add(floorsDropDown, toolbarLeftMargin, 8);
-	floorsDropDown->setFocusable(false);
+	toolbarContainer->add(floorsDropDown, toolbarLeftMargin, 32);
 
-	BrushListModel* brushListModel = new BrushListModel(brushes, brushesCount);
-	gcn::DropDown* brushesDropDown = new gcn::DropDown(brushListModel);
-	brushesDropDown->setSelected(0);
-	toolbarContainer->add(brushesDropDown, toolbarLeftMargin, 32);
-	brushesDropDown->setFocusable(false);
-	brushesDropDown->addActionListener(dropDownActionListener);
-	dropDownActionListener->brushesDropDown = brushesDropDown;
-	
-	LocationListModel* locationListModel = new LocationListModel(locations, locationsCount);
-	gcn::DropDown* locationsDropDown = new gcn::DropDown(locationListModel);
+	//Location control DropDown
+	LocationDropDown* locationsDropDown = new LocationDropDown(this);
+	for (int i = 0; i < locationsCount; i++)
+		locationsDropDown->add(locations[i]->name);
 	locationsDropDown->setSelected(0);
 	toolbarContainer->add(locationsDropDown, toolbarLeftMargin, 56);
-	locationsDropDown->setFocusable(false);
-	locationsDropDown->addActionListener(dropDownActionListener);
-	dropDownActionListener->locationsDropDown = locationsDropDown;
 
+	//Brush selection
+	BrushDropDown* brushesDropDown = new BrushDropDown(this);
+	char str[16];
+	for (int i = 0; i < brushesCount; i++)
+	{
+		sprintf(str, "%dx", brushes[i]->width);
+		brushesDropDown->add(str);
+	}
+	brushesDropDown->setSelected(0);
+	toolbarContainer->add(brushesDropDown, toolbarLeftMargin, 80);
+	
+	//Test window
+	MenuButton* testButton = new MenuButton("Test");
+	gcn::Window* window = new gcn::Window("Drag me");
+	window->add(testButton, 64, 64);
+	window->resizeToContent();
+	mainContainer->add(window, 0, 0);
+	
 	gcn::RadioButton* brushTypeRadioButton1 = new gcn::RadioButton("Typ", "Brush", true);
 	gcn::RadioButton* brushTypeRadioButton2 = new gcn::RadioButton("Tex", "Brush", false);
 	gcn::RadioButton* brushTypeRadioButton3 = new gcn::RadioButton("Npc", "Brush", false);
@@ -174,7 +176,7 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	toolbarContainer->add(listBox, 8, 256);
 	//toolbarContainer->add(sa, 8, 300);
 	*/
-
+	
 	return false;
 }
 
@@ -302,6 +304,7 @@ void Universe::Run()
 	continueFlag = true;
 	
 	keys = SDL_GetKeyState(NULL);
+	int lastUpdate = SDL_GetTicks();
 
 	while (continueFlag)
 	{
@@ -311,6 +314,12 @@ void Universe::Run()
 		{
 			GUIInput->pushInput(event); //((gcn::SDLInput*)(toolbar->getInput()))->pushInput(event); //This code doing the same without defined pointer to GUIInput, but looks too bad...
 			toolbar->logic();
+		}
+
+		if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(1))
+		{
+			if (mouseX < (screenWidth - toolbarWidth)) //Prevents drawing cells with brush while mouse cursor is on the toolbar
+				Paint();
 		}
 
 		//TODO: Put this inside the switch below
@@ -369,12 +378,12 @@ void Universe::Run()
 			case SDL_MOUSEMOTION:
 				SDL_GetMouseState(&mouseX, &mouseY);
 				break;
+			/*
 			case SDL_MOUSEBUTTONDOWN:
-				if (mouseX < (screenWidth - toolbarWidth)) //Prevents drawing cells with brush while mouse cursor is on the toolbar
-					Paint();
 				break;
 			case SDL_MOUSEBUTTONUP:
 				break;
+			*/
 			case SDL_QUIT:
 				continueFlag = false;
 				break;
@@ -389,7 +398,12 @@ void Universe::Run()
 		}
 		//printf("%d : %d\n", cursorX, cursorY);
 		
-		DrawScene();
+		if ((SDL_GetTicks() - lastUpdate) > 41) //41.(6)
+		{
+			DrawScene();
+			lastUpdate = SDL_GetTicks();
+		}
+		Sleep(1);
 	}
 }
 
