@@ -1,5 +1,4 @@
 #pragma once
-#include "d:\myfiles\vs2010\projects\rpg\include\guichan\guichan\widgets\dropdown.hpp"
 #include "Universe.h"
 
 class StringDropDown :

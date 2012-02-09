@@ -8,13 +8,6 @@
 #include "BrushDropDown.h"
 #include "utilities.h"
 
-/*
-	
-	Test commit from Oleg Vovk...
-
-*/
-
-
 Universe::Universe(void)
 {
 	screenWidth = 800;

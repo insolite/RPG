@@ -1,5 +1,4 @@
 #pragma once
-#include "d:\myfiles\vs2010\projects\rpg\include\guichan\guichan\listmodel.hpp"
 
 class FloorListModel :
 	public gcn::ListModel
