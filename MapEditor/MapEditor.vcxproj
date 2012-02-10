@@ -91,8 +91,6 @@
     <ClInclude Include="NPCListModel.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Sprite.h" />
-    <ClInclude Include="SpriteBase.h" />
-    <ClInclude Include="SpriteFrame.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringDropDown.h" />
     <ClInclude Include="StringListModel.h" />
@@ -116,8 +114,6 @@
     <ClCompile Include="NPCListModel.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="SpriteBase.cpp" />
-    <ClCompile Include="SpriteFrame.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
