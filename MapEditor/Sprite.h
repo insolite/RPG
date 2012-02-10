@@ -1,9 +1,8 @@
+#pragma once
 //#ifndef _SPRITE_H_
 //#define _SPRITE_H_
 
-#include <windows.h>
 #include <sys/timeb.h>
-#include <GL/gl.h>
 
 class Sprite
 {
@@ -86,101 +85,101 @@ public:
 		return m_fAlpha;
 	}
     
-    void  setTextureID(GLuint textureID) 
+    void setTextureID(GLuint textureID) 
 	{ 
 		m_textureID = textureID;
 	}
 
-    int   getTextureID(void) 
+    int getTextureID(void) 
 	{ 
 		return m_textureID;
 	}
 
-    void  setTextureWidth(int nTextureWidth)
+    void setTextureWidth(int nTextureWidth)
 	{ 
 		m_nTextureWidth = nTextureWidth;
 	}
 
-    int   getTextureWidth() 
+    int getTextureWidth() 
 	{ 
 		return m_nTextureWidth;
 	}
 
-    void  setTextureHeight(int nTextureHeight) 
+    void setTextureHeight(int nTextureHeight) 
 	{
 		m_nTextureHeight = nTextureHeight;
 	}
 
-    int   getTextureHeight() 
+    int getTextureHeight() 
 	{ 
 		return m_nTextureHeight;
 	}
 
-    void  setFrameWidth(int nFrameWidth)
+    void setFrameWidth(int nFrameWidth)
 	{ 
 		m_nFrameWidth = nFrameWidth; 
 	}
 
-    int   getFrameWidth() 
+    int getFrameWidth() 
 	{ 
 		return m_nFrameWidth;
 	}
 
-    void  setFrameHeight(int nFrameHeight) 
+    void setFrameHeight(int nFrameHeight) 
 	{
 		m_nFrameHeight = nFrameHeight;
 	}
-    int   getFrameHeight() 
+    int getFrameHeight() 
 	{ 
 		return m_nFrameHeight; 
 	}
 
-    void  setNumFrameColumns(int nNumFrameColumns) 
+    void setNumFrameColumns(int nNumFrameColumns) 
 	{
 		m_nNumFrameColumns = nNumFrameColumns;
 	}
-    int   getNumFrameColumns() 
+    int getNumFrameColumns() 
 	{ 
 		return m_nNumFrameColumns;
 	}
 
-    void  setNumFrameRows (int nNumFrameRows) 
+    void setNumFrameRows (int nNumFrameRows) 
 	{
 		m_nNumFrameRows = nNumFrameRows;
 	}
-    int   getNumFrameRows ()
+    int getNumFrameRows ()
 	{ 
 		return m_nNumFrameRows; 
 	}
 
-    void  setTotalFrames(int nTotalFrames) 
+    void setTotalFrames(int nTotalFrames) 
 	{ 
 		m_nTotalFrames = nTotalFrames;
 	}
-    int   getTotalFrames() 
+    int getTotalFrames() 
 	{ 
 		return m_nTotalFrames; 
 	}
 
-    void  setOffsetX(int nOffsetX) 
+    void setOffsetX(int nOffsetX) 
 	{ 
 		m_nOffsetX = nOffsetX; 
 	}
-    int   getOffsetX() 
+    int getOffsetX() 
 	{ 
 		return m_nOffsetX;
 	}
 
-    void  setOffsetY(int nOffsetY)
+    void setOffsetY(int nOffsetY)
 	{ 
 		m_nOffsetY = nOffsetY; 
 	}
-    int   getOffsetY() 
+    int getOffsetY() 
 	{ 
 		return m_nOffsetY;
 	}
 
-    void  setFrameDelay( float fFrameDelay )
+    void setFrameDelay( float fFrameDelay )
 	{ 
 		m_fFrameDelay = fFrameDelay;
 	}

@@ -1,10 +1,11 @@
 #include "StdAfx.h"
 #include "Universe.h"
 #include "MenuButton.h"
-#include "NPCListModel.h"
+#include "StringListModel.h"
 #include "FloorDropDown.h"
 #include "LocationDropDown.h"
 #include "BrushDropDown.h"
+#include "NPCSelectButton.h"
 #include "utilities.h"
 
 Universe::Universe(void)
@@ -18,6 +19,7 @@ Universe::Universe(void)
 	toolbarLeftMargin = 8;
 	gameName = new (char[32]);
 	sprintf(gameName, "testgame");
+	instance = this;
 }
 
 Universe::~Universe(void)
@@ -87,8 +89,6 @@ bool Universe::GraphicsInit()
 	return false;
 }
 
-gcn::Container* editAreaContainer;
-
 bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 {
 	char fontCharacters[256];
@@ -105,7 +105,7 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 
 	//Toolbar container init
 	gcn::Container* toolbarContainer = new gcn::Container();
-	toolbarContainer->setBaseColor(gcn::Color(0x7f7f7f));
+	//toolbarContainer->setBaseColor(gcn::Color(0x7f7f7f));
 	toolbarContainer->setDimension(gcn::Rectangle(0, 0, toolbarWidth, screenHeight));
 	toolbarContainer->setFocusable(true);
 	
@@ -159,14 +159,71 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	brushesDropDown->setSelected(0);
 	toolbarContainer->add(brushesDropDown, toolbarLeftMargin, 80);
 	
-	//Test window
-	MenuButton* testButton = new MenuButton("Test");
-	gcn::Window* window = new gcn::Window("Drag me");
-	window->add(testButton, 64, 64);
-	window->resizeToContent();
-	window->setFocusable(true);
-	mainContainer->add(window, 0, 0);
+	//NPC select button
+	NPCSelectButton* npcSelectButton = new NPCSelectButton("NPC");
+	toolbarContainer->add(npcSelectButton, toolbarLeftMargin, 104);
+
+	//NPC select window
+	npcSelectWindow = new gcn::Window("NPC selection");
+	npcSelectWindow->setFocusable(true);
+	npcSelectWindow->setVisible(false);
+	mainContainer->add(npcSelectWindow, 0, 0);
 	
+	MenuButton* testButton = new MenuButton("Test");
+	npcSelectWindow->add(testButton, 512, 320);
+
+	gcn::CheckBox** tags = new gcn::CheckBox*[3];
+	int tagsCount = 3;
+	tags[0] = new gcn::CheckBox("Humans");
+	tags[1] = new gcn::CheckBox("Elves");
+	tags[2] = new gcn::CheckBox("Orcs");
+	for (int i = 0; i < tagsCount; i++)
+	{
+		tags[i]->setFocusable(false);
+		npcSelectWindow->add(tags[i], 8, 8 + 16 * i);
+	}
+
+	//NPC select ListBox
+	StringListModel* npcSelectListModel = new StringListModel();
+	npcSelectListModel->add("Gremlin");
+	npcSelectListModel->add("Monster Eye Destroyer");
+	npcSelectListModel->add("Doom Knight");
+	npcSelectListModel->add("Really very very very looong name");
+	npcSelectListModel->add("Doom Knight");
+	gcn::ListBox* npcSelectListBox = new gcn::ListBox(npcSelectListModel);
+	
+	//TODO:
+	//Auto resize npcSelectListBox. adjustSize doesn't work for width. Sadly...
+	npcSelectListBox->setSize(512, 0);
+	npcSelectListBox->adjustSize();
+	
+	gcn::ScrollArea* npcSelectListBoxScrollArea = new gcn::ScrollArea();
+    npcSelectListBoxScrollArea->setHorizontalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
+    npcSelectListBoxScrollArea->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
+	npcSelectListBoxScrollArea->setContent(npcSelectListBox);
+	npcSelectListBoxScrollArea->setVisible(true);
+	npcSelectListBoxScrollArea->setSize(256, 320);
+
+	npcSelectWindow->add(npcSelectListBoxScrollArea, 128, 8);
+
+	//NPC preview image
+	gcn::Image* npcPreviewImage = gcn::Image::load("test_preview.bmp"); // http://theinsaneatlantian.deviantart.com/art/RPG-Monster-2-252430339?q=boost%3Apopular%20rpg%20monster&qo=36
+	gcn::Icon* npcPreviewIcon = new gcn::Icon(npcPreviewImage);
+	npcSelectWindow->add(npcPreviewIcon, 400, 8);
+
+	/*
+	gcn::TabbedArea* npcTabbedArea = new gcn::TabbedArea();
+	npcTabbedArea->setSize(200, 100);
+	gcn::Button* tabOneButton = new gcn::Button("Button 1");
+	npcTabbedArea->addTab("Tab 1", tabOneButton);
+	gcn::Button* tabTwoButton = new gcn::Button("Button 2");
+	npcTabbedArea->addTab("Tab 2", tabTwoButton);
+	//window->add(npcTabbedArea);
+	*/
+
+	npcSelectWindow->resizeToContent();
+	npcSelectWindow->setPosition((screenWidth - toolbarWidth) / 2 - npcSelectWindow->getWidth() / 2, screenHeight / 2 - npcSelectWindow->getHeight() / 2);
+
 	gcn::RadioButton* brushTypeRadioButton1 = new gcn::RadioButton("Typ", "Brush", true);
 	gcn::RadioButton* brushTypeRadioButton2 = new gcn::RadioButton("Tex", "Brush", false);
 	gcn::RadioButton* brushTypeRadioButton3 = new gcn::RadioButton("Npc", "Brush", false);
@@ -176,16 +233,6 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	toolbarContainer->add(brushTypeRadioButton3, toolbarLeftMargin, 164);
 	toolbarContainer->add(brushTypeRadioButton4, toolbarLeftMargin, 180);
 
-	/*
-	NPCListModel* npcListModel = new NPCListModel();
-	gcn::ListBox* listBox = new gcn::ListBox(npcListModel);
-	gcn::ScrollArea* sa = new gcn::ScrollArea();
-	sa->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_ALWAYS);
-	sa->setContent(listBox);
-	toolbarContainer->add(listBox, 8, 256);
-	//toolbarContainer->add(sa, 8, 300);
-	*/
-	
 	return false;
 }
 
@@ -438,7 +485,7 @@ bool Universe::BrushesInit()
 		brushes[k]->Init(fgetc(f));
 		for (i = 0; i < brushes[k]->width; i++)
 			for (j = 0; j < brushes[k]->width; j++)
-				brushes[k]->mask[i][j] = fgetc(f);
+				brushes[k]->mask[i][j] = fgetc(f) ? true : false; //the same as fgetc(f), but VC warnings...
 	}
 	fclose(f);
 	brushesCount = count;

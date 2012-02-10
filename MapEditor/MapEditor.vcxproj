@@ -88,7 +88,7 @@
     <ClInclude Include="Location.h" />
     <ClInclude Include="MapObject.h" />
     <ClInclude Include="NPC.h" />
-    <ClInclude Include="NPCListModel.h" />
+    <ClInclude Include="NPCSelectButton.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="stdafx.h" />
@@ -111,7 +111,7 @@
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="MenuButton.cpp" />
     <ClCompile Include="NPC.cpp" />
-    <ClCompile Include="NPCListModel.cpp" />
+    <ClCompile Include="NPCSelectButton.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="stdafx.cpp">
