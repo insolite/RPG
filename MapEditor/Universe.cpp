@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "Universe.h"
 #include "MenuButton.h"
-#include "FloorListModel.h"
 #include "NPCListModel.h"
 #include "FloorDropDown.h"
 #include "LocationDropDown.h"
@@ -88,6 +87,8 @@ bool Universe::GraphicsInit()
 	return false;
 }
 
+gcn::Container* editAreaContainer;
+
 bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 {
 	char fontCharacters[256];
@@ -96,16 +97,23 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	//Input init
 	GUIInput = new gcn::SDLInput();
 
+	//Edit area container init
+	editAreaContainer = new gcn::Container();
+	editAreaContainer->setDimension(gcn::Rectangle(0, 0, screenWidth - toolbarWidth, screenHeight));
+	editAreaContainer->setOpaque(false);
+	editAreaContainer->setFocusable(true);
+
 	//Toolbar container init
 	gcn::Container* toolbarContainer = new gcn::Container();
 	toolbarContainer->setBaseColor(gcn::Color(0x7f7f7f));
-	//toolbarContainer->setDimension(gcn::Rectangle(screenWidth - toolbarWidth, 0, toolbarWidth, screenHeight));
 	toolbarContainer->setDimension(gcn::Rectangle(0, 0, toolbarWidth, screenHeight));
+	toolbarContainer->setFocusable(true);
 	
 	//Main container init
 	gcn::Container* mainContainer = new gcn::Container();
 	mainContainer->setDimension(gcn::Rectangle(0, 0, screenWidth, screenHeight));
 	mainContainer->setOpaque(false);
+	mainContainer->add(editAreaContainer, 0, 0);
 	mainContainer->add(toolbarContainer, screenWidth - toolbarWidth, 0);
 	
 	//GUI init
@@ -156,6 +164,7 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	gcn::Window* window = new gcn::Window("Drag me");
 	window->add(testButton, 64, 64);
 	window->resizeToContent();
+	window->setFocusable(true);
 	mainContainer->add(window, 0, 0);
 	
 	gcn::RadioButton* brushTypeRadioButton1 = new gcn::RadioButton("Typ", "Brush", true);
@@ -318,7 +327,8 @@ void Universe::Run()
 
 		if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(1))
 		{
-			if (mouseX < (screenWidth - toolbarWidth)) //Prevents drawing cells with brush while mouse cursor is on the toolbar
+			//if (mouseX < (screenWidth - toolbarWidth)) //Prevents drawing cells with brush while mouse cursor is on the toolbar
+			if (editAreaContainer->isFocused())
 				Paint();
 		}
 

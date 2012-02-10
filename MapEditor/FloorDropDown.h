@@ -1,5 +1,6 @@
 #pragma once
 #include "stringdropdown.h"
+
 class FloorDropDown :
 	public StringDropDown
 {
@@ -9,4 +10,3 @@ public:
 	FloorDropDown(Universe* _universe);
 	~FloorDropDown(void);
 };
-

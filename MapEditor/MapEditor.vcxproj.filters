@@ -60,9 +60,6 @@
     <ClInclude Include="NPC.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="FloorListModel.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="CursorBrush.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -129,9 +126,6 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="NPC.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="FloorListModel.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="CursorBrush.cpp">

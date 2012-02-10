@@ -82,7 +82,6 @@
     <ClInclude Include="BrushDropDown.h" />
     <ClInclude Include="CursorBrush.h" />
     <ClInclude Include="FloorDropDown.h" />
-    <ClInclude Include="FloorListModel.h" />
     <ClInclude Include="LocationDropDown.h" />
     <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Item.h" />
@@ -106,7 +105,6 @@
     <ClCompile Include="BrushDropDown.cpp" />
     <ClCompile Include="CursorBrush.cpp" />
     <ClCompile Include="FloorDropDown.cpp" />
-    <ClCompile Include="FloorListModel.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="LocationDropDown.cpp" />
