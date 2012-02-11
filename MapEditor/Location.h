@@ -1,10 +1,10 @@
-#include "MapCell.h"
 #pragma once
+#include "MapCell.h"
 
 class Location
 {
 public:
-	MapCell** mask;
+	MapCell*** mask;
 	int width, height;
 	int id;
 	char *name;

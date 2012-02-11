@@ -6,6 +6,7 @@
 #include "LocationDropDown.h"
 #include "BrushDropDown.h"
 #include "NPCSelectButton.h"
+#include "MapObjectSelectWindow.h"
 #include "utilities.h"
 
 Universe::Universe(void)
@@ -163,54 +164,47 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	NPCSelectButton* npcSelectButton = new NPCSelectButton("NPC");
 	toolbarContainer->add(npcSelectButton, toolbarLeftMargin, 104);
 
+	//Test NPCs creating
+	NPC** npcs = new NPC*[5];
+	npcs[0] = new NPC();
+	npcs[1] = new NPC();
+	npcs[2] = new NPC();
+	npcs[3] = new NPC();
+	npcs[4] = new NPC();
+	npcs[0]->name = new char[64];
+	npcs[1]->name = new char[64];
+	npcs[2]->name = new char[64];
+	npcs[3]->name = new char[64];
+	npcs[4]->name = new char[64];
+	strcpy(npcs[0]->name, "Gremlin");
+	strcpy(npcs[1]->name, "Monster Eye Destroyer");
+	strcpy(npcs[2]->name, "Doom Knight");
+	strcpy(npcs[3]->name, "Really very very very looong name");
+	strcpy(npcs[4]->name, "Doom Knight");
+	npcs[0]->tags = new char*[1];
+	npcs[1]->tags = new char*[1];
+	npcs[2]->tags = new char*[1];
+	npcs[3]->tags = new char*[1];
+	npcs[4]->tags = new char*[1];
+	npcs[0]->tags[0] = new char[64];
+	npcs[1]->tags[0] = new char[64];
+	npcs[2]->tags[0] = new char[64];
+	npcs[3]->tags[0] = new char[64];
+	npcs[4]->tags[0] = new char[64];
+	strcpy(npcs[0]->tags[0], "Humans");
+	strcpy(npcs[1]->tags[0], "Elves");
+	strcpy(npcs[2]->tags[0], "Orcs");
+	strcpy(npcs[3]->tags[0], "Humans");
+	strcpy(npcs[4]->tags[0], "Orcs");
+	npcs[0]->tagsCount = 1;
+	npcs[1]->tagsCount = 1;
+	npcs[2]->tagsCount = 1;
+	npcs[3]->tagsCount = 1;
+	npcs[4]->tagsCount = 1;
 	//NPC select window
-	npcSelectWindow = new gcn::Window("NPC selection");
-	npcSelectWindow->setFocusable(true);
-	npcSelectWindow->setVisible(false);
-	mainContainer->add(npcSelectWindow, 0, 0);
+	npcSelectWindow = new MapObjectSelectWindow("NPC selection", (MapObject**)npcs, 5); //TODO: explicit convertion? Really? o_0
+	mainContainer->add(npcSelectWindow);
 	
-	MenuButton* testButton = new MenuButton("Test");
-	npcSelectWindow->add(testButton, 512, 320);
-
-	gcn::CheckBox** tags = new gcn::CheckBox*[3];
-	int tagsCount = 3;
-	tags[0] = new gcn::CheckBox("Humans");
-	tags[1] = new gcn::CheckBox("Elves");
-	tags[2] = new gcn::CheckBox("Orcs");
-	for (int i = 0; i < tagsCount; i++)
-	{
-		tags[i]->setFocusable(false);
-		npcSelectWindow->add(tags[i], 8, 8 + 16 * i);
-	}
-
-	//NPC select ListBox
-	StringListModel* npcSelectListModel = new StringListModel();
-	npcSelectListModel->add("Gremlin");
-	npcSelectListModel->add("Monster Eye Destroyer");
-	npcSelectListModel->add("Doom Knight");
-	npcSelectListModel->add("Really very very very looong name");
-	npcSelectListModel->add("Doom Knight");
-	gcn::ListBox* npcSelectListBox = new gcn::ListBox(npcSelectListModel);
-	
-	//TODO:
-	//Auto resize npcSelectListBox. adjustSize doesn't work for width. Sadly...
-	npcSelectListBox->setSize(512, 0);
-	npcSelectListBox->adjustSize();
-	
-	gcn::ScrollArea* npcSelectListBoxScrollArea = new gcn::ScrollArea();
-    npcSelectListBoxScrollArea->setHorizontalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
-    npcSelectListBoxScrollArea->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
-	npcSelectListBoxScrollArea->setContent(npcSelectListBox);
-	npcSelectListBoxScrollArea->setVisible(true);
-	npcSelectListBoxScrollArea->setSize(256, 320);
-
-	npcSelectWindow->add(npcSelectListBoxScrollArea, 128, 8);
-
-	//NPC preview image
-	gcn::Image* npcPreviewImage = gcn::Image::load("test_preview.bmp"); // http://theinsaneatlantian.deviantart.com/art/RPG-Monster-2-252430339?q=boost%3Apopular%20rpg%20monster&qo=36
-	gcn::Icon* npcPreviewIcon = new gcn::Icon(npcPreviewImage);
-	npcSelectWindow->add(npcPreviewIcon, 400, 8);
-
 	/*
 	gcn::TabbedArea* npcTabbedArea = new gcn::TabbedArea();
 	npcTabbedArea->setSize(200, 100);
@@ -220,9 +214,6 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	npcTabbedArea->addTab("Tab 2", tabTwoButton);
 	//window->add(npcTabbedArea);
 	*/
-
-	npcSelectWindow->resizeToContent();
-	npcSelectWindow->setPosition((screenWidth - toolbarWidth) / 2 - npcSelectWindow->getWidth() / 2, screenHeight / 2 - npcSelectWindow->getHeight() / 2);
 
 	gcn::RadioButton* brushTypeRadioButton1 = new gcn::RadioButton("Typ", "Brush", true);
 	gcn::RadioButton* brushTypeRadioButton2 = new gcn::RadioButton("Tex", "Brush", false);
@@ -288,7 +279,7 @@ void Universe::DrawScene()
 	{
 		for (j = 0; j < currentLocation->width; j++)
 		{
-			switch (currentLocation->mask[i][j].cellProperty)
+			switch (currentLocation->mask[i][j]->cellProperty)
 			{
 			case CellProperty::Free:
 				glColor3d(0, 1, 0);
@@ -505,5 +496,5 @@ void Universe::Paint()
 				(cursorY - currentBrush->width/2 + i) < currentLocation->height && 
 				currentBrush->mask[i][j]
 				)
-				currentLocation->mask[cursorY - currentBrush->width/2 + i][cursorX - currentBrush->width/2 + j].cellProperty = currentCellProperty;
+				currentLocation->mask[cursorY - currentBrush->width/2 + i][cursorX - currentBrush->width/2 + j]->cellProperty = currentCellProperty;
 }

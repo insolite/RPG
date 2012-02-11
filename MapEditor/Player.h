@@ -4,7 +4,8 @@
 using namespace std;
 
 class Player :
-	public Actor
+	public Actor,
+	public MapObject
 {
 public:
 	vector<Item*> items;

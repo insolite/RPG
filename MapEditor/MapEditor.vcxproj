@@ -83,6 +83,8 @@
     <ClInclude Include="CursorBrush.h" />
     <ClInclude Include="FloorDropDown.h" />
     <ClInclude Include="LocationDropDown.h" />
+    <ClInclude Include="MapCell.h" />
+    <ClInclude Include="MapObjectSelectWindow.h" />
     <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Location.h" />
@@ -91,6 +93,7 @@
     <ClInclude Include="NPCSelectButton.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="Static.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringDropDown.h" />
     <ClInclude Include="StringListModel.h" />
@@ -106,14 +109,16 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="LocationDropDown.cpp" />
-    <ClCompile Include="MapCell.h" />
+    <ClCompile Include="MapCell.cpp" />
     <ClCompile Include="MapEditor.cpp" />
     <ClCompile Include="MapObject.cpp" />
+    <ClCompile Include="MapObjectSelectWindow.cpp" />
     <ClCompile Include="MenuButton.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="NPCSelectButton.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Static.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
