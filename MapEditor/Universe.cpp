@@ -77,17 +77,21 @@ bool Universe::GraphicsInit()
  
 	SDL_SetVideoMode(screenWidth, screenHeight, 32, flags);
 
+	LoadTexture();
 	//glViewport(0, 0, screenWidth, screenHeight);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0, screenWidth, screenHeight, 0);
-	glMatrixMode(GL_MODELVIEW);
+	//glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_BLEND);
 
-	//LoadTexture();
+	
+
+	glMatrixMode(GL_MODELVIEW);
+	
 
 
 	return false;
@@ -277,7 +281,7 @@ void Universe::DrawScene()
 	glLoadIdentity();
 	glTranslated(-cameraX, -cameraY, 0); //Camera positioning
 	
-	glBegin(GL_QUADS);
+	//glBegin(GL_QUADS);
 	for (i = 0; i < currentLocation->height; i++)
 	{
 		for (j = 0; j < currentLocation->width; j++)
@@ -285,24 +289,26 @@ void Universe::DrawScene()
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
 			case CellProperty::Free:
-				glColor3d(0, 1, 0);
+				glColor4d(0, 1, 0,1);
+				
 				break;
 			case CellProperty::Locked:
-				glColor3d(1, 0, 0);
+				glColor4d(1, 0, 0,0.5);
 				break;
 			default:
-				glColor3d(1, 1, 1);
+				glColor4d(1, 1, 1,1);
 			}
-			
-			glVertex2d(j * cellSize, i * cellSize);
-			glVertex2d(j * cellSize, i * cellSize + cellSize);
-			glVertex2d(j * cellSize + cellSize, i * cellSize + cellSize);
-			glVertex2d(j * cellSize + cellSize, i * cellSize);
-			
+			glBindTexture(GL_TEXTURE_2D, texture[0]);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0.0f); glVertex2d(j * cellSize, i * cellSize);
+			glTexCoord2f(1.0f, 0.0f); glVertex2d(j * cellSize, i * cellSize + cellSize);
+			glTexCoord2f(1.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize + cellSize);
+			glTexCoord2f(0.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize);
+			glEnd();
 
 		}
 	}
-	glEnd();
+	//glEnd();
 
 	glBegin(GL_QUADS);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
@@ -323,7 +329,7 @@ void Universe::DrawScene()
 
 	toolbar->draw();
 
-	glFlush();
+	//glFlush();
 	SDL_GL_SwapBuffers();
 }
 
@@ -350,6 +356,9 @@ void Universe::Run()
 
 	GraphicsInit();
 	GUIInit(GUIInput);
+
+	//TESTTESTTESTTESTTESTTEST
+	LoadTexture();
 
 	mouseX = 0;
 	mouseY = 0;
@@ -516,8 +525,12 @@ bool Universe::LoadTexture()
 	glGenTextures(1, &texture[0]);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0,
 	GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 	
 	return true;
 }
+
