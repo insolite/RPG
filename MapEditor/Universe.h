@@ -10,6 +10,9 @@ using namespace std;
 class Universe
 {
 public:
+	//textures
+	GLuint texture[1];
+
 	Location* currentLocation;
 	Location** locations;
 	vector<NPC*> npcs;
@@ -34,6 +37,8 @@ public:
 	bool GUIInit(gcn::SDLInput* &GUIInput);
 	bool BrushesInit();
 	bool LocationsInit();
+
+	bool LoadTexture();
 	void SetLocation(Location* location);
 	void DrawScene();
 	void Run();

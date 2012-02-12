@@ -84,6 +84,9 @@ bool Universe::GraphicsInit()
 	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_BLEND);
 
+	//LoadTexture();
+
+
 	return false;
 }
 
@@ -252,10 +255,13 @@ void Universe::DrawScene()
 			default:
 				glColor3d(1, 1, 1);
 			}
+			
 			glVertex2d(j * cellSize, i * cellSize);
 			glVertex2d(j * cellSize, i * cellSize + cellSize);
 			glVertex2d(j * cellSize + cellSize, i * cellSize + cellSize);
 			glVertex2d(j * cellSize + cellSize, i * cellSize);
+			
+
 		}
 	}
 	glEnd();
@@ -459,4 +465,21 @@ void Universe::Paint()
 				currentBrush->mask[i][j]
 				)
 				currentLocation->mask[cursorY - currentBrush->width/2 + i][cursorX - currentBrush->width/2 + j].cellProperty = currentCellProperty;
+}
+
+bool Universe::LoadTexture()
+{
+	
+	// Загрузка картинки
+	AUX_RGBImageRec *texture1;
+	texture1 = auxDIBImageLoad("glass.bmp");
+
+	// Создание текстуры
+	glGenTextures(1, &texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0,
+	GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
+	
+	return true;
 }
