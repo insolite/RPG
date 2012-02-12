@@ -10,6 +10,8 @@ public:
 		   *groundSprite,
 		   *equipSprite;
 
+	void Abstr ( void ) { }; //Abstract class inheritance
+
 	Item(void);
 	~Item(void);
 };

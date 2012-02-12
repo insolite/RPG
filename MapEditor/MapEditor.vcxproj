@@ -80,10 +80,11 @@
   <ItemGroup>
     <ClInclude Include="Actor.h" />
     <ClInclude Include="BrushDropDown.h" />
-    <ClInclude Include="CursorBrush.h" />
+    <ClInclude Include="BrushMask.h" />
     <ClInclude Include="FloorDropDown.h" />
     <ClInclude Include="LocationDropDown.h" />
     <ClInclude Include="MapCell.h" />
+    <ClInclude Include="MapObjectSelectOKButton.h" />
     <ClInclude Include="MapObjectSelectWindow.h" />
     <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Item.h" />
@@ -104,7 +105,7 @@
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="BrushDropDown.cpp" />
-    <ClCompile Include="CursorBrush.cpp" />
+    <ClCompile Include="BrushMask.cpp" />
     <ClCompile Include="FloorDropDown.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Location.cpp" />
@@ -112,6 +113,7 @@
     <ClCompile Include="MapCell.cpp" />
     <ClCompile Include="MapEditor.cpp" />
     <ClCompile Include="MapObject.cpp" />
+    <ClCompile Include="MapObjectSelectOKButton.cpp" />
     <ClCompile Include="MapObjectSelectWindow.cpp" />
     <ClCompile Include="MenuButton.cpp" />
     <ClCompile Include="NPC.cpp" />

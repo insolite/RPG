@@ -5,7 +5,7 @@ class Static :
 	public MapObject
 {
 public:
-	virtual void Abstr ( void ) = 0; //Abstract class
+	void Abstr ( void ) { }; //Abstract class inheritance
 
 	Static(void);
 	~Static(void);

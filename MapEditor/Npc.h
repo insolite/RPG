@@ -8,7 +8,7 @@ class NPC :
 	public MapObject
 {
 public:
-	Sprite* sprite;
+	void Abstr ( void ) { }; //Abstract class inheritance
 
 	NPC(void);
 	~NPC(void);

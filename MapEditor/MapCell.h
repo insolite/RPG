@@ -9,6 +9,8 @@ class MapCell :
 public:
 	CellProperty cellProperty;
 
+	void Abstr ( void ) { }; //Abstract class inheritance
+
 	MapCell(void);
 	~MapCell(void);
 };

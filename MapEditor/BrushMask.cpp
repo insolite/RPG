@@ -1,7 +1,7 @@
 #include "StdAfx.h"
-#include "CursorBrush.h"
+#include "BrushMask.h"
 
-void CursorBrush::Init(int _width, bool** _mask)
+void BrushMask::Init(int _width, bool** _mask)
 {
 	int i, j;
 
@@ -18,11 +18,11 @@ void CursorBrush::Init(int _width, bool** _mask)
 	}
 }
 
-CursorBrush::CursorBrush(void)
+BrushMask::BrushMask(void)
 {
 }
 
-CursorBrush::~CursorBrush(void)
+BrushMask::~BrushMask(void)
 {
 	for (int i = 0; i < width; i++)
 		delete mask[i];

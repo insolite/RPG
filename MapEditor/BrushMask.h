@@ -1,5 +1,6 @@
 #pragma once
-class CursorBrush
+
+class BrushMask
 {
 public:
 	int width;
@@ -7,7 +8,6 @@ public:
 
 	void Init(int _width, bool** _mask = NULL);
 
-	CursorBrush(void);
-	~CursorBrush(void);
+	BrushMask(void);
+	~BrushMask(void);
 };
-

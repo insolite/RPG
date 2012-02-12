@@ -15,7 +15,7 @@ Universe::Universe(void)
 	screenHeight = 600;
 	cellSize = 64;
 	//currentBrush = CellProperty::Free;
-	currentCellProperty = CellProperty::Locked;
+	//currentCellProperty = CellProperty::Locked;
 	toolbarWidth = 192;
 	toolbarLeftMargin = 8;
 	gameName = new (char[32]);
@@ -161,7 +161,7 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	char str[16];
 	for (int i = 0; i < brushesCount; i++)
 	{
-		sprintf(str, "%dx", brushes[i]->width);
+		sprintf(str, "%dx", brushMasks[i]->width);
 		brushesDropDown->add(str);
 	}
 	brushesDropDown->setSelected(0);
@@ -289,14 +289,13 @@ void Universe::DrawScene()
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
 			case CellProperty::Free:
-				glColor4d(0, 1, 0,1);
-				
+				glColor4d(0, 1, 0, 1);
 				break;
 			case CellProperty::Locked:
-				glColor4d(1, 0, 0,0.5);
+				glColor4d(1, 0, 0, 0.5);
 				break;
 			default:
-				glColor4d(1, 1, 1,1);
+				glColor4d(1, 1, 1, 1);
 			}
 			glBindTexture(GL_TEXTURE_2D, texture[0]);
 			glBegin(GL_QUADS);
@@ -312,16 +311,16 @@ void Universe::DrawScene()
 
 	glBegin(GL_QUADS);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-		for (i = 0; i < currentBrush->width; i++)
+		for (i = 0; i < currentBrushMask->width; i++)
 		{
-			for (j = 0; j < currentBrush->width; j++)
+			for (j = 0; j < currentBrushMask->width; j++)
 			{
-				if (currentBrush->mask[i][j])
+				if (currentBrushMask->mask[i][j])
 				{
-					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + j), Index2Pix(cursorY - currentBrush->width/2 + i));
-					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + j) + cellSize, Index2Pix(cursorY - currentBrush->width/2 + i));
-					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + j) + cellSize, Index2Pix(cursorY - currentBrush->width/2 + i) + cellSize);
-					glVertex2d(Index2Pix(cursorX - currentBrush->width/2 + j), Index2Pix(cursorY - currentBrush->width/2 + i) + cellSize);
+					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j), Index2Pix(cursorY - currentBrushMask->width/2 + i));
+					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j) + cellSize, Index2Pix(cursorY - currentBrushMask->width/2 + i));
+					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j) + cellSize, Index2Pix(cursorY - currentBrushMask->width/2 + i) + cellSize);
+					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j), Index2Pix(cursorY - currentBrushMask->width/2 + i) + cellSize);
 				}
 			}
 		}
@@ -461,7 +460,7 @@ void Universe::Run()
 		}
 		//printf("%d : %d\n", cursorX, cursorY);
 		
-		if ((SDL_GetTicks() - lastUpdate) > 41) //41.(6)
+		if ((SDL_GetTicks() - lastUpdate) > 40) //14 for 60fps, 22 for 41fps, 40 for 24fps
 		{
 			DrawScene();
 			lastUpdate = SDL_GetTicks();
@@ -472,7 +471,7 @@ void Universe::Run()
 
 bool Universe::BrushesInit()
 {
-	int i, j, k, count, width;
+	int i, j, k, count;
 	FILE* f;
 	
 	f = fopen("editor/brushes.dat", "rb");
@@ -484,18 +483,28 @@ bool Universe::BrushesInit()
 		fclose(f);
 		return true;
 	}
-	brushes = new CursorBrush*[count];
+	brushMasks = new BrushMask*[count];
 	for (k = 0; k < count; k++)
 	{
-		brushes[k] = new CursorBrush();
-		brushes[k]->Init(fgetc(f));
-		for (i = 0; i < brushes[k]->width; i++)
-			for (j = 0; j < brushes[k]->width; j++)
-				brushes[k]->mask[i][j] = fgetc(f) ? true : false; //the same as fgetc(f), but VC warnings...
+		brushMasks[k] = new BrushMask();
+		brushMasks[k]->Init(fgetc(f));
+		for (i = 0; i < brushMasks[k]->width; i++)
+			for (j = 0; j < brushMasks[k]->width; j++)
+				brushMasks[k]->mask[i][j] = fgetc(f) ? true : false; //the same as fgetc(f), but VC warnings...
 	}
 	fclose(f);
 	brushesCount = count;
-	currentBrush = brushes[0];
+	currentBrushMask = brushMasks[0];
+
+	brush[0] = new MapCell(); //game->mapCells[0]->type; //type ~ cellProperty
+	brush[1] = new NPC();
+	brush[2] = new Static();
+	brush[3] = new Item();
+	brushIndex = 0;
+
+	//Test
+	((MapCell*)brush[0])->cellProperty = CellProperty::Locked;
+
 	return false;
 }
 
@@ -503,34 +512,31 @@ void Universe::Paint()
 {
 	int i, j;
 
-	for (i = 0; i < currentBrush->width; i++)
-		for (j = 0; j < currentBrush->width; j++)
-			if ((cursorX - currentBrush->width/2 + j) >= 0 && 
-				(cursorY - currentBrush->width/2 + i) >= 0 && 
-				(cursorX - currentBrush->width/2 + j) < currentLocation->width && 
-				(cursorY - currentBrush->width/2 + i) < currentLocation->height && 
-				currentBrush->mask[i][j]
+	for (i = 0; i < currentBrushMask->width; i++)
+		for (j = 0; j < currentBrushMask->width; j++)
+			if ((cursorX - currentBrushMask->width/2 + j) >= 0 && 
+				(cursorY - currentBrushMask->width/2 + i) >= 0 && 
+				(cursorX - currentBrushMask->width/2 + j) < currentLocation->width && 
+				(cursorY - currentBrushMask->width/2 + i) < currentLocation->height && 
+				currentBrushMask->mask[i][j]
 				)
-				currentLocation->mask[cursorY - currentBrush->width/2 + i][cursorX - currentBrush->width/2 + j]->cellProperty = currentCellProperty;
+				currentLocation->mask[cursorY - currentBrushMask->width/2 + i][cursorX - currentBrushMask->width/2 + j]->cellProperty = ((MapCell*)brush[brushIndex])->cellProperty;
 }
 
 bool Universe::LoadTexture()
 {
-	
-	// Загрузка картинки
+	// Picture loading
 	AUX_RGBImageRec *texture1;
-	texture1 = auxDIBImageLoad("glass.bmp");
+	texture1 = auxDIBImageLoad("grass.bmp");
 
-	// Создание текстуры
+	// Texture creating
 	glGenTextures(1, &texture[0]);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0,
-	GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 	
 	return true;
 }
-

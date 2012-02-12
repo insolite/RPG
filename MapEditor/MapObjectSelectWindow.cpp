@@ -1,16 +1,18 @@
 #include "StdAfx.h"
 #include "MapObjectSelectWindow.h"
 
-MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** mapObjects, int mapObjectsCount) : Window(caption)
+MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount) : Window(caption)
 {
 	int i, j;
 	vector<std::string> tags;
 
+	mapObjects = _mapObjects;
+
 	this->setFocusable(true);
 	this->setVisible(false);
 	
-	okButton = new MenuButton("Test");
-	this->add(okButton, 512, 320);
+	okButton = new MapObjectSelectOKButton("OK");
+	this->add(okButton, 528, 320);
 
 	//Tags collecting
 	//TODO: All checked/unchecked
@@ -44,8 +46,8 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** ma
 	listBox->adjustSize();
 	
 	listBoxScrollArea = new gcn::ScrollArea();
-    listBoxScrollArea->setHorizontalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
-    listBoxScrollArea->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
+	listBoxScrollArea->setHorizontalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
+	listBoxScrollArea->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
 	listBoxScrollArea->setContent(listBox);
 	listBoxScrollArea->setVisible(true);
 	listBoxScrollArea->setSize(256, 320);

@@ -1,10 +1,11 @@
 #pragma once
 #include "Location.h"
 #include "Npc.h"
+#include "Static.h"
 #include "Player.h"
 #include "Item.h"
 #include "MapObject.h"
-#include "CursorBrush.h"
+#include "BrushMask.h"
 using namespace std;
 
 class Universe
@@ -27,10 +28,14 @@ public:
 
 	GLuint texture[1];
 
-	CellProperty currentCellProperty;
-	CursorBrush** brushes;
-	CursorBrush* currentBrush;
+	//CellProperty currentCellProperty;
+	BrushMask** brushMasks;
+	BrushMask* currentBrushMask;
 	int brushesCount;
+
+	MapObject* brush[4];
+	int brushIndex; //TODO: char
+
 	char* gameName;
 
 	//GUI

@@ -2,23 +2,23 @@
 #include "StringListModel.h"
 #include "MapObject.h"
 #include "Universe.h"
-
-//TODO: temp
-#include "MenuButton.h"
+#include "MapObjectSelectOKButton.h"
 
 class MapObjectSelectWindow :
 	public gcn::Window
 {
 public:
+	MapObject** mapObjects;
 	gcn::CheckBox** mapObjectsTags;
 	int tagsCount;
 	StringListModel* listModel;
 	gcn::ListBox* listBox;
 	gcn::ScrollArea* listBoxScrollArea;
 	gcn::Icon* npcPreviewIcon;
-	MenuButton* okButton;
+	//MapObjectSelectOKButton* okButton;
+	gcn::Button* okButton;
 
-	MapObjectSelectWindow(std::string caption, MapObject** mapObjects, int mapObjectsCount);
+	MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount);
 	~MapObjectSelectWindow(void);
 };
 
