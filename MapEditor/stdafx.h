@@ -19,6 +19,7 @@
 #include "../Include/guichan/guichan/opengl.hpp"
 #include "../Include/guichan/guichan/sdl.hpp"
 #include "../Include/guichan/guichan/opengl/openglsdlimageloader.hpp"
+#include "../Include/gl/GLAUX.h"
 
 #pragma comment(lib, "kernel32.lib")
 #pragma comment(lib, "../Lib/opengl32.lib")
@@ -29,3 +30,4 @@
 #pragma comment(lib, "../Lib/SDL.lib")
 #pragma comment(lib, "../Lib/SDLmain.lib")
 #pragma comment(lib, "../Lib/SDL_image.lib")
+#pragma comment(lib, "../Lib/GLAUX.lib")

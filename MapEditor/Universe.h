@@ -24,6 +24,9 @@ public:
 	int toolbarLeftMargin; //pixels
 	int cellSize; //pixels
 	int locationsCount;
+
+	GLuint texture[1];
+
 	CellProperty currentCellProperty;
 	CursorBrush** brushes;
 	CursorBrush* currentBrush;
@@ -35,6 +38,7 @@ public:
 	gcn::Container* editAreaContainer;
 	gcn::Window* npcSelectWindow;
 	
+	bool LoadTexture();
 	bool GraphicsInit();
 	bool GUIInit(gcn::SDLInput* &GUIInput);
 	bool BrushesInit();
@@ -46,6 +50,8 @@ public:
 	void CameraReset();
 	void CursorReset();
 	void Paint();
+	
+
 	int Pix2Index(int pos);
 	int Index2Pix(int pos);
 	int PixRound(int pos);
