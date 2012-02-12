@@ -1,18 +1,16 @@
+#pragma once
 #include "Location.h"
 #include "Npc.h"
 #include "Player.h"
 #include "Item.h"
 #include "MapObject.h"
 #include "CursorBrush.h"
-#pragma once
 using namespace std;
 
 class Universe
 {
 public:
-	//textures
-	GLuint texture[1];
-
+	static Universe* instance;
 	Location* currentLocation;
 	Location** locations;
 	vector<NPC*> npcs;
@@ -31,14 +29,16 @@ public:
 	CursorBrush* currentBrush;
 	int brushesCount;
 	char* gameName;
+
+	//GUI
 	gcn::Gui* toolbar;
+	gcn::Container* editAreaContainer;
+	gcn::Window* npcSelectWindow;
 	
 	bool GraphicsInit();
 	bool GUIInit(gcn::SDLInput* &GUIInput);
 	bool BrushesInit();
 	bool LocationsInit();
-
-	bool LoadTexture();
 	void SetLocation(Location* location);
 	void DrawScene();
 	void Run();

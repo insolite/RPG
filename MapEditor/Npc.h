@@ -1,9 +1,11 @@
+#pragma once
 #include "Actor.h"
 #include "Sprite.h"
-#pragma once
+#include "MapObject.h"
 
 class NPC :
-	public Actor
+	public Actor,
+	public MapObject
 {
 public:
 	Sprite* sprite;

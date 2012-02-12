@@ -1,7 +1,9 @@
-#include "Sprite.h"
 #pragma once
+#include "Sprite.h"
+#include "MapObject.h"
 
-class Item
+class Item :
+	public MapObject
 {
 public:
 	Sprite *iconSprite,

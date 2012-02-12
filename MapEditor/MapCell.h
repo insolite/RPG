@@ -1,9 +1,14 @@
-#include "stdafx.h"
+#pragma once
+#include "mapobject.h"
 
 enum CellProperty { Free = 0, Locked, Transparment };
 
-struct MapCell
+class MapCell :
+	public MapObject
 {
+public:
 	CellProperty cellProperty;
-	//Sprite* sprite;
+
+	MapCell(void);
+	~MapCell(void);
 };

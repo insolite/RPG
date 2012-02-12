@@ -1,10 +1,12 @@
 #include "StdAfx.h"
 #include "Universe.h"
 #include "MenuButton.h"
-#include "NPCListModel.h"
+#include "StringListModel.h"
 #include "FloorDropDown.h"
 #include "LocationDropDown.h"
 #include "BrushDropDown.h"
+#include "NPCSelectButton.h"
+#include "MapObjectSelectWindow.h"
 #include "utilities.h"
 
 Universe::Universe(void)
@@ -18,6 +20,7 @@ Universe::Universe(void)
 	toolbarLeftMargin = 8;
 	gameName = new (char[32]);
 	sprintf(gameName, "testgame");
+	instance = this;
 }
 
 Universe::~Universe(void)
@@ -90,8 +93,6 @@ bool Universe::GraphicsInit()
 	return false;
 }
 
-gcn::Container* editAreaContainer;
-
 bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 {
 	char fontCharacters[256];
@@ -108,7 +109,7 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 
 	//Toolbar container init
 	gcn::Container* toolbarContainer = new gcn::Container();
-	toolbarContainer->setBaseColor(gcn::Color(0x7f7f7f));
+	//toolbarContainer->setBaseColor(gcn::Color(0x7f7f7f));
 	toolbarContainer->setDimension(gcn::Rectangle(0, 0, toolbarWidth, screenHeight));
 	toolbarContainer->setFocusable(true);
 	
@@ -162,14 +163,61 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	brushesDropDown->setSelected(0);
 	toolbarContainer->add(brushesDropDown, toolbarLeftMargin, 80);
 	
-	//Test window
-	MenuButton* testButton = new MenuButton("Test");
-	gcn::Window* window = new gcn::Window("Drag me");
-	window->add(testButton, 64, 64);
-	window->resizeToContent();
-	window->setFocusable(true);
-	mainContainer->add(window, 0, 0);
+	//NPC select button
+	NPCSelectButton* npcSelectButton = new NPCSelectButton("NPC");
+	toolbarContainer->add(npcSelectButton, toolbarLeftMargin, 104);
+
+	//Test NPCs creating
+	NPC** npcs = new NPC*[5];
+	npcs[0] = new NPC();
+	npcs[1] = new NPC();
+	npcs[2] = new NPC();
+	npcs[3] = new NPC();
+	npcs[4] = new NPC();
+	npcs[0]->name = new char[64];
+	npcs[1]->name = new char[64];
+	npcs[2]->name = new char[64];
+	npcs[3]->name = new char[64];
+	npcs[4]->name = new char[64];
+	strcpy(npcs[0]->name, "Gremlin");
+	strcpy(npcs[1]->name, "Monster Eye Destroyer");
+	strcpy(npcs[2]->name, "Doom Knight");
+	strcpy(npcs[3]->name, "Really very very very looong name");
+	strcpy(npcs[4]->name, "Doom Knight");
+	npcs[0]->tags = new char*[1];
+	npcs[1]->tags = new char*[1];
+	npcs[2]->tags = new char*[1];
+	npcs[3]->tags = new char*[1];
+	npcs[4]->tags = new char*[1];
+	npcs[0]->tags[0] = new char[64];
+	npcs[1]->tags[0] = new char[64];
+	npcs[2]->tags[0] = new char[64];
+	npcs[3]->tags[0] = new char[64];
+	npcs[4]->tags[0] = new char[64];
+	strcpy(npcs[0]->tags[0], "Humans");
+	strcpy(npcs[1]->tags[0], "Elves");
+	strcpy(npcs[2]->tags[0], "Orcs");
+	strcpy(npcs[3]->tags[0], "Humans");
+	strcpy(npcs[4]->tags[0], "Orcs");
+	npcs[0]->tagsCount = 1;
+	npcs[1]->tagsCount = 1;
+	npcs[2]->tagsCount = 1;
+	npcs[3]->tagsCount = 1;
+	npcs[4]->tagsCount = 1;
+	//NPC select window
+	npcSelectWindow = new MapObjectSelectWindow("NPC selection", (MapObject**)npcs, 5); //TODO: explicit convertion? Really? o_0
+	mainContainer->add(npcSelectWindow);
 	
+	/*
+	gcn::TabbedArea* npcTabbedArea = new gcn::TabbedArea();
+	npcTabbedArea->setSize(200, 100);
+	gcn::Button* tabOneButton = new gcn::Button("Button 1");
+	npcTabbedArea->addTab("Tab 1", tabOneButton);
+	gcn::Button* tabTwoButton = new gcn::Button("Button 2");
+	npcTabbedArea->addTab("Tab 2", tabTwoButton);
+	//window->add(npcTabbedArea);
+	*/
+
 	gcn::RadioButton* brushTypeRadioButton1 = new gcn::RadioButton("Typ", "Brush", true);
 	gcn::RadioButton* brushTypeRadioButton2 = new gcn::RadioButton("Tex", "Brush", false);
 	gcn::RadioButton* brushTypeRadioButton3 = new gcn::RadioButton("Npc", "Brush", false);
@@ -179,16 +227,6 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	toolbarContainer->add(brushTypeRadioButton3, toolbarLeftMargin, 164);
 	toolbarContainer->add(brushTypeRadioButton4, toolbarLeftMargin, 180);
 
-	/*
-	NPCListModel* npcListModel = new NPCListModel();
-	gcn::ListBox* listBox = new gcn::ListBox(npcListModel);
-	gcn::ScrollArea* sa = new gcn::ScrollArea();
-	sa->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_ALWAYS);
-	sa->setContent(listBox);
-	toolbarContainer->add(listBox, 8, 256);
-	//toolbarContainer->add(sa, 8, 300);
-	*/
-	
 	return false;
 }
 
@@ -244,7 +282,7 @@ void Universe::DrawScene()
 	{
 		for (j = 0; j < currentLocation->width; j++)
 		{
-			switch (currentLocation->mask[i][j].cellProperty)
+			switch (currentLocation->mask[i][j]->cellProperty)
 			{
 			case CellProperty::Free:
 				glColor3d(0, 1, 0);
@@ -444,7 +482,7 @@ bool Universe::BrushesInit()
 		brushes[k]->Init(fgetc(f));
 		for (i = 0; i < brushes[k]->width; i++)
 			for (j = 0; j < brushes[k]->width; j++)
-				brushes[k]->mask[i][j] = fgetc(f);
+				brushes[k]->mask[i][j] = fgetc(f) ? true : false; //the same as fgetc(f), but VC warnings...
 	}
 	fclose(f);
 	brushesCount = count;
@@ -464,7 +502,7 @@ void Universe::Paint()
 				(cursorY - currentBrush->width/2 + i) < currentLocation->height && 
 				currentBrush->mask[i][j]
 				)
-				currentLocation->mask[cursorY - currentBrush->width/2 + i][cursorX - currentBrush->width/2 + j].cellProperty = currentCellProperty;
+				currentLocation->mask[cursorY - currentBrush->width/2 + i][cursorX - currentBrush->width/2 + j]->cellProperty = currentCellProperty;
 }
 
 bool Universe::LoadTexture()

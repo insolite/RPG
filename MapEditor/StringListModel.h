@@ -11,6 +11,8 @@ public:
 
 	std::string getElementAt(int i)
 	{
+		if (i >= mStrings.size()) //TODO: guichan bug?
+			return "err";
 		return mStrings.at(i);
 	}
 
