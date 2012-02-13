@@ -1,12 +1,15 @@
 #pragma once
 #include "MapObject.h"
+#include "BrushMask.h"
 
 class Static :
 	public MapObject
 {
-public:
+public:	
+	BrushMask* mask;
+
 	void Abstr ( void ) { }; //Abstract class inheritance
 
-	Static(void);
+	Static(int _id);
 	~Static(void);
 };

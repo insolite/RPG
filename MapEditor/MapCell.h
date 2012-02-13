@@ -1,5 +1,5 @@
 #pragma once
-#include "mapobject.h"
+#include "MapObject.h"
 
 enum CellProperty { Free = 0, Locked, Transparment };
 
@@ -11,6 +11,6 @@ public:
 
 	void Abstr ( void ) { }; //Abstract class inheritance
 
-	MapCell(void);
+	MapCell(int _id);
 	~MapCell(void);
 };

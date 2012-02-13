@@ -3,9 +3,11 @@
 #include "MapObject.h"
 #include "Universe.h"
 #include "MapObjectSelectOKButton.h"
+#include "WindowCloseButton.h"
+#include "FocusingWindow.h"
 
 class MapObjectSelectWindow :
-	public gcn::Window
+	public FocusingWindow
 {
 public:
 	MapObject** mapObjects;
@@ -17,6 +19,7 @@ public:
 	gcn::Icon* npcPreviewIcon;
 	//MapObjectSelectOKButton* okButton;
 	gcn::Button* okButton;
+	gcn::Button* closeButton;
 
 	MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount);
 	~MapObjectSelectWindow(void);

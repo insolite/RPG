@@ -8,8 +8,6 @@ class Player :
 	public MapObject
 {
 public:
-	vector<Item*> items;
-
 	Player(void);
 	~Player(void);
 };

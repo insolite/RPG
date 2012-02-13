@@ -10,7 +10,7 @@ class NPC :
 public:
 	void Abstr ( void ) { }; //Abstract class inheritance
 
-	NPC(void);
+	NPC(int _id);
 	~NPC(void);
 };
 

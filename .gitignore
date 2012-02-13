@@ -30,4 +30,5 @@ _ReSharper*/
 *.sln
 *.manifest
 *.embed.manifest.res
+*.lastbuildstate
 ipch/

@@ -1,5 +1,5 @@
 #pragma once
-#include "stringdropdown.h"
+#include "StringDropDown.h"
 
 class FloorDropDown :
 	public StringDropDown
@@ -7,6 +7,6 @@ class FloorDropDown :
 public:
 	void valueChanged(const gcn::SelectionEvent &event);
 
-	FloorDropDown(Universe* _universe);
+	FloorDropDown(void);
 	~FloorDropDown(void);
 };

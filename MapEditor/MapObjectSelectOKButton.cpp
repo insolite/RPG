@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "MapObjectSelectOKButton.h"
 
+Universe* Universe::instance;
+
 MapObjectSelectOKButton::MapObjectSelectOKButton(char* label) : Button(label)
 {
 }

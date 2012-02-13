@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "FloorDropDown.h"
 
-FloorDropDown::FloorDropDown(Universe* _universe) : StringDropDown(_universe)
+FloorDropDown::FloorDropDown(void) : StringDropDown()
 {
 }
 

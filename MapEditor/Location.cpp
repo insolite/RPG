@@ -1,44 +1,24 @@
 #include "StdAfx.h"
 #include "Location.h"
+#include "Universe.h"
 
-
-Location::Location(void)
-{
-}
-
-
-Location::~Location(void)
-{
-}
-
-void Location::Print()
-{
-	for (int i=0; i<height; i++)
-	{
-		for (int j=0;j<width;j++)
-		{
-			printf("%3d",(int)mask[i][j]->cellProperty);
-		}
-		printf("\n");
-	}
-}
-
-bool Location::Init(char* gameName, int _id)
+Location::Location(int _id)
 {
 	FILE *f;
 	int i, j;
 	char path[256];
 
 	id = _id;
-	sprintf(path, "game/%s/location/%d/ground.loc", gameName, id);
+	sprintf(path, "game/%s/location/%d/ground.loc", Universe::instance->game->name, id);
 	f = fopen(path, "rb");
 	if (!f)
-		return true;
+		return;
 	name = new char[16];
 	//fgets(name, 15, f);
 	name[0] = fgetc(f);
 	for (i = 1; i < 15 && name[i - 1]; i++)
 		name[i] = fgetc(f);
+	//TODO: binary reader
 	width = fgetc(f) * 16;
 	width += fgetc(f);
 	height = fgetc(f) * 16;
@@ -52,10 +32,17 @@ bool Location::Init(char* gameName, int _id)
 		{
 			//TODO:
 			//Warning! new MapCell() must be called in resources init. Here must be some kind of concrete cell. Not a cell base
-			mask[i][j] = new MapCell();
-			mask[i][j]->cellProperty = (CellProperty)fgetc(f);
+			//mask[i][j] = new MapCell();
+			//mask[i][j]->cellProperty = (CellProperty)fgetc(f);
+
+			//TODO:
+			//Warning! getMapCellById instead of fgetc(f) - 1
+			mask[i][j] = Universe::instance->game->resources->mapCells[fgetc(f) - 1];
 		}
 	}
 	fclose(f);
-	return false;
+}
+
+Location::~Location(void)
+{
 }

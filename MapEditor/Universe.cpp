@@ -1,13 +1,6 @@
 #include "StdAfx.h"
 #include "Universe.h"
-#include "MenuButton.h"
-#include "StringListModel.h"
-#include "FloorDropDown.h"
-#include "LocationDropDown.h"
-#include "BrushDropDown.h"
-#include "NPCSelectButton.h"
-#include "MapObjectSelectWindow.h"
-#include "utilities.h"
+#include "SliderActionListener.h"
 
 Universe::Universe(void)
 {
@@ -18,8 +11,6 @@ Universe::Universe(void)
 	//currentCellProperty = CellProperty::Locked;
 	toolbarWidth = 192;
 	toolbarLeftMargin = 8;
-	gameName = new (char[32]);
-	sprintf(gameName, "testgame");
 	instance = this;
 }
 
@@ -112,10 +103,10 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	editAreaContainer->setFocusable(true);
 
 	//Toolbar container init
-	gcn::Container* toolbarContainer = new gcn::Container();
-	//toolbarContainer->setBaseColor(gcn::Color(0x7f7f7f));
+	FocusingWindow* toolbarContainer = new FocusingWindow("Tools");
 	toolbarContainer->setDimension(gcn::Rectangle(0, 0, toolbarWidth, screenHeight));
 	toolbarContainer->setFocusable(true);
+	toolbarContainer->setMovable(false);
 	
 	//Main container init
 	gcn::Container* mainContainer = new gcn::Container();
@@ -143,122 +134,66 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	//GUI building
 
 	//Floor control DropDown
-	FloorDropDown* floorsDropDown = new FloorDropDown(this);
+	FloorDropDown* floorsDropDown = new FloorDropDown();
 	floorsDropDown->add("outside");
 	floorsDropDown->add("first fl.");
 	floorsDropDown->setSelected(0);
-	toolbarContainer->add(floorsDropDown, toolbarLeftMargin, 32);
+	toolbarContainer->add(floorsDropDown, toolbarLeftMargin, 16);
 
 	//Location control DropDown
-	LocationDropDown* locationsDropDown = new LocationDropDown(this);
-	for (int i = 0; i < locationsCount; i++)
-		locationsDropDown->add(locations[i]->name);
+	LocationDropDown* locationsDropDown = new LocationDropDown();
+	for (int i = 0; i < game->data->locationsCount; i++)
+		locationsDropDown->add(game->data->locations[i]->name);
 	locationsDropDown->setSelected(0);
-	toolbarContainer->add(locationsDropDown, toolbarLeftMargin, 56);
-
-	//Brush selection
-	BrushDropDown* brushesDropDown = new BrushDropDown(this);
-	char str[16];
-	for (int i = 0; i < brushesCount; i++)
-	{
-		sprintf(str, "%dx", brushMasks[i]->width);
-		brushesDropDown->add(str);
-	}
-	brushesDropDown->setSelected(0);
-	toolbarContainer->add(brushesDropDown, toolbarLeftMargin, 80);
+	toolbarContainer->add(locationsDropDown, toolbarLeftMargin, 40);
 	
-	//NPC select button
-	NPCSelectButton* npcSelectButton = new NPCSelectButton("NPC");
-	toolbarContainer->add(npcSelectButton, toolbarLeftMargin, 104);
-
-	//Test NPCs creating
-	NPC** npcs = new NPC*[5];
-	npcs[0] = new NPC();
-	npcs[1] = new NPC();
-	npcs[2] = new NPC();
-	npcs[3] = new NPC();
-	npcs[4] = new NPC();
-	npcs[0]->name = new char[64];
-	npcs[1]->name = new char[64];
-	npcs[2]->name = new char[64];
-	npcs[3]->name = new char[64];
-	npcs[4]->name = new char[64];
-	strcpy(npcs[0]->name, "Gremlin");
-	strcpy(npcs[1]->name, "Monster Eye Destroyer");
-	strcpy(npcs[2]->name, "Doom Knight");
-	strcpy(npcs[3]->name, "Really very very very looong name");
-	strcpy(npcs[4]->name, "Doom Knight");
-	npcs[0]->tags = new char*[1];
-	npcs[1]->tags = new char*[1];
-	npcs[2]->tags = new char*[1];
-	npcs[3]->tags = new char*[1];
-	npcs[4]->tags = new char*[1];
-	npcs[0]->tags[0] = new char[64];
-	npcs[1]->tags[0] = new char[64];
-	npcs[2]->tags[0] = new char[64];
-	npcs[3]->tags[0] = new char[64];
-	npcs[4]->tags[0] = new char[64];
-	strcpy(npcs[0]->tags[0], "Humans");
-	strcpy(npcs[1]->tags[0], "Elves");
-	strcpy(npcs[2]->tags[0], "Orcs");
-	strcpy(npcs[3]->tags[0], "Humans");
-	strcpy(npcs[4]->tags[0], "Orcs");
-	npcs[0]->tagsCount = 1;
-	npcs[1]->tagsCount = 1;
-	npcs[2]->tagsCount = 1;
-	npcs[3]->tagsCount = 1;
-	npcs[4]->tagsCount = 1;
+	//MapCell select window
+	mapCellSelectWindow = new MapObjectSelectWindow("MapCell selection", (MapObject**)game->resources->mapCells, game->resources->mapCellsCount); //TODO: explicit convertion? Really? o_0
+	mainContainer->add(mapCellSelectWindow);
+	
 	//NPC select window
-	npcSelectWindow = new MapObjectSelectWindow("NPC selection", (MapObject**)npcs, 5); //TODO: explicit convertion? Really? o_0
+	npcSelectWindow = new MapObjectSelectWindow("NPC selection", (MapObject**)game->resources->npcs, game->resources->npcsCount); //TODO: explicit convertion? Really? o_0
 	mainContainer->add(npcSelectWindow);
 	
-	/*
-	gcn::TabbedArea* npcTabbedArea = new gcn::TabbedArea();
-	npcTabbedArea->setSize(200, 100);
-	gcn::Button* tabOneButton = new gcn::Button("Button 1");
-	npcTabbedArea->addTab("Tab 1", tabOneButton);
-	gcn::Button* tabTwoButton = new gcn::Button("Button 2");
-	npcTabbedArea->addTab("Tab 2", tabTwoButton);
-	//window->add(npcTabbedArea);
-	*/
+	//Static select window
+	staticSelectWindow = new MapObjectSelectWindow("Static selection", (MapObject**)game->resources->statics, game->resources->staticsCount); //TODO: explicit convertion? Really? o_0
+	mainContainer->add(staticSelectWindow);
+	
+	//Item select window
+	itemSelectWindow = new MapObjectSelectWindow("Item selection", (MapObject**)game->resources->items, game->resources->itemsCount); //TODO: explicit convertion? Really? o_0
+	mainContainer->add(itemSelectWindow);
+	
+	int brushMaskMinSize = 1;
+	int brushMaskMaxSize = 10;
 
-	gcn::RadioButton* brushTypeRadioButton1 = new gcn::RadioButton("Typ", "Brush", true);
-	gcn::RadioButton* brushTypeRadioButton2 = new gcn::RadioButton("Tex", "Brush", false);
-	gcn::RadioButton* brushTypeRadioButton3 = new gcn::RadioButton("Npc", "Brush", false);
-	gcn::RadioButton* brushTypeRadioButton4 = new gcn::RadioButton("Obj", "Brush", false);
-	toolbarContainer->add(brushTypeRadioButton1, toolbarLeftMargin, 132);
-	toolbarContainer->add(brushTypeRadioButton2, toolbarLeftMargin, 148);
-	toolbarContainer->add(brushTypeRadioButton3, toolbarLeftMargin, 164);
-	toolbarContainer->add(brushTypeRadioButton4, toolbarLeftMargin, 180);
+	//Brush mask size slider
+	brushMaskSlider = new gcn::Slider(brushMaskMinSize - 0.5f, brushMaskMaxSize - 0.5f);
+	brushMaskSlider->setOrientation(gcn::Slider::HORIZONTAL);
+	brushMaskSlider->setSize(128, 12);
+	//brushMaskSlider->setStepLength(1); //Only for keyboard //Isn't needed due to line below
+	brushMaskSlider->setFocusable(false);
+	gcn::ActionListener* actionListener = new SliderActionListener();
+	brushMaskSlider->addActionListener(actionListener);
 
-	return false;
-}
+	//Brush mask size label
+	brushMaskSizeLabel = new gcn::Label("1x");
+	brushMaskSizeLabel->setSize(32, 16);
 
-bool Universe::LocationsInit()
-{
-	char locationsPath[256];
-	char **folders;
-	int id, i;
+	//MapCells tab container (#1)
+	mapCellSelectTabContainer = new MapObjectSelectTabContainer(npcSelectWindow);
+	mapCellSelectTabContainer->add(brushMaskSlider, 36, 204);
+	mapCellSelectTabContainer->add(brushMaskSizeLabel, 4, 200);
 
-	sprintf(locationsPath, "game/%s/location", gameName);
-	locationsCount = ReadDir(locationsPath, folders, true);
-	locations = new (Location*[locationsCount]);
-	for (i = 0; i < locationsCount; i++)
-	{
-		sscanf(folders[i], "%d", &id);
-		delete folders[i];
-		locations[i] = new Location();
-		if (locations[i]->Init(gameName, id)) //LocationsInit fails if at least one location failed to load
-		{
-			for (int j = 0; j <= i; j++)
-				delete locations[i];
-			delete locations;
-			delete folders;
-			return true;
-		}
-	}
-	delete folders;
-	SetLocation(locations[0]);
+	//Statics tab container (#2)
+	staticSelectTabContainer = new MapObjectSelectTabContainer(staticSelectWindow);
+	
+	//MapObjects selection TabbedArea
+	gcn::TabbedArea* brushesTabbedArea = new gcn::TabbedArea();
+	brushesTabbedArea->setSize(176, 256);
+	brushesTabbedArea->addTab("MapCell", mapCellSelectTabContainer);
+	brushesTabbedArea->addTab("Static", staticSelectTabContainer);
+	toolbarContainer->add(brushesTabbedArea, toolbarLeftMargin, 96);
+	
 	return false;
 }
 
@@ -288,14 +223,14 @@ void Universe::DrawScene()
 		{
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
-			case CellProperty::Free:
-				glColor4d(0, 1, 0, 1);
-				break;
-			case CellProperty::Locked:
-				glColor4d(1, 0, 0, 0.5);
-				break;
-			default:
-				glColor4d(1, 1, 1, 1);
+				case CellProperty::Free:
+					glColor4d(0, 1, 0, 1);
+					break;
+				case CellProperty::Locked:
+					glColor4d(1, 0, 0, 0.5);
+					break;
+				default:
+					glColor4d(1, 1, 1, 1);
 			}
 			glBindTexture(GL_TEXTURE_2D, texture[0]);
 			glBegin(GL_QUADS);
@@ -304,7 +239,6 @@ void Universe::DrawScene()
 			glTexCoord2f(1.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize + cellSize);
 			glTexCoord2f(0.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize);
 			glEnd();
-
 		}
 	}
 	//glEnd();
@@ -315,7 +249,7 @@ void Universe::DrawScene()
 		{
 			for (j = 0; j < currentBrushMask->width; j++)
 			{
-				if (currentBrushMask->mask[i][j])
+				if (currentBrushMask->data[i][j])
 				{
 					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j), Index2Pix(cursorY - currentBrushMask->width/2 + i));
 					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j) + cellSize, Index2Pix(cursorY - currentBrushMask->width/2 + i));
@@ -347,7 +281,9 @@ void Universe::Run()
 	int mouseX, mouseY;
 	bool continueFlag;
 
-	LocationsInit();
+	game = new Game("testgame");
+	game->Init();
+	//LocationsInit();
 	BrushesInit();
 
 	CameraReset();
@@ -381,7 +317,7 @@ void Universe::Run()
 		{
 			//if (mouseX < (screenWidth - toolbarWidth)) //Prevents drawing cells with brush while mouse cursor is on the toolbar
 			if (editAreaContainer->isFocused())
-				Paint();
+				PaintMapCell();
 		}
 
 		//TODO: Put this inside the switch below
@@ -490,37 +426,56 @@ bool Universe::BrushesInit()
 		brushMasks[k]->Init(fgetc(f));
 		for (i = 0; i < brushMasks[k]->width; i++)
 			for (j = 0; j < brushMasks[k]->width; j++)
-				brushMasks[k]->mask[i][j] = fgetc(f) ? true : false; //the same as fgetc(f), but VC warnings...
+				brushMasks[k]->data[i][j] = fgetc(f) ? true : false; //the same as fgetc(f), but VC warnings...
 	}
 	fclose(f);
 	brushesCount = count;
 	currentBrushMask = brushMasks[0];
 
-	brush[0] = new MapCell(); //game->mapCells[0]->type; //type ~ cellProperty
-	brush[1] = new NPC();
-	brush[2] = new Static();
-	brush[3] = new Item();
+	brush[0] = game->resources->mapCells[1];
+	brush[1] = game->resources->npcs[0];
+	brush[2] = game->resources->statics[0];
+	brush[3] = game->resources->items[0];
 	brushIndex = 0;
-
-	//Test
-	((MapCell*)brush[0])->cellProperty = CellProperty::Locked;
 
 	return false;
 }
 
-void Universe::Paint()
+void Universe::PaintMapCell()
 {
 	int i, j;
-
+	MapCell* pBrush;
+	
+	pBrush = (MapCell*)brush[brushIndex];
+			
 	for (i = 0; i < currentBrushMask->width; i++)
+	{
 		for (j = 0; j < currentBrushMask->width; j++)
+		{
 			if ((cursorX - currentBrushMask->width/2 + j) >= 0 && 
 				(cursorY - currentBrushMask->width/2 + i) >= 0 && 
 				(cursorX - currentBrushMask->width/2 + j) < currentLocation->width && 
 				(cursorY - currentBrushMask->width/2 + i) < currentLocation->height && 
-				currentBrushMask->mask[i][j]
-				)
-				currentLocation->mask[cursorY - currentBrushMask->width/2 + i][cursorX - currentBrushMask->width/2 + j]->cellProperty = ((MapCell*)brush[brushIndex])->cellProperty;
+				currentBrushMask->data[i][j])
+				currentLocation->mask[cursorY - currentBrushMask->width/2 + i][cursorX - currentBrushMask->width/2 + j] = pBrush;
+		}
+	}
+	/*
+	//Static* pBrush = (Static*)brush[brushIndex];
+	pBrush = (Static*)brush[brushIndex];
+	for (i = 0; i < pBrush->mask->width; i++)
+	{
+		for (j = 0; j < pBrush->mask->width; j++)
+		{
+			if ((cursorX - pBrush->mask->width/2 + j) >= 0 && 
+				(cursorY - pBrush->mask->width/2 + i) >= 0 && 
+				(cursorX - pBrush->mask->width/2 + j) < currentLocation->width && 
+				(cursorY - pBrush->mask->width/2 + i) < currentLocation->height && 
+				(*pBrush->mask)[i][j])
+				currentLocation->mask[cursorY - pBrush->mask->width/2 + i][cursorX - pBrush->mask->width/2 + j]->cellProperty = CellProperty::Locked; // ((Static*)brush[brushIndex])->mask->mask[i][j];
+		}
+	}
+	*/
 }
 
 bool Universe::LoadTexture()

@@ -6,15 +6,15 @@ void BrushMask::Init(int _width, bool** _mask)
 	int i, j;
 
 	width = _width;
-	mask = new bool*[width];
+	data = new bool*[width];
 	for (i = 0; i < width; i++)
 	{
-		mask[i] = new bool[width];
+		data[i] = new bool[width];
 		for (j = 0; j < width; j++)
 			if (_mask)
-				mask[i][j] = _mask[i][j];
+				data[i][j] = _mask[i][j];
 			else
-				mask[i][j] = false;
+				data[i][j] = true;
 	}
 }
 
@@ -24,7 +24,6 @@ BrushMask::BrushMask(void)
 
 BrushMask::~BrushMask(void)
 {
-	for (int i = 0; i < width; i++)
-		delete mask[i];
-	delete mask;
+	delete[] data;
+	delete data;
 }

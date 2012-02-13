@@ -1,12 +1,14 @@
 #pragma once
-#include "stringdropdown.h"
+#include "StringDropDown.h"
+#include "Universe.h"
+
 class LocationDropDown :
 	public StringDropDown
 {
 public:
 	void valueChanged(const gcn::SelectionEvent &event);
 
-	LocationDropDown(Universe* _universe);
+	LocationDropDown(void);
 	~LocationDropDown(void);
 };
 

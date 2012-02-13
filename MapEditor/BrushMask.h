@@ -4,10 +4,16 @@ class BrushMask
 {
 public:
 	int width;
-	bool** mask;
 
 	void Init(int _width, bool** _mask = NULL);
+	bool* operator[](int i)
+	{
+		return (*(data + i));
+	}
 
 	BrushMask(void);
 	~BrushMask(void);
+
+//private:
+	bool** data;
 };

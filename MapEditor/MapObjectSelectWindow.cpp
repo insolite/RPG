@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "MapObjectSelectWindow.h"
 
-MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount) : Window(caption)
+MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount) : FocusingWindow(caption)
 {
 	int i, j;
 	vector<std::string> tags;
@@ -49,7 +49,6 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 	listBoxScrollArea->setHorizontalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
 	listBoxScrollArea->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
 	listBoxScrollArea->setContent(listBox);
-	listBoxScrollArea->setVisible(true);
 	listBoxScrollArea->setSize(256, 320);
 	
 	this->add(listBoxScrollArea, 128, 8);
@@ -59,7 +58,12 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 	npcPreviewIcon = new gcn::Icon(gcn::Image::load("test_preview.bmp"));// http://theinsaneatlantian.deviantart.com/art/RPG-Monster-2-252430339?q=boost%3Apopular%20rpg%20monster&qo=36
 	this->add(npcPreviewIcon, 400, 8);
 
+	//Close button
+	gcn::Button* closeButton = new WindowCloseButton();
+	this->add(closeButton);
+
 	this->resizeToContent();
+	((WindowCloseButton*)closeButton)->Dock();
 	this->setPosition((Universe::instance->screenWidth - Universe::instance->toolbarWidth) / 2 - this->getWidth() / 2, Universe::instance->screenHeight / 2 - this->getHeight() / 2);
 }
 

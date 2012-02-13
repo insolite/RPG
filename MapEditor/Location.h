@@ -9,10 +9,6 @@ public:
 	int id;
 	char *name;
 
-	bool Init(char* gameName, int id);
-	void Print();
-
-	Location(void);
+	Location(int _id);
 	~Location(void);
 };
-

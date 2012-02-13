@@ -82,16 +82,21 @@
     <ClInclude Include="BrushDropDown.h" />
     <ClInclude Include="BrushMask.h" />
     <ClInclude Include="FloorDropDown.h" />
+    <ClInclude Include="FocusingWindow.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameData.h" />
+    <ClInclude Include="GameResources.h" />
     <ClInclude Include="LocationDropDown.h" />
     <ClInclude Include="MapCell.h" />
     <ClInclude Include="MapObjectSelectOKButton.h" />
+    <ClInclude Include="MapObjectSelectTabContainer.h" />
     <ClInclude Include="MapObjectSelectWindow.h" />
-    <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="MapObject.h" />
     <ClInclude Include="NPC.h" />
-    <ClInclude Include="NPCSelectButton.h" />
+    <ClInclude Include="SliderActionListener.h" />
+    <ClInclude Include="ToggleWindowVisibilityButton.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Static.h" />
@@ -101,12 +106,17 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Universe.h" />
     <ClInclude Include="utilities.h" />
+    <ClInclude Include="WindowCloseButton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="BrushDropDown.cpp" />
     <ClCompile Include="BrushMask.cpp" />
     <ClCompile Include="FloorDropDown.cpp" />
+    <ClCompile Include="FocusingWindow.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="GameResources.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="LocationDropDown.cpp" />
@@ -114,10 +124,11 @@
     <ClCompile Include="MapEditor.cpp" />
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="MapObjectSelectOKButton.cpp" />
+    <ClCompile Include="MapObjectSelectTabContainer.cpp" />
     <ClCompile Include="MapObjectSelectWindow.cpp" />
-    <ClCompile Include="MenuButton.cpp" />
     <ClCompile Include="NPC.cpp" />
-    <ClCompile Include="NPCSelectButton.cpp" />
+    <ClCompile Include="SliderActionListener.cpp" />
+    <ClCompile Include="ToggleWindowVisibilityButton.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Static.cpp" />
@@ -129,6 +140,7 @@
     <ClCompile Include="StringListModel.cpp" />
     <ClCompile Include="Universe.cpp" />
     <ClCompile Include="utilities.cpp" />
+    <ClCompile Include="WindowCloseButton.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

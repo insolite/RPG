@@ -1,5 +1,5 @@
 #pragma once
-#include "Universe.h"
+#include "StringListModel.h"
 
 class StringDropDown :
 	public gcn::DropDown
@@ -7,9 +7,6 @@ class StringDropDown :
 public:
 	void add(std::string str);
 
-	StringDropDown(Universe* _universe);
+	StringDropDown(void);
 	~StringDropDown(void);
-
-protected:
-	Universe* universe;
 };

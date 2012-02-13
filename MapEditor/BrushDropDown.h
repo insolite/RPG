@@ -1,5 +1,6 @@
 #pragma once
-#include "stringdropdown.h"
+#include "StringDropDown.h"
+#include "Universe.h"
 
 class BrushDropDown :
 	public StringDropDown
@@ -7,6 +8,6 @@ class BrushDropDown :
 public:
 	void valueChanged(const gcn::SelectionEvent &event);
 
-	BrushDropDown(Universe* _universe);
+	BrushDropDown(void);
 	~BrushDropDown(void);
 };
