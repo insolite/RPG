@@ -3,13 +3,14 @@
 #include "MapObject.h"
 #include "Universe.h"
 #include "MapObjectSelectOKButton.h"
-#include "WindowCloseButton.h"
+#include "ToggleWindowVisibilityButton.h"
 #include "FocusingWindow.h"
 
 class MapObjectSelectWindow :
 	public FocusingWindow
 {
 public:
+	int brushIndex; //TODO: typeof would be fine...
 	MapObject** mapObjects;
 	gcn::CheckBox** mapObjectsTags;
 	int tagsCount;
@@ -17,11 +18,10 @@ public:
 	gcn::ListBox* listBox;
 	gcn::ScrollArea* listBoxScrollArea;
 	gcn::Icon* npcPreviewIcon;
-	//MapObjectSelectOKButton* okButton;
 	gcn::Button* okButton;
 	gcn::Button* closeButton;
 
-	MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount);
+	MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount, int brushIndex);
 	~MapObjectSelectWindow(void);
 };
 

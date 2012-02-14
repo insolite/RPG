@@ -106,7 +106,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Universe.h" />
     <ClInclude Include="utilities.h" />
-    <ClInclude Include="WindowCloseButton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
@@ -140,7 +139,6 @@
     <ClCompile Include="StringListModel.cpp" />
     <ClCompile Include="Universe.cpp" />
     <ClCompile Include="utilities.cpp" />
-    <ClCompile Include="WindowCloseButton.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

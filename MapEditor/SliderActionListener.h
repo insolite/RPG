@@ -15,7 +15,6 @@ public:
 			slider->setValue((int)slider->getValue() + 0.5f);
 			sprintf(str, "%.0fx", slider->getValue());
 			Universe::instance->brushMaskSizeLabel->setCaption(str);
-			// The value of the Slider has changed.
 		}
 	}
 

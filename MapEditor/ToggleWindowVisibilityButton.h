@@ -6,8 +6,10 @@ class ToggleWindowVisibilityButton :
 public:
 	gcn::Window* window;
 
+	void Dock();
+
 	void mouseClicked(gcn::MouseEvent &mouseEvent);
 
-	ToggleWindowVisibilityButton(char* label, gcn::Window* _window);
+	ToggleWindowVisibilityButton(char* label = "x", gcn::Window* _window = NULL);
 	~ToggleWindowVisibilityButton(void);
 };

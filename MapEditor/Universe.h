@@ -27,6 +27,7 @@ public:
 	int cameraX, cameraY; //pixels
 	int cursorX, cursorY; //points
 	int screenWidth, screenHeight; //pixels
+	bool fullscreen;
 	int toolbarWidth; //pixels
 	int toolbarLeftMargin; //pixels
 	int cellSize; //pixels
@@ -54,7 +55,9 @@ public:
 	StringDropDown* brushesDropDown;
 
 	gcn::Container* mapCellSelectTabContainer;
+	gcn::Container* npcSelectTabContainer;
 	gcn::Container* staticSelectTabContainer;
+	gcn::Container* itemSelectTabContainer;
 
 	bool LoadTexture();
 	bool GraphicsInit();

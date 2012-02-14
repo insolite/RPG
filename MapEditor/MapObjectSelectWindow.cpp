@@ -1,11 +1,12 @@
 #include "StdAfx.h"
 #include "MapObjectSelectWindow.h"
 
-MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount) : FocusingWindow(caption)
+MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount, int _brushIndex) : FocusingWindow(caption)
 {
 	int i, j;
 	vector<std::string> tags;
 
+	brushIndex = _brushIndex;
 	mapObjects = _mapObjects;
 
 	this->setFocusable(true);
@@ -39,6 +40,7 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 	for (i = 0; i < mapObjectsCount; i++)
 		listModel->add(mapObjects[i]->name);
 	listBox = new gcn::ListBox(listModel);
+	listBox->setSelected(0);
 	
 	//TODO:
 	//Auto resize npcSelectListBox. adjustSize doesn't work for width. Sadly...
@@ -59,11 +61,11 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 	this->add(npcPreviewIcon, 400, 8);
 
 	//Close button
-	gcn::Button* closeButton = new WindowCloseButton();
+	gcn::Button* closeButton = new ToggleWindowVisibilityButton("x", this);
 	this->add(closeButton);
 
 	this->resizeToContent();
-	((WindowCloseButton*)closeButton)->Dock();
+	((ToggleWindowVisibilityButton*)closeButton)->Dock();
 	this->setPosition((Universe::instance->screenWidth - Universe::instance->toolbarWidth) / 2 - this->getWidth() / 2, Universe::instance->screenHeight / 2 - this->getHeight() / 2);
 }
 
@@ -71,10 +73,11 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 MapObjectSelectWindow::~MapObjectSelectWindow(void)
 {
 	delete[] mapObjectsTags;
-	delete mapObjectsTags;
+	//delete mapObjectsTags;
 	delete listModel;
 	delete listBox;
 	delete listBoxScrollArea;
 	delete npcPreviewIcon;
 	delete okButton;
+	delete closeButton;
 }

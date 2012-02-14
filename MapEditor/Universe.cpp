@@ -6,9 +6,13 @@ Universe::Universe(void)
 {
 	screenWidth = 800;
 	screenHeight = 600;
+	fullscreen = false;
+	/*
+	screenWidth = 1366;
+	screenHeight = 768;
+	fullscreen = true;
+	*/
 	cellSize = 64;
-	//currentBrush = CellProperty::Free;
-	//currentCellProperty = CellProperty::Locked;
 	toolbarWidth = 192;
 	toolbarLeftMargin = 8;
 	instance = this;
@@ -46,13 +50,9 @@ void Universe::CursorReset()
 
 bool Universe::GraphicsInit()
 {
-	bool FULLSCREEN;
-
 	Uint32 flags = SDL_OPENGL;
 	
-	FULLSCREEN = false;
-	
-	if (FULLSCREEN)
+	if (fullscreen)
 		flags |= SDL_FULLSCREEN;
 	if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO) < 0)
 	{
@@ -148,19 +148,19 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	toolbarContainer->add(locationsDropDown, toolbarLeftMargin, 40);
 	
 	//MapCell select window
-	mapCellSelectWindow = new MapObjectSelectWindow("MapCell selection", (MapObject**)game->resources->mapCells, game->resources->mapCellsCount); //TODO: explicit convertion? Really? o_0
+	mapCellSelectWindow = new MapObjectSelectWindow("MapCell selection", (MapObject**)game->resources->mapCells, game->resources->mapCellsCount, 0); //TODO: explicit convertion? Really? o_0
 	mainContainer->add(mapCellSelectWindow);
 	
 	//NPC select window
-	npcSelectWindow = new MapObjectSelectWindow("NPC selection", (MapObject**)game->resources->npcs, game->resources->npcsCount); //TODO: explicit convertion? Really? o_0
+	npcSelectWindow = new MapObjectSelectWindow("NPC selection", (MapObject**)game->resources->npcs, game->resources->npcsCount, 1); //TODO: explicit convertion? Really? o_0
 	mainContainer->add(npcSelectWindow);
 	
 	//Static select window
-	staticSelectWindow = new MapObjectSelectWindow("Static selection", (MapObject**)game->resources->statics, game->resources->staticsCount); //TODO: explicit convertion? Really? o_0
+	staticSelectWindow = new MapObjectSelectWindow("Static selection", (MapObject**)game->resources->statics, game->resources->staticsCount, 2); //TODO: explicit convertion? Really? o_0
 	mainContainer->add(staticSelectWindow);
 	
 	//Item select window
-	itemSelectWindow = new MapObjectSelectWindow("Item selection", (MapObject**)game->resources->items, game->resources->itemsCount); //TODO: explicit convertion? Really? o_0
+	itemSelectWindow = new MapObjectSelectWindow("Item selection", (MapObject**)game->resources->items, game->resources->itemsCount, 3); //TODO: explicit convertion? Really? o_0
 	mainContainer->add(itemSelectWindow);
 	
 	int brushMaskMinSize = 1;
@@ -180,18 +180,26 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	brushMaskSizeLabel->setSize(32, 16);
 
 	//MapCells tab container (#1)
-	mapCellSelectTabContainer = new MapObjectSelectTabContainer(npcSelectWindow);
+	mapCellSelectTabContainer = new MapObjectSelectTabContainer(mapCellSelectWindow);
 	mapCellSelectTabContainer->add(brushMaskSlider, 36, 204);
 	mapCellSelectTabContainer->add(brushMaskSizeLabel, 4, 200);
 
 	//Statics tab container (#2)
+	npcSelectTabContainer = new MapObjectSelectTabContainer(npcSelectWindow);
+
+	//Statics tab container (#3)
 	staticSelectTabContainer = new MapObjectSelectTabContainer(staticSelectWindow);
 	
+	//Statics tab container (#4)
+	itemSelectTabContainer = new MapObjectSelectTabContainer(itemSelectWindow);
+
 	//MapObjects selection TabbedArea
 	gcn::TabbedArea* brushesTabbedArea = new gcn::TabbedArea();
 	brushesTabbedArea->setSize(176, 256);
-	brushesTabbedArea->addTab("MapCell", mapCellSelectTabContainer);
-	brushesTabbedArea->addTab("Static", staticSelectTabContainer);
+	brushesTabbedArea->addTab("Cell", mapCellSelectTabContainer);
+	brushesTabbedArea->addTab("NPC", npcSelectTabContainer);
+	brushesTabbedArea->addTab("Stat.", staticSelectTabContainer);
+	brushesTabbedArea->addTab("Item", itemSelectTabContainer);
 	toolbarContainer->add(brushesTabbedArea, toolbarLeftMargin, 96);
 	
 	return false;
@@ -447,7 +455,7 @@ void Universe::PaintMapCell()
 	MapCell* pBrush;
 	
 	pBrush = (MapCell*)brush[brushIndex];
-			
+	
 	for (i = 0; i < currentBrushMask->width; i++)
 	{
 		for (j = 0; j < currentBrushMask->width; j++)

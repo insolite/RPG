@@ -90,9 +90,6 @@
     <ClInclude Include="SliderActionListener.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="WindowCloseButton.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="FocusingWindow.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -177,9 +174,6 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="SliderActionListener.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowCloseButton.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="FocusingWindow.cpp">
