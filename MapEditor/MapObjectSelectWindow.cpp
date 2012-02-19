@@ -27,12 +27,15 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 		}
 	}
 	tagsCount = tags.size();
-	mapObjectsTags = new gcn::CheckBox*[tagsCount];
-	for (i = 0; i < tagsCount; i++)
+	if (tagsCount > 0)
 	{
-		mapObjectsTags[i] = new gcn::CheckBox(tags[i]);
-		mapObjectsTags[i]->setFocusable(false);
-		this->add(mapObjectsTags[i], 8, 8 + 16 * i);
+		mapObjectsTags = new gcn::CheckBox*[tagsCount];
+		for (i = 0; i < tagsCount; i++)
+		{
+			mapObjectsTags[i] = new TagCheckBox(tags[i]);
+			mapObjectsTags[i]->setFocusable(false);
+			this->add(mapObjectsTags[i], 8, 8 + 16 * i);
+		}
 	}
 
 	//NPC select ListBox
@@ -43,7 +46,7 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 	listBox->setSelected(0);
 	
 	//TODO:
-	//Auto resize npcSelectListBox. adjustSize doesn't work for width. Sadly...
+	//Auto resize ListBox. adjustSize doesn't work for width. Sadly...
 	listBox->setSize(512, 0);
 	listBox->adjustSize();
 	
@@ -73,11 +76,9 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 MapObjectSelectWindow::~MapObjectSelectWindow(void)
 {
 	delete[] mapObjectsTags;
-	//delete mapObjectsTags;
 	delete listModel;
 	delete listBox;
 	delete listBoxScrollArea;
 	delete npcPreviewIcon;
 	delete okButton;
-	delete closeButton;
 }

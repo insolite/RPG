@@ -14,6 +14,8 @@ public:
 	Item** items;
 	//Player** players;
 	
+	sqlite3* db;
+	
 	int mapCellsCount;
 	int npcsCount;
 	int staticsCount;
@@ -23,8 +25,12 @@ public:
 	~GameResources(void);
 
 private:
+	template<class T>
+	void MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName);
+	/*
 	bool MapCellsInit(void);
 	bool NpcsInit(void);
 	bool StaticsInit(void);
 	bool ItemsInit(void);
+	*/
 };

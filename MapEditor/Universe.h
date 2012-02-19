@@ -14,6 +14,9 @@
 #include "BrushDropDown.h"
 #include "ToggleWindowVisibilityButton.h"
 #include "FocusingWindow.h"
+#include "LoadGameButton.h"
+#include "DeleteGameButton.h"
+#include "NewGameWindow.h"
 #include "Game.h"
 #include "utilities.h"
 using namespace std;
@@ -42,8 +45,25 @@ public:
 	MapObject* brush[4];
 	int brushIndex; //TODO: char
 
-	//GUI
-	gcn::Gui* toolbar;
+	// GUI
+	gcn::Graphics* graphics;
+
+	// Menu GUI
+	gcn::Gui* menuGUI;
+	gcn::Container* menuMainContainer;
+	gcn::Button* newGameButton;
+	LoadGameButton* loadGameButton;
+	gcn::Button* deleteGameButton;
+	gcn::Button* quitButton;
+	StringListModel* gamesListModel;
+	gcn::ListBox* gamesListBox;
+	gcn::ScrollArea* gamesListBoxScrollArea;
+	gcn::Window* newGameWindow;
+
+	// Editor GUI
+	gcn::Gui* editorGUI;
+	gcn::Window* toolbarContainer;
+	gcn::Container* editorMainContainer;
 	gcn::Container* editAreaContainer;
 	gcn::Window* mapCellSelectWindow;
 	gcn::Window* npcSelectWindow;
@@ -52,7 +72,6 @@ public:
 
 	gcn::Slider* brushMaskSlider;
 	gcn::Label* brushMaskSizeLabel;
-	StringDropDown* brushesDropDown;
 
 	gcn::Container* mapCellSelectTabContainer;
 	gcn::Container* npcSelectTabContainer;
@@ -61,11 +80,15 @@ public:
 
 	bool LoadTexture();
 	bool GraphicsInit();
-	bool GUIInit(gcn::SDLInput* &GUIInput);
+	bool EditorGUIInit(gcn::SDLInput* &GUIInput);
+	bool MenuGUIInit(gcn::SDLInput* &GUIInput);
+	void EditorGUIDestroy();
 	bool BrushesInit();
 	void SetLocation(Location* location);
+	void DrawMenu();
 	void DrawScene();
-	void Run();
+	char* Menu();
+	void Run(char* gameName);
 	void CameraMove(int x, int y);
 	void CameraReset();
 	void CursorReset();

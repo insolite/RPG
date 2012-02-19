@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Item.h"
 #include "Universe.h"
-
+/*
 Item::Item(int _id)
 {
 	char path[256];
@@ -20,6 +20,11 @@ Item::Item(int _id)
 		//Operations of gathering info
 	}
 	fclose(f);
+}
+*/
+Item::Item(std::map<std::string, std::string> strings, std::map<std::string, int> integers) : MapObject(strings, integers)
+{
+	
 }
 
 Item::~Item(void)

@@ -4,16 +4,90 @@
 
 GameResources::GameResources(void)
 {
+	char path[279];
+
+	sprintf(path, "game/%s/resources.sqlite", Universe::instance->game->name);
+	if (sqlite3_open_v2(path, &db, SQLITE_OPEN_READWRITE, NULL) != SQLITE_OK)
+	//if (sqlite3_open(path, &db) != SQLITE_OK)
+	{
+		printf("Couldn't load game \"%s\" resources", Universe::instance->game->name);
+		return;
+	}
+
+	MapObjectsInit<MapCell>(mapCells, mapCellsCount, "MapCell");
+	MapObjectsInit<NPC>(npcs, npcsCount, "NPC");
+	MapObjectsInit<Item>(items, itemsCount, "Item");
+	MapObjectsInit<Static>(statics, staticsCount, "StaticObject");
+
+	/*
 	MapCellsInit();
 	NpcsInit();
 	ItemsInit();
 	StaticsInit();
+	*/
 }
 
 GameResources::~GameResources(void)
 {
+	delete[] mapCells;
+	delete[] npcs;
+	delete[] items;
+	delete[] statics;
+	sqlite3_close(db);
 }
 
+template<class T>
+void GameResources::MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName)
+{
+	char query[64];
+	sqlite3_stmt *stmt;
+	int result, i, columnsCount;
+	std::map<std::string, std::string> strings;
+	std::map<std::string, int> integers;
+	std::string columnName;
+	
+	sprintf(query, "SELECT * FROM %s;", tableName); //TODO: Get class T name
+	if (sqlite3_prepare(db, query, -1, &stmt, NULL) != SQLITE_OK)
+	{
+		printf("Couldn't load table from game \"%s\" resources", Universe::instance->game->name);
+		return;
+	}
+	
+	mapObjectsCount = 0;
+	mapObjects = NULL;
+	
+	while ((result = sqlite3_step(stmt)) != SQLITE_DONE)
+	{
+		if (result == SQLITE_ROW)
+		{
+			columnsCount = sqlite3_column_count(stmt);
+			for (i = 0; i < columnsCount; i++)
+			{
+				columnName = sqlite3_column_name(stmt, i);
+				switch (sqlite3_column_type(stmt, i))
+				{
+					case SQLITE_TEXT:
+						strings[columnName] = (string)(char*)sqlite3_column_text(stmt, i);
+						break;
+					case SQLITE_INTEGER:
+						integers[columnName] = sqlite3_column_int(stmt, i);
+						break;
+				}
+			}
+			mapObjectsCount++;
+			mapObjects = (T**)realloc(mapObjects, mapObjectsCount * sizeof(T*));
+			mapObjects[mapObjectsCount - 1] = new T(strings, integers);
+		}
+		else
+		{
+			printf("SQLite error. Code: %d\n", result);
+		}
+	}
+	strings.clear();
+	integers.clear();
+	sqlite3_finalize(stmt);
+}
+/*
 bool GameResources::ItemsInit()
 {
 	char locationsPath[256];
@@ -89,3 +163,4 @@ bool GameResources::MapCellsInit()
 	//delete folders;
 	return false;
 }
+*/

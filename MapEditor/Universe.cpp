@@ -88,38 +88,13 @@ bool Universe::GraphicsInit()
 	return false;
 }
 
-bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
+bool Universe::MenuGUIInit(gcn::SDLInput* &GUIInput)
 {
 	char fontCharacters[256];
 	FILE* f;
 
 	//Input init
 	GUIInput = new gcn::SDLInput();
-
-	//Edit area container init
-	editAreaContainer = new gcn::Container();
-	editAreaContainer->setDimension(gcn::Rectangle(0, 0, screenWidth - toolbarWidth, screenHeight));
-	editAreaContainer->setOpaque(false);
-	editAreaContainer->setFocusable(true);
-
-	//Toolbar container init
-	FocusingWindow* toolbarContainer = new FocusingWindow("Tools");
-	toolbarContainer->setDimension(gcn::Rectangle(0, 0, toolbarWidth, screenHeight));
-	toolbarContainer->setFocusable(true);
-	toolbarContainer->setMovable(false);
-	
-	//Main container init
-	gcn::Container* mainContainer = new gcn::Container();
-	mainContainer->setDimension(gcn::Rectangle(0, 0, screenWidth, screenHeight));
-	mainContainer->setOpaque(false);
-	mainContainer->add(editAreaContainer, 0, 0);
-	mainContainer->add(toolbarContainer, screenWidth - toolbarWidth, 0);
-	
-	//GUI init
-	toolbar = new gcn::Gui();
-	toolbar->setGraphics(new gcn::OpenGLGraphics(screenWidth, screenHeight));
-	toolbar->setInput(GUIInput);
-	toolbar->setTop(mainContainer);
 
 	//Font init
 	f = fopen("editor/_font/char.txt", "rt");
@@ -130,6 +105,95 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
 	gcn::ImageFont* mFontWhite = new gcn::ImageFont("editor/_font/face.png", fontCharacters);
 	gcn::Widget::setGlobalFont(mFontWhite);
+	
+	//Main container init
+	menuMainContainer = new gcn::Container();
+	menuMainContainer->setDimension(gcn::Rectangle(0, 0, screenWidth, screenHeight));
+	//menuMainContainer->setOpaque(false);
+
+	//GUI init
+	menuGUI= new gcn::Gui();
+	graphics = new gcn::OpenGLGraphics(screenWidth, screenHeight);
+	menuGUI->setGraphics(graphics);
+	menuGUI->setInput(GUIInput);
+	menuGUI->setTop(menuMainContainer);
+
+	//GUI building
+	
+	//Some graphical elements
+	//...
+	
+	//Games list
+	//Game select ListBox
+	char** games;
+	int gamesCount;
+	gamesCount = ReadDir("game", games, true);
+	gamesListModel = new StringListModel();
+	for (int i = 0; i < gamesCount; i++)
+		gamesListModel->add(games[i]);
+	delete[] games;
+	gamesListBox = new gcn::ListBox(gamesListModel);
+	gamesListBox->setSelected(0);
+	//TODO:
+	//Auto resize ListBox. adjustSize doesn't work for width. Sadly...
+	gamesListBox->setSize(512, 0);
+	gamesListBox->adjustSize();
+	gamesListBoxScrollArea = new gcn::ScrollArea();
+	gamesListBoxScrollArea->setHorizontalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
+	gamesListBoxScrollArea->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
+	gamesListBoxScrollArea->setContent(gamesListBox);
+	gamesListBoxScrollArea->setSize(256, 320);
+	menuMainContainer->add(gamesListBoxScrollArea, 256, 64);
+
+	//New game window
+	newGameWindow = new NewGameWindow("New game");
+	
+	//Buttons init
+	newGameButton = new ToggleWindowVisibilityButton("New", newGameWindow);
+	loadGameButton = new LoadGameButton("Load");
+	deleteGameButton = new DeleteGameButton("Delete", gamesListBox);
+	quitButton = new gcn::Button("Quit");
+	newGameButton->setWidth(128);
+	loadGameButton->setWidth(128);
+	deleteGameButton->setWidth(128);
+	quitButton->setWidth(128);
+	menuMainContainer->add(newGameButton, 520, 64);
+	menuMainContainer->add(loadGameButton, 520, 96);
+	menuMainContainer->add(deleteGameButton, 520, 128);
+	menuMainContainer->add(quitButton, 520, 360);
+
+	menuMainContainer->add(newGameWindow, screenWidth / 2 - newGameWindow->getWidth() / 2, screenHeight / 2 - newGameWindow->getHeight() / 2);
+}
+
+bool Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
+{
+	//Input init
+	GUIInput = new gcn::SDLInput();
+
+	//Edit area container init
+	editAreaContainer = new gcn::Container();
+	editAreaContainer->setDimension(gcn::Rectangle(0, 0, screenWidth - toolbarWidth, screenHeight));
+	editAreaContainer->setOpaque(false);
+	editAreaContainer->setFocusable(true);
+
+	//Toolbar container init
+	toolbarContainer = new FocusingWindow("Tools");
+	toolbarContainer->setDimension(gcn::Rectangle(0, 0, toolbarWidth, screenHeight));
+	toolbarContainer->setFocusable(true);
+	toolbarContainer->setMovable(false);
+	
+	//Main container init
+	editorMainContainer = new gcn::Container();
+	editorMainContainer->setDimension(gcn::Rectangle(0, 0, screenWidth, screenHeight));
+	editorMainContainer->setOpaque(false);
+	editorMainContainer->add(editAreaContainer, 0, 0);
+	editorMainContainer->add(toolbarContainer, screenWidth - toolbarWidth, 0);
+	
+	//GUI init
+	editorGUI = new gcn::Gui();
+	editorGUI->setGraphics(graphics);
+	editorGUI->setInput(GUIInput);
+	editorGUI->setTop(editorMainContainer);
 
 	//GUI building
 
@@ -149,19 +213,19 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	
 	//MapCell select window
 	mapCellSelectWindow = new MapObjectSelectWindow("MapCell selection", (MapObject**)game->resources->mapCells, game->resources->mapCellsCount, 0); //TODO: explicit convertion? Really? o_0
-	mainContainer->add(mapCellSelectWindow);
+	editorMainContainer->add(mapCellSelectWindow);
 	
 	//NPC select window
 	npcSelectWindow = new MapObjectSelectWindow("NPC selection", (MapObject**)game->resources->npcs, game->resources->npcsCount, 1); //TODO: explicit convertion? Really? o_0
-	mainContainer->add(npcSelectWindow);
+	editorMainContainer->add(npcSelectWindow);
 	
 	//Static select window
 	staticSelectWindow = new MapObjectSelectWindow("Static selection", (MapObject**)game->resources->statics, game->resources->staticsCount, 2); //TODO: explicit convertion? Really? o_0
-	mainContainer->add(staticSelectWindow);
+	editorMainContainer->add(staticSelectWindow);
 	
 	//Item select window
 	itemSelectWindow = new MapObjectSelectWindow("Item selection", (MapObject**)game->resources->items, game->resources->itemsCount, 3); //TODO: explicit convertion? Really? o_0
-	mainContainer->add(itemSelectWindow);
+	editorMainContainer->add(itemSelectWindow);
 	
 	int brushMaskMinSize = 1;
 	int brushMaskMaxSize = 10;
@@ -205,6 +269,26 @@ bool Universe::GUIInit(gcn::SDLInput* &GUIInput)
 	return false;
 }
 
+void Universe::EditorGUIDestroy()
+{
+	delete editorGUI;
+	delete toolbarContainer;
+	delete editorMainContainer;
+	delete editAreaContainer;
+	delete mapCellSelectWindow;
+	delete npcSelectWindow;
+	delete staticSelectWindow;
+	delete itemSelectWindow;
+
+	delete brushMaskSlider;
+	delete brushMaskSizeLabel;
+
+	delete mapCellSelectTabContainer;
+	delete npcSelectTabContainer;
+	delete staticSelectTabContainer;
+	delete itemSelectTabContainer;
+}
+
 void Universe::CameraMove(int x, int y)
 {
 	if ((cameraX + x) < 0 || ((cameraX + x) + screenWidth - toolbarWidth) >= currentLocation->width * cellSize)
@@ -214,6 +298,17 @@ void Universe::CameraMove(int x, int y)
 	cameraX += x;
 	cameraY += y;
 	//Sleep(8);
+}
+
+void Universe::DrawMenu()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	
+	menuGUI->draw();
+
+	//glFlush();
+	SDL_GL_SwapBuffers();
 }
 
 void Universe::DrawScene()
@@ -231,10 +326,10 @@ void Universe::DrawScene()
 		{
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
-				case CellProperty::Free:
+				case Free:
 					glColor4d(0, 1, 0, 1);
 					break;
-				case CellProperty::Locked:
+				case Locked:
 					glColor4d(1, 0, 0, 0.5);
 					break;
 				default:
@@ -268,7 +363,7 @@ void Universe::DrawScene()
 		}
 	glEnd();
 
-	toolbar->draw();
+	editorGUI->draw();
 
 	//glFlush();
 	SDL_GL_SwapBuffers();
@@ -281,7 +376,48 @@ void Universe::SetLocation(Location* location)
 	currentLocation = location;
 }
 
-void Universe::Run()
+char* Universe::Menu()
+{
+	SDL_Event event;
+	gcn::SDLInput* GUIInput;
+	bool continueFlag;
+	
+	GraphicsInit();
+	MenuGUIInit(GUIInput);
+
+	continueFlag = true;
+	loadGameButton->continueFlag = &continueFlag;
+	
+	int lastUpdate = SDL_GetTicks();
+
+	while (continueFlag)
+	{
+		SDL_PumpEvents();
+		
+		while (SDL_PollEvent(&event))
+		{
+			GUIInput->pushInput(event); //((gcn::SDLInput*)(toolbar->getInput()))->pushInput(event); //This code doing the same without defined pointer to GUIInput, but looks too bad...
+			menuGUI->logic();
+		}
+
+		switch (event.type)
+		{
+			case SDL_QUIT:
+				return NULL;
+		}
+
+		if ((SDL_GetTicks() - lastUpdate) > 40) //14 for 60fps, 22 for 41fps, 40 for 24fps
+		{
+			DrawMenu();
+			lastUpdate = SDL_GetTicks();
+		}
+		Sleep(1);
+	}
+
+	return (char*)gamesListModel->getElementAt(gamesListBox->getSelected()).c_str();
+}
+
+void Universe::Run(char* gameName)
 {
 	Uint8 *keys;
 	SDL_Event event;
@@ -289,16 +425,14 @@ void Universe::Run()
 	int mouseX, mouseY;
 	bool continueFlag;
 
-	game = new Game("testgame");
+	game = new Game(gameName);
 	game->Init();
-	//LocationsInit();
 	BrushesInit();
 
 	CameraReset();
 	CursorReset();
 
-	GraphicsInit();
-	GUIInit(GUIInput);
+	EditorGUIInit(GUIInput);
 
 	//TESTTESTTESTTESTTESTTEST
 	LoadTexture();
@@ -318,24 +452,18 @@ void Universe::Run()
 		while (SDL_PollEvent(&event))
 		{
 			GUIInput->pushInput(event); //((gcn::SDLInput*)(toolbar->getInput()))->pushInput(event); //This code doing the same without defined pointer to GUIInput, but looks too bad...
-			toolbar->logic();
+			editorGUI->logic();
 		}
 
 		if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(1))
 		{
-			//if (mouseX < (screenWidth - toolbarWidth)) //Prevents drawing cells with brush while mouse cursor is on the toolbar
 			if (editAreaContainer->isFocused())
 				PaintMapCell();
 		}
 
 		//TODO: Put this inside the switch below
 		//EXIT
-		if (keys[SDLK_ESCAPE])
-		{
-			continueFlag = false;
-		}
-		//CAMERA UP LEFT
-		else if (keys[SDLK_UP] && keys[SDLK_LEFT])
+		if (keys[SDLK_UP] && keys[SDLK_LEFT])
 		{
 			CameraMove(-1, -1);
 		}
@@ -380,16 +508,12 @@ void Universe::Run()
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
 				keys = SDL_GetKeyState(NULL);
+				if (event.key.keysym.sym == SDLK_ESCAPE)
+					continueFlag = false;
 				break;
 			case SDL_MOUSEMOTION:
 				SDL_GetMouseState(&mouseX, &mouseY);
 				break;
-			/*
-			case SDL_MOUSEBUTTONDOWN:
-				break;
-			case SDL_MOUSEBUTTONUP:
-				break;
-			*/
 			case SDL_QUIT:
 				continueFlag = false;
 				break;
@@ -402,7 +526,6 @@ void Universe::Run()
 			cursorX = Pix2Index(mouseX + cameraX);
 			cursorY = Pix2Index(mouseY + cameraY);
 		}
-		//printf("%d : %d\n", cursorX, cursorY);
 		
 		if ((SDL_GetTicks() - lastUpdate) > 40) //14 for 60fps, 22 for 41fps, 40 for 24fps
 		{
@@ -411,6 +534,9 @@ void Universe::Run()
 		}
 		Sleep(1);
 	}
+
+	EditorGUIDestroy();
+	delete game;
 }
 
 bool Universe::BrushesInit()
@@ -441,9 +567,11 @@ bool Universe::BrushesInit()
 	currentBrushMask = brushMasks[0];
 
 	brush[0] = game->resources->mapCells[1];
+	/*
 	brush[1] = game->resources->npcs[0];
 	brush[2] = game->resources->statics[0];
 	brush[3] = game->resources->items[0];
+	*/
 	brushIndex = 0;
 
 	return false;

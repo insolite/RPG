@@ -31,11 +31,6 @@ Location::Location(int _id)
 		for (j = 0; j < width; j++)
 		{
 			//TODO:
-			//Warning! new MapCell() must be called in resources init. Here must be some kind of concrete cell. Not a cell base
-			//mask[i][j] = new MapCell();
-			//mask[i][j]->cellProperty = (CellProperty)fgetc(f);
-
-			//TODO:
 			//Warning! getMapCellById instead of fgetc(f) - 1
 			mask[i][j] = Universe::instance->game->resources->mapCells[fgetc(f) - 1];
 		}

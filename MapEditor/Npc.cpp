@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Npc.h"
 #include "Universe.h"
-
+/*
 NPC::NPC(int _id)
 {
 	char path[256];
@@ -20,6 +20,11 @@ NPC::NPC(int _id)
 		//Operations of gathering info
 	}
 	fclose(f);
+}
+*/
+NPC::NPC(std::map<std::string, std::string> strings, std::map<std::string, int> integers) : MapObject(strings, integers)
+{
+	
 }
 
 NPC::~NPC(void)

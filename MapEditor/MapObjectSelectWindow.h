@@ -5,6 +5,7 @@
 #include "MapObjectSelectOKButton.h"
 #include "ToggleWindowVisibilityButton.h"
 #include "FocusingWindow.h"
+#include "TagCheckBox.h"
 
 class MapObjectSelectWindow :
 	public FocusingWindow
@@ -19,7 +20,6 @@ public:
 	gcn::ScrollArea* listBoxScrollArea;
 	gcn::Icon* npcPreviewIcon;
 	gcn::Button* okButton;
-	gcn::Button* closeButton;
 
 	MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount, int brushIndex);
 	~MapObjectSelectWindow(void);

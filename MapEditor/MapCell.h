@@ -9,8 +9,9 @@ class MapCell :
 public:
 	CellProperty cellProperty;
 
-	void Abstr ( void ) { }; //Abstract class inheritance
+	void Abstr(void) { }; //Abstract class inheritance
 
-	MapCell(int _id);
+	//MapCell(int _id);
+	MapCell(std::map<std::string, std::string> strings, std::map<std::string, int> integers);
 	~MapCell(void);
 };

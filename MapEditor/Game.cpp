@@ -3,11 +3,13 @@
 
 Game::Game(char* _name)
 {
-	name = _name;
+	name = _name; //TODO: strcpy?
 }
 
 Game::~Game(void)
 {
+	delete resources;
+	delete data;
 }
 
 void Game::Init()

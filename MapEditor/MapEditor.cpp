@@ -6,7 +6,15 @@
 
 int main(int argc, char* argv[])
 {
-	(new Universe())->Run();
+	Universe* universe;
+	char* gameName;
+
+	universe = new Universe();
+
+	while (gameName = universe->Menu())
+	{
+		universe->Run(gameName);
+	}
 
 	return 0;
 }

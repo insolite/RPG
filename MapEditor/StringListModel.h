@@ -12,7 +12,7 @@ public:
 	std::string getElementAt(int i)
 	{
 		if (i >= mStrings.size()) //TODO: guichan bug?
-			return "err";
+			return "*Error*";
 		return mStrings.at(i);
 	}
 
@@ -21,10 +21,14 @@ public:
 		mStrings.push_back(str);
 	}
 	
+	void remove(int i)
+	{
+		mStrings.erase(mStrings.begin() + i);
+	}
+
 	StringListModel(void);
 	~StringListModel(void);
 
 private:
 	std::vector<std::string> mStrings;
 };
-
