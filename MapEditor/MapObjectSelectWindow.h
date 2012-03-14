@@ -13,7 +13,8 @@ class MapObjectSelectWindow :
 public:
 	int brushIndex; //TODO: typeof would be fine...
 	MapObject** mapObjects;
-	gcn::CheckBox** mapObjectsTags;
+	int mapObjectsCount;
+	TagCheckBox** mapObjectsTags;
 	int tagsCount;
 	StringListModel* listModel;
 	gcn::ListBox* listBox;

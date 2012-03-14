@@ -11,7 +11,7 @@ public:
 
 	std::string getElementAt(int i)
 	{
-		if (i >= mStrings.size()) //TODO: guichan bug?
+		if (i >= (int)mStrings.size()) //TODO: guichan bug?
 			return "*Error*";
 		return mStrings.at(i);
 	}
@@ -24,6 +24,11 @@ public:
 	void remove(int i)
 	{
 		mStrings.erase(mStrings.begin() + i);
+	}
+
+	void clear()
+	{
+		mStrings.clear();
 	}
 
 	StringListModel(void);

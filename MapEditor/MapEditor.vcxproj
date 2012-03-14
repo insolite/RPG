@@ -64,7 +64,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Include\guichan;..\Include\SDL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -81,6 +81,8 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="BrushDropDown.h" />
     <ClInclude Include="BrushMask.h" />
+    <ClInclude Include="CurrentMapObject.h" />
+    <ClInclude Include="CurrentNPC.h" />
     <ClInclude Include="DeleteGameButton.h" />
     <ClInclude Include="FloorDropDown.h" />
     <ClInclude Include="FocusingWindow.h" />
@@ -96,8 +98,10 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="MapObject.h" />
+    <ClInclude Include="NewGameOKButton.h" />
     <ClInclude Include="NewGameWindow.h" />
     <ClInclude Include="NPC.h" />
+    <ClInclude Include="QuitButton.h" />
     <ClInclude Include="SliderActionListener.h" />
     <ClInclude Include="TagCheckBox.h" />
     <ClInclude Include="ToggleWindowVisibilityButton.h" />
@@ -115,6 +119,8 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="BrushDropDown.cpp" />
     <ClCompile Include="BrushMask.cpp" />
+    <ClCompile Include="CurrentMapObject.cpp" />
+    <ClCompile Include="CurrentNPC.cpp" />
     <ClCompile Include="DeleteGameButton.cpp" />
     <ClCompile Include="FloorDropDown.cpp" />
     <ClCompile Include="FocusingWindow.cpp" />
@@ -131,8 +137,10 @@
     <ClCompile Include="MapObjectSelectOKButton.cpp" />
     <ClCompile Include="MapObjectSelectTabContainer.cpp" />
     <ClCompile Include="MapObjectSelectWindow.cpp" />
+    <ClCompile Include="NewGameOKButton.cpp" />
     <ClCompile Include="NewGameWindow.cpp" />
     <ClCompile Include="NPC.cpp" />
+    <ClCompile Include="QuitButton.cpp" />
     <ClCompile Include="SliderActionListener.cpp" />
     <ClCompile Include="TagCheckBox.cpp" />
     <ClCompile Include="ToggleWindowVisibilityButton.cpp" />

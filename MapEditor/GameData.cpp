@@ -5,6 +5,7 @@
 GameData::GameData(void)
 {
 	LocationsInit();
+	MapObjectsInit();
 }
 
 GameData::~GameData(void)
@@ -17,8 +18,8 @@ bool GameData::LocationsInit()
 	char **folders;
 	int id, i;
 
-	sprintf(locationsPath, "game/%s/location", Universe::instance->game->name);
-	locationsCount = ReadDir(locationsPath, folders, true);
+	sprintf(locationsPath, "game/%s/data/location", Universe::instance->game->name);
+	locationsCount = ReadDir(locationsPath, folders, false);
 	locations = new (Location*[locationsCount]);
 	for (i = 0; i < locationsCount; i++)
 	{
@@ -29,4 +30,9 @@ bool GameData::LocationsInit()
 	//delete folders;
 	Universe::instance->SetLocation(locations[0]);
 	return false;
+}
+
+void GameData::MapObjectsInit()
+{
+
 }

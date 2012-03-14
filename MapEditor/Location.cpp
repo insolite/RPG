@@ -9,7 +9,7 @@ Location::Location(int _id)
 	char path[256];
 
 	id = _id;
-	sprintf(path, "game/%s/location/%d/ground.loc", Universe::instance->game->name, id);
+	sprintf(path, "game/%s/data/location/%d.loc", Universe::instance->game->name, id);
 	f = fopen(path, "rb");
 	if (!f)
 		return;
@@ -40,4 +40,10 @@ Location::Location(int _id)
 
 Location::~Location(void)
 {
+}
+
+void Location::AddNPC(CurrentNPC* currentNPC)
+{
+	//Adds NPC to array currentNPCs
+	//Adds record to GameData db (Universe::instance->game->data->db)
 }

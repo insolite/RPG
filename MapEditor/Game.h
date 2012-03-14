@@ -15,4 +15,3 @@ public:
 	Game(char* _name);
 	~Game(void);
 };
-

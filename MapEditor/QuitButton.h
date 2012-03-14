@@ -1,13 +1,13 @@
 #pragma once
 
-class LoadGameButton :
+class QuitButton :
 	public gcn::Button
 {
 public:
 	char* continueFlag;
 
 	void mouseClicked(gcn::MouseEvent& mouseEvent);
-	
-	LoadGameButton(std::string label);
-	~LoadGameButton(void);
+
+	QuitButton(std::string label);
+	~QuitButton(void);
 };

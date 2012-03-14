@@ -11,5 +11,5 @@ LoadGameButton::~LoadGameButton(void)
 
 void LoadGameButton::mouseClicked(gcn::MouseEvent& mouseEvent)
 {
-	*continueFlag = false;
+	*continueFlag = 0;
 }

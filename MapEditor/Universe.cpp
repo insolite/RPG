@@ -61,6 +61,8 @@ bool Universe::GraphicsInit()
 	}
 	SDL_WM_SetCaption("RPG", NULL);
 
+	SDL_EnableUNICODE(1); //For gcn input
+
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
@@ -88,7 +90,7 @@ bool Universe::GraphicsInit()
 	return false;
 }
 
-bool Universe::MenuGUIInit(gcn::SDLInput* &GUIInput)
+void Universe::MenuGUIInit(gcn::SDLInput* &GUIInput)
 {
 	char fontCharacters[256];
 	FILE* f;
@@ -99,7 +101,7 @@ bool Universe::MenuGUIInit(gcn::SDLInput* &GUIInput)
 	//Font init
 	f = fopen("editor/_font/char.txt", "rt");
 	if (!f)
-		return true;
+		return;
 	fgets(fontCharacters, 256, f);
 	fclose(f);
 	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
@@ -147,12 +149,12 @@ bool Universe::MenuGUIInit(gcn::SDLInput* &GUIInput)
 
 	//New game window
 	newGameWindow = new NewGameWindow("New game");
-	
+
 	//Buttons init
 	newGameButton = new ToggleWindowVisibilityButton("New", newGameWindow);
 	loadGameButton = new LoadGameButton("Load");
 	deleteGameButton = new DeleteGameButton("Delete", gamesListBox);
-	quitButton = new gcn::Button("Quit");
+	quitButton = new QuitButton("Quit");
 	newGameButton->setWidth(128);
 	loadGameButton->setWidth(128);
 	deleteGameButton->setWidth(128);
@@ -165,7 +167,7 @@ bool Universe::MenuGUIInit(gcn::SDLInput* &GUIInput)
 	menuMainContainer->add(newGameWindow, screenWidth / 2 - newGameWindow->getWidth() / 2, screenHeight / 2 - newGameWindow->getHeight() / 2);
 }
 
-bool Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
+void Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
 {
 	//Input init
 	GUIInput = new gcn::SDLInput();
@@ -265,8 +267,6 @@ bool Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
 	brushesTabbedArea->addTab("Stat.", staticSelectTabContainer);
 	brushesTabbedArea->addTab("Item", itemSelectTabContainer);
 	toolbarContainer->add(brushesTabbedArea, toolbarLeftMargin, 96);
-	
-	return false;
 }
 
 void Universe::EditorGUIDestroy()
@@ -380,13 +380,14 @@ char* Universe::Menu()
 {
 	SDL_Event event;
 	gcn::SDLInput* GUIInput;
-	bool continueFlag;
+	char continueFlag;
 	
 	GraphicsInit();
 	MenuGUIInit(GUIInput);
 
-	continueFlag = true;
+	continueFlag = 1;
 	loadGameButton->continueFlag = &continueFlag;
+	quitButton->continueFlag = &continueFlag;
 	
 	int lastUpdate = SDL_GetTicks();
 
@@ -412,6 +413,9 @@ char* Universe::Menu()
 			lastUpdate = SDL_GetTicks();
 		}
 		Sleep(1);
+
+		if (continueFlag == 2)
+			return NULL;
 	}
 
 	return (char*)gamesListModel->getElementAt(gamesListBox->getSelected()).c_str();

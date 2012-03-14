@@ -1,13 +1,14 @@
 #include "StdAfx.h"
 #include "MapObjectSelectWindow.h"
 
-MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount, int _brushIndex) : FocusingWindow(caption)
+MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int _mapObjectsCount, int _brushIndex) : FocusingWindow(caption)
 {
 	int i, j;
 	vector<std::string> tags;
 
 	brushIndex = _brushIndex;
 	mapObjects = _mapObjects;
+	mapObjectsCount = _mapObjectsCount;
 
 	this->setFocusable(true);
 	this->setVisible(false);
@@ -29,10 +30,10 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 	tagsCount = tags.size();
 	if (tagsCount > 0)
 	{
-		mapObjectsTags = new gcn::CheckBox*[tagsCount];
+		mapObjectsTags = new TagCheckBox*[tagsCount];
 		for (i = 0; i < tagsCount; i++)
 		{
-			mapObjectsTags[i] = new TagCheckBox(tags[i]);
+			mapObjectsTags[i] = new TagCheckBox(tags[i], true);
 			mapObjectsTags[i]->setFocusable(false);
 			this->add(mapObjectsTags[i], 8, 8 + 16 * i);
 		}

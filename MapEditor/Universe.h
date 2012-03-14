@@ -17,6 +17,7 @@
 #include "LoadGameButton.h"
 #include "DeleteGameButton.h"
 #include "NewGameWindow.h"
+#include "QuitButton.h"
 #include "Game.h"
 #include "utilities.h"
 using namespace std;
@@ -54,7 +55,7 @@ public:
 	gcn::Button* newGameButton;
 	LoadGameButton* loadGameButton;
 	gcn::Button* deleteGameButton;
-	gcn::Button* quitButton;
+	QuitButton* quitButton;
 	StringListModel* gamesListModel;
 	gcn::ListBox* gamesListBox;
 	gcn::ScrollArea* gamesListBoxScrollArea;
@@ -80,8 +81,8 @@ public:
 
 	bool LoadTexture();
 	bool GraphicsInit();
-	bool EditorGUIInit(gcn::SDLInput* &GUIInput);
-	bool MenuGUIInit(gcn::SDLInput* &GUIInput);
+	void EditorGUIInit(gcn::SDLInput* &GUIInput);
+	void MenuGUIInit(gcn::SDLInput* &GUIInput);
 	void EditorGUIDestroy();
 	bool BrushesInit();
 	void SetLocation(Location* location);
