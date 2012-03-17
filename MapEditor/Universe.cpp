@@ -431,6 +431,7 @@ void Universe::Run(char* gameName)
 
 	game = new Game(gameName);
 	game->Init();
+	SetLocation(game->data->locations[0]);
 	BrushesInit();
 
 	CameraReset();

@@ -1,11 +1,4 @@
 #pragma once
-#include "Location.h"
-#include "Npc.h"
-#include "Static.h"
-#include "Player.h"
-#include "Item.h"
-#include "MapObject.h"
-#include "BrushMask.h"
 #include "StringListModel.h"
 #include "MapObjectSelectTabContainer.h"
 #include "MapObjectSelectWindow.h"
@@ -18,8 +11,6 @@
 #include "DeleteGameButton.h"
 #include "NewGameWindow.h"
 #include "QuitButton.h"
-#include "Game.h"
-#include "utilities.h"
 using namespace std;
 
 class Universe

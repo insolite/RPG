@@ -1,6 +1,5 @@
 #pragma once
 #include "StringListModel.h"
-#include "MapObject.h"
 #include "Universe.h"
 #include "MapObjectSelectOKButton.h"
 #include "ToggleWindowVisibilityButton.h"
