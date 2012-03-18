@@ -9,10 +9,9 @@ public:
 
 	static Game* instance;
 
+	sqlite3* db;
 	GameResources* resources;
 	GameData* data;
-
-	__declspec(dllexport) void Init();
 
 	__declspec(dllexport) Game(char* _name);
 	__declspec(dllexport) ~Game(void);

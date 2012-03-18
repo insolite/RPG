@@ -19,6 +19,18 @@
     <Filter Include="Заголовочные файлы\GUI">
       <UniqueIdentifier>{95d17d56-c6c8-4588-8742-49563d17411c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Заголовочные файлы\GUI\Menu">
+      <UniqueIdentifier>{75fe37ff-9319-44be-9ec4-6011ca7512a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\GUI\Menu">
+      <UniqueIdentifier>{a77231d3-a097-44f6-8e9b-112c12852505}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\GUI\Editor">
+      <UniqueIdentifier>{83d8627f-208c-4590-bf5d-a5a7917514ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\GUI\Editor">
+      <UniqueIdentifier>{033906f0-24b4-48f6-9a86-31c491320198}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -33,49 +45,13 @@
     <ClInclude Include="Universe.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="BrushDropDown.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="DeleteGameButton.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="FocusingWindow.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="FloorDropDown.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadGameButton.h">
       <Filter>Заголовочные файлы\GUI</Filter>
     </ClInclude>
     <ClInclude Include="SliderActionListener.h">
       <Filter>Заголовочные файлы\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="LocationDropDown.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="MapObjectSelectOKButton.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="MapObjectSelectTabContainer.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="MapObjectSelectWindow.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="NewGameOKButton.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="NewGameWindow.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="QuitButton.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="ToggleWindowVisibilityButton.h">
-      <Filter>Заголовочные файлы\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="TagCheckBox.h">
       <Filter>Заголовочные файлы\GUI</Filter>
     </ClInclude>
     <ClInclude Include="StringListModel.h">
@@ -83,6 +59,42 @@
     </ClInclude>
     <ClInclude Include="StringDropDown.h">
       <Filter>Заголовочные файлы\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteGameButton.h">
+      <Filter>Заголовочные файлы\GUI\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadGameButton.h">
+      <Filter>Заголовочные файлы\GUI\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="NewGameOKButton.h">
+      <Filter>Заголовочные файлы\GUI\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="NewGameWindow.h">
+      <Filter>Заголовочные файлы\GUI\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="QuitButton.h">
+      <Filter>Заголовочные файлы\GUI\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="BrushDropDown.h">
+      <Filter>Заголовочные файлы\GUI\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="FloorDropDown.h">
+      <Filter>Заголовочные файлы\GUI\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="LocationDropDown.h">
+      <Filter>Заголовочные файлы\GUI\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="MapObjectSelectOKButton.h">
+      <Filter>Заголовочные файлы\GUI\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="MapObjectSelectTabContainer.h">
+      <Filter>Заголовочные файлы\GUI\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="MapObjectSelectWindow.h">
+      <Filter>Заголовочные файлы\GUI\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="TagCheckBox.h">
+      <Filter>Заголовочные файлы\GUI\Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -95,43 +107,10 @@
     <ClCompile Include="Universe.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="BrushDropDown.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="FocusingWindow.cpp">
       <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="DeleteGameButton.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="FloorDropDown.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="LoadGameButton.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="LocationDropDown.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="MapObjectSelectOKButton.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="SliderActionListener.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="MapObjectSelectTabContainer.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="MapObjectSelectWindow.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="NewGameOKButton.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="NewGameWindow.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="QuitButton.cpp">
       <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
     <ClCompile Include="ToggleWindowVisibilityButton.cpp">
@@ -143,8 +122,41 @@
     <ClCompile Include="StringListModel.cpp">
       <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="DeleteGameButton.cpp">
+      <Filter>Файлы исходного кода\GUI\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadGameButton.cpp">
+      <Filter>Файлы исходного кода\GUI\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="NewGameOKButton.cpp">
+      <Filter>Файлы исходного кода\GUI\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="NewGameWindow.cpp">
+      <Filter>Файлы исходного кода\GUI\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="QuitButton.cpp">
+      <Filter>Файлы исходного кода\GUI\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="BrushDropDown.cpp">
+      <Filter>Файлы исходного кода\GUI\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="FloorDropDown.cpp">
+      <Filter>Файлы исходного кода\GUI\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="LocationDropDown.cpp">
+      <Filter>Файлы исходного кода\GUI\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="MapObjectSelectOKButton.cpp">
+      <Filter>Файлы исходного кода\GUI\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="MapObjectSelectTabContainer.cpp">
+      <Filter>Файлы исходного кода\GUI\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="MapObjectSelectWindow.cpp">
+      <Filter>Файлы исходного кода\GUI\Editor</Filter>
+    </ClCompile>
     <ClCompile Include="TagCheckBox.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
+      <Filter>Файлы исходного кода\GUI\Editor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,6 +1,5 @@
 #pragma once
 #include "StringDropDown.h"
-#include "Universe.h"
 
 class LocationDropDown :
 	public StringDropDown

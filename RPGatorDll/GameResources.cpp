@@ -4,16 +4,6 @@
 
 GameResources::GameResources(void)
 {
-	char path[279];
-
-	sprintf(path, "game/%s/resources.sqlite", Game::instance->name);
-	if (sqlite3_open_v2(path, &db, SQLITE_OPEN_READWRITE, NULL) != SQLITE_OK)
-	//if (sqlite3_open(path, &db) != SQLITE_OK)
-	{
-		printf("Couldn't load game \"%s\" resources\n", Game::instance->name);
-		return;
-	}
-
 	MapObjectsInit<MapCell>(mapCells, mapCellsCount, "MapCell");
 	MapObjectsInit<NPC>(npcs, npcsCount, "NPC");
 	MapObjectsInit<Item>(items, itemsCount, "Item");
@@ -29,11 +19,20 @@ GameResources::GameResources(void)
 
 GameResources::~GameResources(void)
 {
-	delete[] mapCells;
-	delete[] npcs;
-	delete[] items;
-	delete[] statics;
-	sqlite3_close(db);
+	int i;
+
+	for (i = 0; i < mapCellsCount; i++)
+		delete mapCells[i];
+	delete mapCells;
+	for (i = 0; i < npcsCount; i++)
+		delete npcs[i];
+	delete npcs;
+	for (i = 0; i < itemsCount; i++)
+		delete items[i];
+	delete items;
+	for (i = 0; i < staticsCount; i++)
+		delete statics[i];
+	delete statics;
 }
 
 template<class T>
@@ -47,9 +46,9 @@ void GameResources::MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* 
 	std::string columnName;
 	
 	sprintf(query, "SELECT * FROM %s;", tableName); //TODO: Get class T name
-	if (sqlite3_prepare(db, query, -1, &stmt, NULL) != SQLITE_OK)
+	if (sqlite3_prepare(Game::instance->db, query, -1, &stmt, NULL) != SQLITE_OK)
 	{
-		printf("Couldn't load table from game \"%s\" resources\n", Game::instance->name);
+		printf("Couldn't load table from game \"%s\" db\n", Game::instance->name);
 		return;
 	}
 	

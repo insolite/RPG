@@ -9,6 +9,7 @@ public:
 	StringListModel* lastMapCellsListModel;
 	gcn::ListBox* lastMapCellsListBox;
 	gcn::ScrollArea* lastMapCellsListBoxScrollArea;
+	ToggleWindowVisibilityButton* mapCellSelectButton;
 	
 	MapObjectSelectTabContainer(gcn::Window* window);
 	~MapObjectSelectTabContainer(void);

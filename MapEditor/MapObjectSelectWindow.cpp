@@ -60,12 +60,13 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 	this->add(listBoxScrollArea, 128, 8);
 
 	//NPC preview image
-	//gcn::Image* npcPreviewImage = gcn::Image::load("test_preview.bmp"); 
-	npcPreviewIcon = new gcn::Icon(gcn::Image::load("test_preview.bmp"));// http://theinsaneatlantian.deviantart.com/art/RPG-Monster-2-252430339?q=boost%3Apopular%20rpg%20monster&qo=36
-	this->add(npcPreviewIcon, 400, 8);
-
+	//gcn::Image* npcPreviewImage = gcn::Image::load("test_preview.bmp");
+	//npcPreviewIcon = new gcn::Icon(npcPreviewImage);// http://theinsaneatlantian.deviantart.com/art/RPG-Monster-2-252430339?q=boost%3Apopular%20rpg%20monster&qo=36
+	//delete npcPreviewImage;
+	//this->add(npcPreviewIcon, 400, 8);
+	
 	//Close button
-	gcn::Button* closeButton = new ToggleWindowVisibilityButton("x", this);
+	closeButton = new ToggleWindowVisibilityButton("x", this);
 	this->add(closeButton);
 
 	this->resizeToContent();
@@ -76,10 +77,15 @@ MapObjectSelectWindow::MapObjectSelectWindow(std::string caption, MapObject** _m
 
 MapObjectSelectWindow::~MapObjectSelectWindow(void)
 {
-	delete[] mapObjectsTags;
+	for (int i = 0; i < tagsCount; i++)
+	{
+		delete mapObjectsTags[i];
+	}
+	delete mapObjectsTags;
 	delete listModel;
 	delete listBox;
 	delete listBoxScrollArea;
-	delete npcPreviewIcon;
+	//delete npcPreviewIcon;
 	delete okButton;
+	delete closeButton;
 }

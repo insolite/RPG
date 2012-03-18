@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "LocationDropDown.h"
+#include "Universe.h"
 
 LocationDropDown::LocationDropDown(void) : StringDropDown()
 {

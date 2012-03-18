@@ -16,14 +16,20 @@ void NewGameOKButton::mouseClicked(gcn::MouseEvent &mouseEvent)
 	char path[262 + 64];
 	char sql[256];
 	sqlite3* db;
+	FILE* f;
+	std::string query;
+	char tmp[1024];
+	int i, width, height;
 
 	NewGameWindow* parent = (NewGameWindow*)this->getParent();
 	sprintf(path, "game/%s", parent->gameName->getText().c_str());
 	CreateDirectory(path, NULL);
+	/*
 	sprintf(path, "game/%s/data", parent->gameName->getText().c_str());
 	CreateDirectory(path, NULL);
 	sprintf(path, "game/%s/data/location", parent->gameName->getText().c_str());
 	CreateDirectory(path, NULL);
+	*/
 	sprintf(path, "game/%s/resource", parent->gameName->getText().c_str());
 	CreateDirectory(path, NULL);
 	sprintf(path, "game/%s/resource/texture", parent->gameName->getText().c_str());
@@ -33,23 +39,35 @@ void NewGameOKButton::mouseClicked(gcn::MouseEvent &mouseEvent)
 
 	//Create subdirs
 
-	//Create resources db
-	sprintf(path, "game/%s/resources.sqlite", parent->gameName->getText().c_str());
+	//Create game db
+	sprintf(path, "game/%s/db.sqlite", parent->gameName->getText().c_str());
 	sqlite3_open(path, &db);
 	//TODO: Init SQL file exec here
 	//...
-	sprintf(sql, "INSERT INTO config VALUES ('gameName', '%s');", parent->gameName->getText().c_str());
-	sqlite3_exec(db, sql, NULL, NULL, NULL);
-	sqlite3_close(db);
+	f = fopen("editor/create_db.sql", "rt");
+	query = "";
+	while (!feof(f))
+	{
+		fgets(tmp, 1023, f);
+		query += tmp;
+	}
+	fclose(f);
+	sqlite3_exec(db, query.c_str(), NULL, NULL, NULL);
 
-	//Create data db
-	sprintf(path, "game/%s/data.sqlite", parent->gameName->getText().c_str());
-	sqlite3_open(path, &db);
-	//TODO: Init SQL file exec here
-	//...
-	//sprintf(sql, "INSERT INTO location VALUES ('gameName', '%s');", parent->gameName->getText().c_str());
-	//sqlite3_exec(db, sql, NULL, NULL, NULL);
+	sscanf(parent->mapWidth->getText().c_str(), "%d", &width);
+	sscanf(parent->mapWidth->getText().c_str(), "%d", &height);
+	char* locationMask = new char[width * height + 1];
+	for (i = 0; i < width * height; i++)
+	{
+		locationMask[i] = '\1';
+	}
+	locationMask[width * height] = '\0';
+	char* sql2 = new char[width * height + 256];
+	sprintf(sql2, "INSERT INTO Location VALUES (1, 'start1', %d, %d, '%s');", width, height, locationMask); //CAST(X'%s' AS TEXT))
+	sqlite3_exec(db, sql2, NULL, NULL, NULL);
 	sqlite3_close(db);
+	delete locationMask;
+	delete sql2;
 
 	//Add game to list [and select it]
 	Universe::instance->gamesListModel->add(parent->gameName->getText());

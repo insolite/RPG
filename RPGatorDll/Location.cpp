@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Location.h"
 #include "Game.h"
-
+/*
 Location::Location(int _id)
 {
 	FILE *f;
@@ -37,9 +37,39 @@ Location::Location(int _id)
 	}
 	fclose(f);
 }
+*/
+
+Location::Location(std::map<std::string, std::string> strings, std::map<std::string, int> integers)
+{
+	int i, j;
+
+	id = integers["id"];
+	width = integers["width"];
+	height = integers["height"];
+	name = new char[strings["name"].length() + 1];
+	strcpy(name, strings["name"].c_str());
+
+	mask = new MapCell**[height];
+	for (i = 0; i < height; i++)
+	{
+		mask[i] = new MapCell*[width];
+		for (j = 0; j < width; j++)
+		{
+			//TODO:
+			//Warning! getMapCellById instead of fgetc(f) - 1
+			mask[i][j] = Game::instance->resources->mapCells[strings["mask"][height * i + j] - 1];
+		}
+	}
+}
 
 Location::~Location(void)
 {
+	delete name;
+	for (int i = 0; i < height; i++)
+		delete[] mask[i];
+	//delete[] mask; //TODO: array of array
+	//delete mask;
+	delete mask;
 }
 
 void Location::AddNPC(CurrentNPC* currentNPC)

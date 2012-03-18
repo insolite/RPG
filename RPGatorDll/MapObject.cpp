@@ -27,7 +27,7 @@ MapObject::MapObject(std::map<std::string, std::string> strings, std::map<std::s
 			j++;
 		}
 		tags[tagsCount - 1][j] = '\0';
-		printf("%s\n", tags[tagsCount - 1]);
+		//printf("%s\n", tags[tagsCount - 1]);
 		i += j + 1;
 	}
 }
@@ -35,4 +35,7 @@ MapObject::MapObject(std::map<std::string, std::string> strings, std::map<std::s
 MapObject::~MapObject(void)
 {
 	delete name;
+	for (int i = 0; i < tagsCount; i++)
+		delete tags[i];
+	delete tags;
 }

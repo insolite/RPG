@@ -7,9 +7,8 @@ class GameData
 public:
 	Location** locations;
 	int locationsCount;
-	sqlite3* db;
 
-	__declspec(dllexport) bool LocationsInit();
+	__declspec(dllexport) void LocationsInit();
 	__declspec(dllexport) void MapObjectsInit();
 
 	__declspec(dllexport) GameData(void);

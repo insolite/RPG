@@ -4,6 +4,9 @@
 
 Universe::Universe(void)
 {
+	char fontCharacters[256];
+	FILE* f;
+
 	screenWidth = 800;
 	screenHeight = 600;
 	fullscreen = false;
@@ -12,14 +15,33 @@ Universe::Universe(void)
 	screenHeight = 768;
 	fullscreen = true;
 	*/
-	cellSize = 64;
+	cellSize = 24;
+	cameraMoveZoneWidth = 24;
 	toolbarWidth = 192;
 	toolbarLeftMargin = 8;
+	brushMaskMinSize = 1;
+	brushMaskMaxSize = 10;
 	instance = this;
+
+	GraphicsInit();
+	
+	graphics = new gcn::OpenGLGraphics(screenWidth, screenHeight);
+	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
+
+	//Font init
+	f = fopen("editor/_font/char.txt", "rt");
+	if (!f)
+		return;
+	fgets(fontCharacters, 256, f);
+	fclose(f);
+	
+	gcn::Widget::setGlobalFont(new gcn::ImageFont("editor/_font/face.png", fontCharacters));
 }
 
 Universe::~Universe(void)
 {
+	delete graphics;
+	//TODO: delete image loader, font
 }
 
 int Universe::Pix2Index(int pos)
@@ -81,45 +103,27 @@ bool Universe::GraphicsInit()
 	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_BLEND);
 
-	
-
 	glMatrixMode(GL_MODELVIEW);
 	
-
-
 	return false;
 }
 
 void Universe::MenuGUIInit(gcn::SDLInput* &GUIInput)
 {
-	char fontCharacters[256];
-	FILE* f;
-
 	//Input init
 	GUIInput = new gcn::SDLInput();
 
-	//Font init
-	f = fopen("editor/_font/char.txt", "rt");
-	if (!f)
-		return;
-	fgets(fontCharacters, 256, f);
-	fclose(f);
-	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
-	gcn::ImageFont* mFontWhite = new gcn::ImageFont("editor/_font/face.png", fontCharacters);
-	gcn::Widget::setGlobalFont(mFontWhite);
-	
 	//Main container init
 	menuMainContainer = new gcn::Container();
 	menuMainContainer->setDimension(gcn::Rectangle(0, 0, screenWidth, screenHeight));
 	//menuMainContainer->setOpaque(false);
-
+	
 	//GUI init
-	menuGUI= new gcn::Gui();
-	graphics = new gcn::OpenGLGraphics(screenWidth, screenHeight);
+	menuGUI = new gcn::Gui();
 	menuGUI->setGraphics(graphics);
 	menuGUI->setInput(GUIInput);
 	menuGUI->setTop(menuMainContainer);
-
+	
 	//GUI building
 	
 	//Some graphical elements
@@ -132,21 +136,26 @@ void Universe::MenuGUIInit(gcn::SDLInput* &GUIInput)
 	gamesCount = ReadDir("game", games, true);
 	gamesListModel = new StringListModel();
 	for (int i = 0; i < gamesCount; i++)
+	{
 		gamesListModel->add(games[i]);
-	delete[] games;
+		delete games[i];
+	}
+	delete games;
+	
 	gamesListBox = new gcn::ListBox(gamesListModel);
 	gamesListBox->setSelected(0);
 	//TODO:
 	//Auto resize ListBox. adjustSize doesn't work for width. Sadly...
 	gamesListBox->setSize(512, 0);
 	gamesListBox->adjustSize();
+	
 	gamesListBoxScrollArea = new gcn::ScrollArea();
 	gamesListBoxScrollArea->setHorizontalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
 	gamesListBoxScrollArea->setVerticalScrollPolicy(gcn::ScrollArea::SHOW_AUTO);
 	gamesListBoxScrollArea->setContent(gamesListBox);
 	gamesListBoxScrollArea->setSize(256, 320);
 	menuMainContainer->add(gamesListBoxScrollArea, 256, 64);
-
+	
 	//New game window
 	newGameWindow = new NewGameWindow("New game");
 
@@ -200,14 +209,14 @@ void Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
 	//GUI building
 
 	//Floor control DropDown
-	FloorDropDown* floorsDropDown = new FloorDropDown();
+	floorsDropDown = new FloorDropDown();
 	floorsDropDown->add("outside");
 	floorsDropDown->add("first fl.");
 	floorsDropDown->setSelected(0);
 	toolbarContainer->add(floorsDropDown, toolbarLeftMargin, 16);
 
 	//Location control DropDown
-	LocationDropDown* locationsDropDown = new LocationDropDown();
+	locationsDropDown = new LocationDropDown();
 	for (int i = 0; i < game->data->locationsCount; i++)
 		locationsDropDown->add(game->data->locations[i]->name);
 	locationsDropDown->setSelected(0);
@@ -229,16 +238,13 @@ void Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
 	itemSelectWindow = new MapObjectSelectWindow("Item selection", (MapObject**)game->resources->items, game->resources->itemsCount, 3); //TODO: explicit convertion? Really? o_0
 	editorMainContainer->add(itemSelectWindow);
 	
-	int brushMaskMinSize = 1;
-	int brushMaskMaxSize = 10;
-
 	//Brush mask size slider
 	brushMaskSlider = new gcn::Slider(brushMaskMinSize - 0.5f, brushMaskMaxSize - 0.5f);
 	brushMaskSlider->setOrientation(gcn::Slider::HORIZONTAL);
 	brushMaskSlider->setSize(128, 12);
 	//brushMaskSlider->setStepLength(1); //Only for keyboard //Isn't needed due to line below
 	brushMaskSlider->setFocusable(false);
-	gcn::ActionListener* actionListener = new SliderActionListener();
+	actionListener = new SliderActionListener();
 	brushMaskSlider->addActionListener(actionListener);
 
 	//Brush mask size label
@@ -249,7 +255,7 @@ void Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
 	mapCellSelectTabContainer = new MapObjectSelectTabContainer(mapCellSelectWindow);
 	mapCellSelectTabContainer->add(brushMaskSlider, 36, 204);
 	mapCellSelectTabContainer->add(brushMaskSizeLabel, 4, 200);
-
+	
 	//Statics tab container (#2)
 	npcSelectTabContainer = new MapObjectSelectTabContainer(npcSelectWindow);
 
@@ -260,7 +266,7 @@ void Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
 	itemSelectTabContainer = new MapObjectSelectTabContainer(itemSelectWindow);
 
 	//MapObjects selection TabbedArea
-	gcn::TabbedArea* brushesTabbedArea = new gcn::TabbedArea();
+	brushesTabbedArea = new gcn::TabbedArea();
 	brushesTabbedArea->setSize(176, 256);
 	brushesTabbedArea->addTab("Cell", mapCellSelectTabContainer);
 	brushesTabbedArea->addTab("NPC", npcSelectTabContainer);
@@ -269,8 +275,24 @@ void Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
 	toolbarContainer->add(brushesTabbedArea, toolbarLeftMargin, 96);
 }
 
-void Universe::EditorGUIDestroy()
+void Universe::MenuGUIDestroy(gcn::SDLInput* GUIInput)
 {
+	delete GUIInput;
+	delete menuGUI;
+	delete menuMainContainer;
+	delete newGameButton;
+	delete loadGameButton;
+	delete deleteGameButton;
+	delete quitButton;
+	delete gamesListModel;
+	delete gamesListBox;
+	delete gamesListBoxScrollArea;
+	delete newGameWindow;
+}
+
+void Universe::EditorGUIDestroy(gcn::SDLInput* GUIInput)
+{
+	delete GUIInput;
 	delete editorGUI;
 	delete toolbarContainer;
 	delete editorMainContainer;
@@ -279,6 +301,11 @@ void Universe::EditorGUIDestroy()
 	delete npcSelectWindow;
 	delete staticSelectWindow;
 	delete itemSelectWindow;
+
+	delete floorsDropDown;
+	delete locationsDropDown;
+	delete actionListener;
+	delete brushesTabbedArea;
 
 	delete brushMaskSlider;
 	delete brushMaskSizeLabel;
@@ -313,16 +340,23 @@ void Universe::DrawMenu()
 
 void Universe::DrawScene()
 {
-	int i, j;
+	int i, j, drawWidth, drawHeight;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	glTranslated(-cameraX, -cameraY, 0); //Camera positioning
 	
-	//glBegin(GL_QUADS);
-	for (i = 0; i < currentLocation->height; i++)
+	drawWidth = Pix2Index(cameraX + screenWidth) + 1;
+	drawHeight = Pix2Index(cameraY + screenHeight) + 1;
+	if (drawWidth > currentLocation->width)
+		drawWidth = currentLocation->width;
+	if (drawHeight > currentLocation->height)
+		drawHeight = currentLocation->height;
+	//for (i = 0; i < currentLocation->height; i++)
+	for (i = cameraY / cellSize; i < drawHeight; i++)
 	{
-		for (j = 0; j < currentLocation->width; j++)
+		//for (j = 0; j < currentLocation->width; j++)
+		for (j = cameraX / cellSize; j < drawWidth; j++)
 		{
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
@@ -344,8 +378,7 @@ void Universe::DrawScene()
 			glEnd();
 		}
 	}
-	//glEnd();
-
+	
 	glBegin(GL_QUADS);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 		for (i = 0; i < currentBrushMask->width; i++)
@@ -362,10 +395,9 @@ void Universe::DrawScene()
 			}
 		}
 	glEnd();
-
+	
 	editorGUI->draw();
 
-	//glFlush();
 	SDL_GL_SwapBuffers();
 }
 
@@ -376,35 +408,34 @@ void Universe::SetLocation(Location* location)
 	currentLocation = location;
 }
 
-char* Universe::Menu()
+bool Universe::Menu(char* &gameName)
 {
 	SDL_Event event;
 	gcn::SDLInput* GUIInput;
 	char continueFlag;
 	
-	GraphicsInit();
 	MenuGUIInit(GUIInput);
-
+	
 	continueFlag = 1;
 	loadGameButton->continueFlag = &continueFlag;
 	quitButton->continueFlag = &continueFlag;
 	
 	int lastUpdate = SDL_GetTicks();
-
+	
 	while (continueFlag)
 	{
 		SDL_PumpEvents();
 		
 		while (SDL_PollEvent(&event))
 		{
-			GUIInput->pushInput(event); //((gcn::SDLInput*)(toolbar->getInput()))->pushInput(event); //This code doing the same without defined pointer to GUIInput, but looks too bad...
+			GUIInput->pushInput(event);
 			menuGUI->logic();
 		}
 
 		switch (event.type)
 		{
 			case SDL_QUIT:
-				return NULL;
+				return true;
 		}
 
 		if ((SDL_GetTicks() - lastUpdate) > 40) //14 for 60fps, 22 for 41fps, 40 for 24fps
@@ -415,10 +446,15 @@ char* Universe::Menu()
 		Sleep(1);
 
 		if (continueFlag == 2)
-			return NULL;
+			return true;
 	}
+	
+	gameName = new char[gamesListModel->getElementAt(gamesListBox->getSelected()).length() + 1];
+	strcpy(gameName, gamesListModel->getElementAt(gamesListBox->getSelected()).c_str());
+	
+	MenuGUIDestroy(GUIInput);
 
-	return (char*)gamesListModel->getElementAt(gamesListBox->getSelected()).c_str();
+	return false;
 }
 
 void Universe::Run(char* gameName)
@@ -430,15 +466,15 @@ void Universe::Run(char* gameName)
 	bool continueFlag;
 
 	game = new Game(gameName);
-	game->Init();
 	SetLocation(game->data->locations[0]);
+	
 	BrushesInit();
-
+	
 	CameraReset();
 	CursorReset();
 
 	EditorGUIInit(GUIInput);
-
+	
 	//TESTTESTTESTTESTTESTTEST
 	LoadTexture();
 
@@ -448,8 +484,9 @@ void Universe::Run(char* gameName)
 	continueFlag = true;
 	
 	keys = SDL_GetKeyState(NULL);
+	SDL_GetMouseState(&mouseX, &mouseY);
 	int lastUpdate = SDL_GetTicks();
-
+	
 	while (continueFlag)
 	{
 		SDL_PumpEvents();
@@ -466,44 +503,43 @@ void Universe::Run(char* gameName)
 				PaintMapCell();
 		}
 
-		//TODO: Put this inside the switch below
-		//EXIT
-		if (keys[SDLK_UP] && keys[SDLK_LEFT])
+		//CAMERA UP LEFT
+		if (keys[SDLK_UP] && keys[SDLK_LEFT] || mouseY < cameraMoveZoneWidth * 3 && mouseX < cameraMoveZoneWidth * 3)
 		{
 			CameraMove(-1, -1);
 		}
 		//CAMERA UP RIGHT
-		else if (keys[SDLK_UP] && keys[SDLK_RIGHT])
+		else if (keys[SDLK_UP] && keys[SDLK_RIGHT] || mouseY < cameraMoveZoneWidth * 3 && mouseX > (screenWidth - toolbarWidth - cameraMoveZoneWidth * 3) && mouseX < (screenWidth - toolbarWidth))
 		{
 			CameraMove(1, -1);
 		}
 		//CAMERA DOWN LEFT
-		else if (keys[SDLK_DOWN] && keys[SDLK_LEFT])
+		else if (keys[SDLK_DOWN] && keys[SDLK_LEFT] || mouseY > (screenHeight - cameraMoveZoneWidth * 3) && mouseX < cameraMoveZoneWidth * 3)
 		{
 			CameraMove(-1, 1);
 		}
 		//CAMERA DOWN RIGHT
-		else if (keys[SDLK_DOWN] && keys[SDLK_RIGHT])
+		else if (keys[SDLK_DOWN] && keys[SDLK_RIGHT] || mouseY > (screenHeight - cameraMoveZoneWidth * 3) && mouseX > (screenWidth - toolbarWidth - cameraMoveZoneWidth * 3) && mouseX < (screenWidth - toolbarWidth))
 		{
 			CameraMove(1, 1);
 		}
 		//CAMERA UP
-		else if (keys[SDLK_UP])
+		else if (keys[SDLK_UP] || mouseY < cameraMoveZoneWidth * 3 && mouseX < (screenWidth - toolbarWidth))
 		{
 			CameraMove(0, -1);
 		}
 		//CAMERA DOWN
-		else if (keys[SDLK_DOWN])
+		else if (keys[SDLK_DOWN] || mouseY > (screenHeight - cameraMoveZoneWidth * 3) && mouseX < (screenWidth - toolbarWidth))
 		{
 			CameraMove(0, 1);
 		}
 		//CAMERA LEFT
-		else if (keys[SDLK_LEFT])
+		else if (keys[SDLK_LEFT] || mouseX < cameraMoveZoneWidth * 3)
 		{
 			CameraMove(-1, 0);
 		}
 		//CAMERA RIGHT
-		else if (keys[SDLK_RIGHT])
+		else if (keys[SDLK_RIGHT] || mouseX > (screenWidth - toolbarWidth - cameraMoveZoneWidth * 3) && mouseX < (screenWidth - toolbarWidth))
 		{
 			CameraMove(1, 0);
 		}
@@ -539,8 +575,16 @@ void Universe::Run(char* gameName)
 		}
 		Sleep(1);
 	}
+	
+	EditorGUIDestroy(GUIInput);
 
-	EditorGUIDestroy();
+	for (int i = 0; i < brushesCount; i++)
+		delete brushMasks[i];
+	delete brushMasks;
+
+	//TEST
+	DeleteTexture();
+	
 	delete game;
 }
 
@@ -621,6 +665,8 @@ void Universe::PaintMapCell()
 
 bool Universe::LoadTexture()
 {
+	texture = new GLuint[1];
+
 	// Picture loading
 	AUX_RGBImageRec *texture1;
 	texture1 = auxDIBImageLoad("grass.bmp");
@@ -634,5 +680,14 @@ bool Universe::LoadTexture()
 
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
 	
+	delete texture1->data;
+	delete texture1;
+	
 	return true;
+}
+
+void Universe::DeleteTexture()
+{
+	glDeleteTextures(1, texture);
+	delete texture;
 }

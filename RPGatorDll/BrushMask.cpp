@@ -24,6 +24,7 @@ BrushMask::BrushMask(void)
 
 BrushMask::~BrushMask(void)
 {
-	delete[] data;
+	for (int i = 0; i < width; i++)
+		delete data[i];
 	delete data;
 }

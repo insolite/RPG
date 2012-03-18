@@ -12,7 +12,6 @@ public:
 	Static** statics;
 	Item** items;
 	//Player** players;
-	sqlite3* db;
 	
 	int mapCellsCount;
 	int npcsCount;

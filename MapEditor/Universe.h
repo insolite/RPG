@@ -24,10 +24,13 @@ public:
 	int screenWidth, screenHeight; //pixels
 	bool fullscreen;
 	int toolbarWidth; //pixels
+	int cameraMoveZoneWidth; //pixels
 	int toolbarLeftMargin; //pixels
 	int cellSize; //pixels
+	int brushMaskMinSize; //points
+	int brushMaskMaxSize; //points
 
-	GLuint texture[1];
+	GLuint* texture; //TEST
 
 	//CellProperty currentCellProperty;
 	BrushMask** brushMasks;
@@ -61,6 +64,11 @@ public:
 	gcn::Window* npcSelectWindow;
 	gcn::Window* staticSelectWindow;
 	gcn::Window* itemSelectWindow;
+	
+	FloorDropDown* floorsDropDown;
+	LocationDropDown* locationsDropDown;
+	gcn::ActionListener* actionListener;
+	gcn::TabbedArea* brushesTabbedArea;
 
 	gcn::Slider* brushMaskSlider;
 	gcn::Label* brushMaskSizeLabel;
@@ -70,16 +78,18 @@ public:
 	gcn::Container* staticSelectTabContainer;
 	gcn::Container* itemSelectTabContainer;
 
-	bool LoadTexture();
+	bool LoadTexture(); //TEST
+	void DeleteTexture(); //TEST
 	bool GraphicsInit();
-	void EditorGUIInit(gcn::SDLInput* &GUIInput);
 	void MenuGUIInit(gcn::SDLInput* &GUIInput);
-	void EditorGUIDestroy();
+	void EditorGUIInit(gcn::SDLInput* &GUIInput);
+	void MenuGUIDestroy(gcn::SDLInput* GUIInput);
+	void EditorGUIDestroy(gcn::SDLInput* GUIInput);
 	bool BrushesInit();
 	void SetLocation(Location* location);
 	void DrawMenu();
 	void DrawScene();
-	char* Menu();
+	bool Menu(char* &gameName);
 	void Run(char* gameName);
 	void CameraMove(int x, int y);
 	void CameraReset();

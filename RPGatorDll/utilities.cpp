@@ -32,6 +32,7 @@ extern "C" __declspec(dllexport) int ReadDir(char* path, char** &elements, bool 
 	}
 	FindClose(elementHandle);
 	count = elementsV.size();
+	
 	elements = new char*[count];
 	for (i = 0; i < count; i++)
 	{

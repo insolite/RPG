@@ -20,6 +20,7 @@ public:
 	gcn::ScrollArea* listBoxScrollArea;
 	gcn::Icon* npcPreviewIcon;
 	gcn::Button* okButton;
+	gcn::Button* closeButton;
 
 	MapObjectSelectWindow(std::string caption, MapObject** _mapObjects, int mapObjectsCount, int brushIndex);
 	~MapObjectSelectWindow(void);

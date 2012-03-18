@@ -19,7 +19,7 @@ MapObjectSelectTabContainer::MapObjectSelectTabContainer(gcn::Window* window)
 	lastMapCellsListBoxScrollArea->setSize(256, 160);
 	
 	//MapCells tab container (#1)
-	ToggleWindowVisibilityButton* mapCellSelectButton = new ToggleWindowVisibilityButton("Select", window);
+	mapCellSelectButton = new ToggleWindowVisibilityButton("Select", window);
 	this->add(mapCellSelectButton, 4, 4);
 	this->add(lastMapCellsListBoxScrollArea, 4, 36);
 	this->setSize(176, 256);
@@ -28,4 +28,8 @@ MapObjectSelectTabContainer::MapObjectSelectTabContainer(gcn::Window* window)
 
 MapObjectSelectTabContainer::~MapObjectSelectTabContainer(void)
 {
+	delete lastMapCellsListModel;
+	delete lastMapCellsListBox;
+	delete lastMapCellsListBoxScrollArea;
+	delete mapCellSelectButton;
 }
