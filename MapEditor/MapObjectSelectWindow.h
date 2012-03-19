@@ -19,6 +19,7 @@ public:
 	gcn::ListBox* listBox;
 	gcn::ScrollArea* listBoxScrollArea;
 	gcn::Icon* npcPreviewIcon;
+	gcn::Image* npcPreviewImage;
 	gcn::Button* okButton;
 	gcn::Button* closeButton;
 

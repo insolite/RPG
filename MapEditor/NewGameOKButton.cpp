@@ -14,7 +14,7 @@ NewGameOKButton::~NewGameOKButton(void)
 void NewGameOKButton::mouseClicked(gcn::MouseEvent &mouseEvent)
 {
 	char path[262 + 64];
-	char sql[256];
+	char* sql;
 	sqlite3* db;
 	FILE* f;
 	std::string query;
@@ -62,12 +62,12 @@ void NewGameOKButton::mouseClicked(gcn::MouseEvent &mouseEvent)
 		locationMask[i] = '\1';
 	}
 	locationMask[width * height] = '\0';
-	char* sql2 = new char[width * height + 256];
-	sprintf(sql2, "INSERT INTO Location VALUES (1, 'start1', %d, %d, '%s');", width, height, locationMask); //CAST(X'%s' AS TEXT))
-	sqlite3_exec(db, sql2, NULL, NULL, NULL);
+	sql = new char[width * height + 256];
+	sprintf(sql, "INSERT INTO Location VALUES (1, 'start1', %d, %d, '%s');", width, height, locationMask); //CAST(X'%s' AS TEXT))
+	sqlite3_exec(db, sql, NULL, NULL, NULL);
 	sqlite3_close(db);
 	delete locationMask;
-	delete sql2;
+	delete sql;
 
 	//Add game to list [and select it]
 	Universe::instance->gamesListModel->add(parent->gameName->getText());

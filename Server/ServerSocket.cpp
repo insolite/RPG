@@ -11,8 +11,6 @@ ServerSocket::ServerSocket(char* port)
 	struct addrinfo *result = NULL;
 	struct addrinfo hints;
 
-	int iSendResult;
-    
 	u_long iMode = 1;
 
 	// Initialize Winsock
