@@ -27,7 +27,6 @@ _ReSharper*/
 *.opensdf
 *.sdf
 *.tlog
-*.sln
 *.manifest
 *.embed.manifest.res
 *.lastbuildstate
