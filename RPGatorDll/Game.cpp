@@ -12,6 +12,7 @@ Game::Game(char* _name)
 	//if (sqlite3_open(path, &db) != SQLITE_OK)
 	{
 		printf("Couldn't load game \"%s\" db\n", name);
+		instance = NULL;
 		return;
 	}
 

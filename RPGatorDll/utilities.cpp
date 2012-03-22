@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "utilities.h"
 
 extern "C" __declspec(dllexport) int ReadDir(char* path, char** &elements, bool directoriesOnly)
 	/************************************************************************/
@@ -43,6 +44,78 @@ extern "C" __declspec(dllexport) int ReadDir(char* path, char** &elements, bool 
 	elementsV.clear();
 	return count;
 }
+
+extern "C" __declspec(dllexport) void SetPacketLength(char* packet, int length)
+{
+	*((short int*)packet) = length;
+}
+
+extern "C" __declspec(dllexport) int GetPacketLength(char* packet)
+{
+	return *((short int*)packet);
+}
+
+extern "C" __declspec(dllexport) void IncreasePacketLength(char* packet, int length)
+{
+	SetPacketLength(packet, GetPacketLength(packet) + length);
+}
+
+extern "C" __declspec(dllexport) void PacketAddString(char* packet, char* str)
+{
+	strcpy(packet + GetPacketLength(packet) + 2, str);
+	IncreasePacketLength(packet, strlen(str) + 1);
+}
+
+extern "C" __declspec(dllexport) void SetPacketType(char* packet, char type)
+{
+	packet[2] = type;
+}
+
+extern "C" __declspec(dllexport) int SqliteGetRow(sqlite3* db, char* query, std::map<std::string, std::string> &strings, std::map<std::string, int> &integers)
+{
+	int result, i, columnsCount;
+	sqlite3_stmt *stmt;
+	std::string columnName;
+
+	if (sqlite3_prepare(db, query, -1, &stmt, NULL) != SQLITE_OK)
+	{
+		printf("Couldn't load execute query '%s'\n", query);
+		return -1;
+	}
+	
+	while ((result = sqlite3_step(stmt)) != SQLITE_DONE)
+	{
+		if (result == SQLITE_ROW)
+		{
+			columnsCount = sqlite3_column_count(stmt);
+			for (i = 0; i < columnsCount; i++)
+			{
+				columnName = sqlite3_column_name(stmt, i);
+				switch (sqlite3_column_type(stmt, i))
+				{
+					case SQLITE_TEXT:
+						strings[columnName] = (std::string)(char*)sqlite3_column_text(stmt, i);
+						break;
+					case SQLITE_INTEGER:
+						integers[columnName] = sqlite3_column_int(stmt, i);
+						break;
+				}
+			}
+		}
+		else
+		{
+			printf("SQLite error. Code: %d\n", result);
+			sqlite3_finalize(stmt);
+			return -2;
+		}
+	}
+
+	sqlite3_finalize(stmt);
+	return 1;
+}
+
+
+
 /*
 int Str2Int(char *str)
 {

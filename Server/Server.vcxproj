@@ -75,6 +75,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\RPGator\ConnectSocket.h" />
     <ClInclude Include="ServerClientSocket.h" />
     <ClInclude Include="ServerSocket.h" />
     <ClInclude Include="stdafx.h" />

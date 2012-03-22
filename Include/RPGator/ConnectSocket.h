@@ -6,7 +6,7 @@ public:
 	//WSADATA wsaData;
 	SOCKET connectSocket;
 
-	bool Send(char *packet, int length);
+	bool Send(char *packet);
 	int Receive(char *packet);
 
 	ConnectSocket(void);

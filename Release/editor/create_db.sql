@@ -30,6 +30,22 @@ CREATE TABLE StaticObject (
 	tags VARCHAR(1024)
 	);
 
+CREATE TABLE `Character` (
+	id INTEGER PRIMARY KEY,
+	name VARCHAR(64),
+	tags VARCHAR(1024)
+);
+
+CREATE TABLE Quest (
+	id INTEGER PRIMARY KEY,
+	name VARCHAR(64)
+);
+
+CREATE TABLE Skill (
+	id INTEGER PRIMARY KEY,
+	name VARCHAR(64)
+);
+
 /*=============Game Data=============*/
 
 CREATE TABLE Location (
@@ -39,23 +55,46 @@ CREATE TABLE Location (
 	height INTEGER,
 	mask BLOB
 	);
-
 /*
 CREATE TABLE CurrentMapCell (
 	id INTEGER PRIMARY KEY
 	);
 */
 CREATE TABLE CurrentNPC (
-	id INTEGER PRIMARY KEY
+	id INTEGER PRIMARY KEY,
+	npcId INTEGER
 	);
 
 CREATE TABLE CurrentItem (
-	id INTEGER PRIMARY KEY
+	id INTEGER PRIMARY KEY,
+	itemId INTEGER
 	);
 
 CREATE TABLE CurrentStaticObject (
-	id INTEGER PRIMARY KEY
+	id INTEGER PRIMARY KEY,
+	staticId INTEGER
 	);
+
+CREATE TABLE `CurrentCharacter` (
+	id INTEGER PRIMARY KEY,
+	characterId INTEGER,
+	login VARCHAR(32),
+	password VARCHAR(32),
+	locationId INTEGER
+);
+
+CREATE TABLE CurrentQuest (
+	id INTEGER PRIMARY KEY,
+	questId INTEGER,
+	characterId INTEGER,
+	`state` INTEGER
+);
+
+CREATE TABLE CurrentSkill (
+	id INTEGER PRIMARY KEY,
+	skillId INTEGER,
+	characterId INTEGER
+);
 
 /*=============Init data=============*/
 
@@ -67,3 +106,6 @@ INSERT INTO NPC VALUES (1, 'Test NPC', '');
 INSERT INTO Item VALUES (1, 'Test Item', '');
 
 INSERT INTO StaticObject VALUES (1, 'Test StaticObject', '');
+
+INSERT INTO `Character` VALUES (1, 'Dwarf', '');
+INSERT INTO CurrentCharacter VALUES (1, 1, 'admin', '1234', 1);

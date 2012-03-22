@@ -5,6 +5,6 @@
 class CurrentNPC : CurrentMapObject<NPC>
 {
 public:
-	__declspec(dllexport) CurrentNPC(NPC* base, int x, int y);
+	__declspec(dllexport) CurrentNPC(std::map<std::string, std::string> strings, std::map<std::string, int> integers);
 	__declspec(dllexport) ~CurrentNPC(void);
 };

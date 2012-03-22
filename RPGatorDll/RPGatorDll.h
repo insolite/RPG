@@ -4,6 +4,6 @@
 #include "Item.h"
 #include "Npc.h"
 #include "Static.h"
-#include "Player.h"
+#include "Character.h"
 #include "Game.h"
 #include "utilities.h"

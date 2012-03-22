@@ -15,7 +15,7 @@ Universe::~Universe(void)
 void Universe::Run()
 {
 	bool continueFlag;
-	char inPacket[256];
+	char inPacket[256], outPacket[256];
 	int packetLength;
 	int ping;
 
@@ -33,17 +33,24 @@ void Universe::Run()
 		packetLength = connectSocket->Receive(inPacket);
 		if (packetLength > 0)
 		{
-			//printf("Packet received: %s; Ping: %d\n", inPacket, SDL_GetTicks() - ping);
+			printf("Packet received: '%s'; Length: %d; Ping: %d;\n", inPacket + 2, GetPacketLength(inPacket), SDL_GetTicks() - ping);
 			ping = SDL_GetTicks();
 		}
-		else
+		else if (packetLength < -1)
 		{
-			printf("Disconnected from the server: Server shutdown\n");
-			continueFlag = false;
+			printf("Warning! Wrong packet from server. Error code: %d\n", packetLength);
+			//continueFlag = false;
 		}
 
 		//Drawing, events, etc.
 		//TODO: correct disconnect in events
+		SetPacketLength(outPacket, 1);
+		SetPacketType(outPacket, 0);
+		PacketAddString(outPacket, "admin");
+		PacketAddString(outPacket, "MegaPassword");
+		printf("sl: %d\n", GetPacketLength(outPacket));
+		connectSocket->Send(outPacket);
+		system("pause");
 	}
 
 	delete connectSocket;

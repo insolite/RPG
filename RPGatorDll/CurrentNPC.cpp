@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "CurrentNPC.h"
 
-CurrentNPC::CurrentNPC(NPC* base, int x, int y) : CurrentMapObject<NPC>::CurrentMapObject(base, x, y)
+CurrentNPC::CurrentNPC(std::map<std::string, std::string> strings, std::map<std::string, int> integers) : CurrentMapObject<NPC>::CurrentMapObject(strings, integers)
 {
 }
 

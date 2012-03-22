@@ -44,17 +44,17 @@ Universe::~Universe(void)
 	//TODO: delete image loader, font
 }
 
-int Universe::Pix2Index(int pos)
+inline int Universe::Pix2Index(int pos)
 {
 	return pos / cellSize;
 }
 
-int Universe::Index2Pix(int pos)
+inline int Universe::Index2Pix(int pos)
 {
 	return pos * cellSize;
 }
 
-int Universe::PixRound(int pos)
+inline int Universe::PixRound(int pos)
 {
 	return Index2Pix(Pix2Index(pos));
 }

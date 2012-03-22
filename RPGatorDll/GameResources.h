@@ -2,7 +2,7 @@
 #include "MapCell.h"
 #include "NPC.h"
 #include "Static.h"
-#include "Player.h"
+#include "Character.h"
 
 class GameResources
 {

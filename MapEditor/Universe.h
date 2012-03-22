@@ -96,9 +96,9 @@ public:
 	void CursorReset();
 	void PaintMapCell();
 	
-	int Pix2Index(int pos);
-	int Index2Pix(int pos);
-	int PixRound(int pos);
+	inline int Pix2Index(int pos);
+	inline int Index2Pix(int pos);
+	inline int PixRound(int pos);
 	
 	Universe(void);
 	~Universe(void);

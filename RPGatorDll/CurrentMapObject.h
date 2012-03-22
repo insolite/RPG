@@ -5,19 +5,18 @@ template<class T> //T inherits MapObject
 class CurrentMapObject
 {
 public:
-	int objectId;
-	Sprite* sprite;
+	int id; //objectId
 	int x; //in "our" coordinates, not in pixels
 	int y; //in "our" coordinates, not in pixels
 	T* base; //pointer to NPC, Static, or Item
-
-	__declspec(dllexport) CurrentMapObject(T* _base, int _x, int _y)
+	Sprite* sprite;
+	
+	__declspec(dllexport) CurrentMapObject(std::map<std::string, std::string> strings, std::map<std::string, int> integers)
 	{
-		base = _base;
+		id = integers["id"];
+		//x = integers["x"];
+		//y = integers["y"];
 		//sprite = new Sprite(base->SpriteBase);
-		x = _x;
-		y = _y;
-		//TODO: generate unique objectId
 	}
 
 	__declspec(dllexport) ~CurrentMapObject(void)

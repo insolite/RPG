@@ -60,6 +60,9 @@ Location::Location(std::map<std::string, std::string> strings, std::map<std::str
 			mask[i][j] = Game::instance->resources->mapCells[strings["mask"][height * i + j] - 1];
 		}
 	}
+
+	currentCharacters = NULL;
+	currentCharactersCount = 0;
 }
 
 Location::~Location(void)
@@ -76,4 +79,13 @@ void Location::AddNPC(CurrentNPC* currentNPC)
 {
 	//Adds NPC to array currentNPCs
 	//Adds record to GameData db (Universe::instance->game->data->db)
+}
+
+bool Location::AddCurrentCharacter(CurrentCharacter* currentCharacter)
+{
+	currentCharactersCount++;
+	currentCharacters = (CurrentCharacter**)realloc(currentCharacters, currentCharactersCount * sizeof(CurrentCharacter));
+	currentCharacters[currentCharactersCount - 1] = currentCharacter;
+
+	return false;
 }

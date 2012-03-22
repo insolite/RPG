@@ -78,6 +78,7 @@
     <ClInclude Include="BrushMask.h" />
     <ClInclude Include="CurrentMapObject.h" />
     <ClInclude Include="CurrentNPC.h" />
+    <ClInclude Include="CurrentCharacter.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="GameResources.h" />
@@ -86,7 +87,7 @@
     <ClInclude Include="MapCell.h" />
     <ClInclude Include="MapObject.h" />
     <ClInclude Include="NPC.h" />
-    <ClInclude Include="Player.h" />
+    <ClInclude Include="Character.h" />
     <ClInclude Include="RPGatorDll.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Static.h" />
@@ -99,6 +100,7 @@
     <ClCompile Include="BrushMask.cpp" />
     <ClCompile Include="CurrentMapObject.cpp" />
     <ClCompile Include="CurrentNPC.cpp" />
+    <ClCompile Include="CurrentCharacter.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameData.cpp" />
     <ClCompile Include="GameResources.cpp" />
@@ -107,7 +109,7 @@
     <ClCompile Include="MapCell.cpp" />
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="NPC.cpp" />
-    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Static.cpp" />
     <ClCompile Include="stdafx.cpp" />
