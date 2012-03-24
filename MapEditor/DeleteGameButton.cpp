@@ -13,9 +13,13 @@ DeleteGameButton::~DeleteGameButton(void)
 
 void DeleteGameButton::mouseClicked(gcn::MouseEvent& mouseEvent)
 {
-	char path[262];
+	if (!(gamesListBox->getSelected() >= gamesListBox->getListModel()->getNumberOfElements()))
+	{
+		char path[262];
 
-	sprintf(path, "game/%s", ((StringListModel*)gamesListBox->getListModel())->getElementAt(gamesListBox->getSelected()).c_str());
-	//if (RemoveDirectory(path)) //TODO: use an multiplatform funciton. RemoveDirectory is for Windows
+		sprintf(path, "game/%s", ((StringListModel*)gamesListBox->getListModel())->getElementAt(gamesListBox->getSelected()).c_str());
+		ClearDir(path);
+		RemoveDirectory(path);
 		((StringListModel*)gamesListBox->getListModel())->remove(gamesListBox->getSelected());
+	}
 }

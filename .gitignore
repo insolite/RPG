@@ -33,3 +33,10 @@ _ReSharper*/
 *.embed.manifest.res
 *.lastbuildstate
 ipch/
+
+Release/Client.exp
+Release/Client.lib
+Release/MapEditor.exp
+Release/MapEditor.lib
+Release/Server.exp
+Release/Server.lib

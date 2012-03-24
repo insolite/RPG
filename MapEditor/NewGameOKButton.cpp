@@ -21,6 +21,8 @@ void NewGameOKButton::mouseClicked(gcn::MouseEvent &mouseEvent)
 	char tmp[1024];
 	int i, width, height;
 
+	
+
 	NewGameWindow* parent = (NewGameWindow*)this->getParent();
 	sprintf(path, "game/%s", parent->gameName->getText().c_str());
 	CreateDirectory(path, NULL);

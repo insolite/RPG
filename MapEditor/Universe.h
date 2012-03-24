@@ -30,6 +30,10 @@ public:
 	int brushMaskMinSize; //points
 	int brushMaskMaxSize; //points
 
+	bool** brushMask;
+	int brushRadius;
+
+
 	GLuint* texture; //TEST
 
 	//CellProperty currentCellProperty;
@@ -78,6 +82,12 @@ public:
 	gcn::Container* staticSelectTabContainer;
 	gcn::Container* itemSelectTabContainer;
 
+
+	void CreateBrushMask(int r);
+	void DeleteBrushMask();
+	void PrintBrushMask();
+
+
 	bool LoadTexture(); //TEST
 	void DeleteTexture(); //TEST
 	bool GraphicsInit();
@@ -96,9 +106,9 @@ public:
 	void CursorReset();
 	void PaintMapCell();
 	
-	inline int Pix2Index(int pos);
-	inline int Index2Pix(int pos);
-	inline int PixRound(int pos);
+	int Pix2Index(int pos);
+	int Index2Pix(int pos);
+	int PixRound(int pos);
 	
 	Universe(void);
 	~Universe(void);
