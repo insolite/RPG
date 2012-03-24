@@ -11,28 +11,47 @@ ConnectSocket::~ConnectSocket(void)
 
 int ConnectSocket::Receive(char *packet)
 {
-	int length;
+	int iResult;
 
-	length = recv(connectSocket, packet, 2, 0);
-	if (length < 2)
+	iResult = recv(connectSocket, packet, 2, 0);
+	if (iResult < 0)
 	{
-		return -1;
+		iResult = WSAGetLastError();
+		if (iResult != WSAEWOULDBLOCK && iResult != 0)
+		{
+			printf("Socket error: %d\n", iResult);
+			return -1;
+		}
+		return 0;
 	}
-
-	if (*((short int*)packet) > 254)
+	if (iResult < 2)
+	{
 		return -2;
-
-	length = recv(connectSocket, packet + 2, *((short int*)packet), 0);
-	if (length != *((short int*)packet))
-	{
-		printf("l: %d pl: %d\n", length, *((short int*)packet));
-		return -3;
 	}
 
-	return length;
+	if (*((short int*)packet) > 254 || *((short int*)packet) < 1)
+		return -3;
+
+	iResult = recv(connectSocket, packet + 2, *((short int*)packet), 0);
+	if (iResult < 0)
+	{
+		iResult = WSAGetLastError();
+		if (iResult != WSAEWOULDBLOCK && iResult != 0)
+		{
+			printf("Socket error: %d\n", iResult);
+			return -1;
+		}
+		return 0;
+	}
+	if (iResult != *((short int*)packet))
+	{
+		return -4;
+	}
+
+	return iResult;
 }
 
-bool ConnectSocket::Send(char *packet)
+bool ConnectSocket::Send(char *packet) //asdas
 {
 	return send(connectSocket, packet, *((short int*)packet) + 2, 0) == SOCKET_ERROR;
 }
