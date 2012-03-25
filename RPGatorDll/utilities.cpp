@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "utilities.h"
 
-extern "C" __declspec(dllexport) int ReadDir(char* path, char** &elements, bool directoriesOnly)
+extern "C" __declspec(dllexport) int ReadDir(const char* path, char** &elements, bool directoriesOnly)
 	/************************************************************************/
 	/* Creates array of filenames which are in directory                    */
 	/* path: directory to analyze. "dir1/.../dir2" (no '/' in the end)      */
@@ -44,6 +44,38 @@ extern "C" __declspec(dllexport) int ReadDir(char* path, char** &elements, bool 
 	elementsV.clear();
 	return count;
 }
+
+extern "C" __declspec(dllexport) void ClearDir(const char* path)
+{
+	char** paths;
+	int i;
+
+	int numOfDirs = ReadDir(path, paths, true);
+
+	if (numOfDirs != 0)
+	{
+		for (i = 0; i < numOfDirs; i++)
+		{
+			ClearDir( ((std::string)path + "/" + (std::string)paths[i]).c_str() );
+			printf("Deleting directory: %s\n", paths[i]);
+			RemoveDirectory(((std::string)path + "/" + (std::string)paths[i]).c_str());
+			delete paths[i];
+		}
+	}
+
+	delete paths;
+	int numOfFiles = ReadDir(path, paths, false);
+
+	if (numOfFiles != 0)
+	{
+		for (i = 0; i < numOfFiles; i++)
+		{
+			printf("Deleting file: %s\n",paths[i]);
+			DeleteFile(((std::string)path + "/" + (std::string)paths[i]).c_str());
+		}
+	}
+}
+
 
 extern "C" __declspec(dllexport) void SetPacketLength(char* packet, int length)
 {

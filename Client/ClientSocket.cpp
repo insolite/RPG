@@ -1,15 +1,15 @@
 #include "StdAfx.h"
 #include "ClientSocket.h"
 
-//Source code from http://msdn.microsoft.com/en-us/library/windows/desktop/ms737591(v=vs.85).aspx
-
 ClientSocket::ClientSocket(char *serv, char *port)
-{
+{//Source code from http://msdn.microsoft.com/en-us/library/windows/desktop/ms737591(v=vs.85).aspx
 	WSADATA wsaData;
 	struct addrinfo *result = NULL,
 					*ptr = NULL,
 					hints;
 	int iResult;
+
+	u_long iMode = 1;
     
 	// Initialize Winsock
 	iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -64,10 +64,13 @@ ClientSocket::ClientSocket(char *serv, char *port)
 		WSACleanup();
 		//return;
 	}
+
+	//Setting socket as non-blocking
+	ioctlsocket(connectSocket, FIONBIO, &iMode);
 }
 
 ClientSocket::~ClientSocket(void)
-{
+{//Source code from http://msdn.microsoft.com/en-us/library/windows/desktop/ms737591(v=vs.85).aspx
 	int iResult;
 	char inPacket[256];
 

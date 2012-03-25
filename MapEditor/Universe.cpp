@@ -46,17 +46,17 @@ Universe::~Universe(void)
 	//TODO: delete image loader, font
 }
 
-inline int Universe::Pix2Index(int pos)
+int Universe::Pix2Index(int pos)
 {
 	return pos / cellSize;
 }
 
-inline int Universe::Index2Pix(int pos)
+int Universe::Index2Pix(int pos)
 {
 	return pos * cellSize;
 }
 
-inline int Universe::PixRound(int pos)
+int Universe::PixRound(int pos)
 {
 	return Index2Pix(Pix2Index(pos));
 }
@@ -398,16 +398,16 @@ void Universe::DrawScene()
 	/*
 	glBegin(GL_QUADS);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-		for (i = 0; i < currentBrushMask->width; i++)
+		for (i = 0; i < 2 * brushRadius + 1; i++)
 		{
-			for (j = 0; j < currentBrushMask->width; j++)
+			for (j = 0; j < 2 * brushRadius + 1; j++)
 			{
-				if (currentBrushMask->data[i][j])
+				if (brushMask[i][j])
 				{
-					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j), Index2Pix(cursorY - currentBrushMask->width/2 + i));
-					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j) + cellSize, Index2Pix(cursorY - currentBrushMask->width/2 + i));
-					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j) + cellSize, Index2Pix(cursorY - currentBrushMask->width/2 + i) + cellSize);
-					glVertex2d(Index2Pix(cursorX - currentBrushMask->width/2 + j), Index2Pix(cursorY - currentBrushMask->width/2 + i) + cellSize);
+					glVertex2d(Index2Pix(cursorX - brushRadius + j), Index2Pix(cursorY - brushRadius + i));
+					glVertex2d(Index2Pix(cursorX - brushRadius + j) + cellSize, Index2Pix(cursorY - brushRadius + i));
+					glVertex2d(Index2Pix(cursorX - brushRadius + j) + cellSize, Index2Pix(cursorY - brushRadius + i) + cellSize);
+					glVertex2d(Index2Pix(cursorX - brushRadius + j), Index2Pix(cursorY - brushRadius + i) + cellSize);
 				}
 			}
 		}
@@ -493,6 +493,8 @@ void Universe::Run(char* gameName)
 
 	EditorGUIInit(GUIInput);
 	
+	CreateBrushMask(brushMaskSlider->getValue());
+
 	//TESTTESTTESTTESTTESTTEST
 	LoadTexture();
 
@@ -662,6 +664,59 @@ bool Universe::BrushesInit()
 	return false;
 }
 
+void Universe::CreateBrushMask(int r)
+{
+	brushRadius = r;
+
+	int y,i,j;
+     
+	brushMask = new bool*[brushRadius * 2 + 1];
+     
+	for (i=0; i < 2 * brushRadius + 1; i++)
+	{
+		brushMask[i] = new bool[2 * brushRadius + 1];
+	}
+     
+	for (i = 0; i < 2 * brushRadius + 1; i++)
+		for (j = 0; j < 2 * brushRadius + 1; j++)
+			brushMask[i][j] = false;
+     
+	for (i = 0; i <= brushRadius; i++)
+	{
+		y = sqrt((double)(brushRadius * brushRadius - i * i));
+         
+		for (j = brushRadius - y; j <= brushRadius + y; j++)
+		{
+			brushMask[j][i + brushRadius] = true;
+			brushMask[j][(int)abs(i - brushRadius)] = true;   
+		}
+	}
+}
+
+void Universe::PrintBrushMask()
+{
+	int i,j;
+
+	for (i = 0; i < 2 * brushRadius + 1; i++)
+	{
+		for (j = 0; j < 2 * brushRadius + 1; j++)
+			printf("%3d", brushMask[i][j]);
+	
+		printf("\n");
+	}
+
+	printf("|-------------------------------------------|\n");
+}
+
+
+void Universe::DeleteBrushMask()
+{
+	for (int i = 0; i < brushRadius * 2 + 1; i++)
+		delete brushMask[i];
+
+	delete brushMask;
+}
+
 void Universe::PaintMapCell()
 {
 	int i, j;
@@ -669,16 +724,16 @@ void Universe::PaintMapCell()
 	
 	pBrush = (MapCell*)brush[brushIndex];
 	
-	for (i = 0; i < currentBrushMask->width; i++)
+	for (i = 0; i < brushRadius * 2 + 1; i++)
 	{
-		for (j = 0; j < currentBrushMask->width; j++)
+		for (j = 0; j < brushRadius * 2 + 1; j++)
 		{
-			if ((cursorX - currentBrushMask->width/2 + j) >= 0 && 
-				(cursorY - currentBrushMask->width/2 + i) >= 0 && 
-				(cursorX - currentBrushMask->width/2 + j) < currentLocation->width && 
-				(cursorY - currentBrushMask->width/2 + i) < currentLocation->height && 
-				currentBrushMask->data[i][j])
-				currentLocation->mask[cursorY - currentBrushMask->width/2 + i][cursorX - currentBrushMask->width/2 + j] = pBrush;
+			if ((brushMask[i][j]) &&
+				(cursorX - brushRadius + j) >= 0 && 
+				(cursorY - brushRadius + i) >= 0 && 
+				(cursorX - brushRadius + j) < currentLocation->width && 
+				(cursorY - brushRadius + i) < currentLocation->height)
+				currentLocation->mask[cursorY - brushRadius + i][cursorX - brushRadius + j] = pBrush;
 		}
 	}
 	/*

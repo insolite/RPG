@@ -1,15 +1,14 @@
 #include "StdAfx.h"
 #include "ServerClientSocket.h"
 
-//Source code from http://msdn.microsoft.com/en-us/library/windows/desktop/ms737593(v=vs.85).aspx
-
 ServerClientSocket::ServerClientSocket(SOCKET& _connectSocket)
 {
 	connectSocket = _connectSocket;
+	character = NULL;
 }
 
 ServerClientSocket::~ServerClientSocket(void)
-{
+{//Source code from http://msdn.microsoft.com/en-us/library/windows/desktop/ms737593(v=vs.85).aspx
 	int iResult;
 
 	iResult = shutdown(connectSocket, SD_SEND);

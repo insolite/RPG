@@ -1,10 +1,8 @@
 #include "StdAfx.h"
 #include "ServerSocket.h"
 
-//Source code from http://msdn.microsoft.com/en-us/library/windows/desktop/ms737593(v=vs.85).aspx
-
 ServerSocket::ServerSocket(char* port)
-{
+{//Source code from http://msdn.microsoft.com/en-us/library/windows/desktop/ms737593(v=vs.85).aspx
 	WSADATA wsaData;
 	int iResult;
 
@@ -75,7 +73,7 @@ ServerSocket::ServerSocket(char* port)
 }
 
 ServerSocket::~ServerSocket(void)
-{
+{//Source code from http://msdn.microsoft.com/en-us/library/windows/desktop/ms737593(v=vs.85).aspx
 	closesocket(connectSocket);
 	WSACleanup();
 }

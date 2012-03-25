@@ -1,3 +1,10 @@
+enum Packet
+{
+	LogIn = 0,
+	LogOut
+};
+
+
 #include "BrushMask.h"
 #include "Location.h"
 #include "MapObject.h"

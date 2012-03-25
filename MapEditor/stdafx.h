@@ -5,15 +5,17 @@
 
 #pragma once
 
-//Include
+// TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы
 
 #include "targetver.h"
-
 #include <stdio.h>
 #include <windows.h>
 #include <vector>
 #include <map>
 #include <string>
+#include <math.h>
+
+//Include
 
 #include "../Include/gl/GL.h"
 #include "../Include/gl/GLU.h"
@@ -33,7 +35,6 @@
 //Lib
 
 #pragma comment(lib, "kernel32.lib")
-
 #pragma comment(lib, "../Lib/opengl32.lib")
 #pragma comment(lib, "../Lib/glu32.lib")
 #pragma comment(lib, "../Lib/GLAUX.lib")

@@ -1,6 +1,7 @@
 #pragma once
 
-extern "C" __declspec(dllexport) int ReadDir(char* path, char** &elements, bool directoriesOnly);
+extern "C" __declspec(dllexport) int ReadDir(const char* path, char** &elements, bool directoriesOnly);
+extern "C" __declspec(dllexport) void ClearDir(const char* path);
 extern "C" __declspec(dllexport) void SetPacketLength(char* packet, int length);
 extern "C" __declspec(dllexport) int GetPacketLength(char* packet);
 extern "C" __declspec(dllexport) void IncreasePacketLength(char* packet, int length);
