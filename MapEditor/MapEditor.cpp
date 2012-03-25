@@ -11,11 +11,10 @@ int main(int argc, char* argv[])
 
 	universe = new Universe();
 
-	while (!universe->Menu(gameName))
-	{
-		universe->Run(gameName);
-		delete gameName;
-	}
+	
+		universe->Run("testgame");
+		//delete gameName;
+
 
 	return 0;
 }

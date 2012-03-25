@@ -11,7 +11,17 @@
 #include "DeleteGameButton.h"
 #include "NewGameWindow.h"
 #include "QuitButton.h"
+#include "Render.h"
 using namespace std;
+
+
+using namespace irr;
+
+using namespace core;
+using namespace scene;
+using namespace video;
+using namespace io;
+using namespace gui;
 
 class Universe
 {
@@ -29,6 +39,11 @@ public:
 	int cellSize; //pixels
 	int brushMaskMinSize; //points
 	int brushMaskMaxSize; //points
+
+	
+
+	Render* render;
+
 
 	GLuint* texture; //TEST
 
@@ -88,6 +103,7 @@ public:
 	bool BrushesInit();
 	void SetLocation(Location* location);
 	void DrawMenu();
+
 	void DrawScene();
 	bool Menu(char* &gameName);
 	void Run(char* gameName);

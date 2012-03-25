@@ -11,6 +11,8 @@ public:
 	__declspec(dllexport) void LocationsInit();
 	__declspec(dllexport) void MapObjectsInit();
 
+	//__declspec(dllexport) 
+
 	__declspec(dllexport) GameData(void);
 	__declspec(dllexport) ~GameData(void);
 };

@@ -80,7 +80,7 @@ MapObjectSelectWindow::~MapObjectSelectWindow(void)
 	{
 		delete mapObjectsTags[i];
 	}
-	delete mapObjectsTags;
+	//delete mapObjectsTags;
 	delete listModel;
 	delete listBox;
 	delete listBoxScrollArea;
