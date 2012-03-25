@@ -16,7 +16,7 @@ Universe::Universe(void)
 	screenHeight = 768;
 	fullscreen = true;
 	*/
-	cellSize = 24;
+	cellSize = 10;
 	cameraMoveZoneWidth = 24;
 	toolbarWidth = 192;
 	toolbarLeftMargin = 8;
@@ -377,8 +377,7 @@ void Universe::DrawScene()
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
 				case Free:
-					//glColor4d(0, 1, 0, 1);
-					render->drawKub(i*cellSize-100,j*cellSize-100,-100);
+					render->drawKub(j*cellSize,-20,i*cellSize);
 					break;
 				/*case Locked:
 					glColor4d(1, 0, 0, 0.5);
@@ -395,27 +394,6 @@ void Universe::DrawScene()
 			glEnd();*/
 		}
 	}
-	/*
-	glBegin(GL_QUADS);
-		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-		for (i = 0; i < 2 * brushRadius + 1; i++)
-		{
-			for (j = 0; j < 2 * brushRadius + 1; j++)
-			{
-				if (brushMask[i][j])
-				{
-					glVertex2d(Index2Pix(cursorX - brushRadius + j), Index2Pix(cursorY - brushRadius + i));
-					glVertex2d(Index2Pix(cursorX - brushRadius + j) + cellSize, Index2Pix(cursorY - brushRadius + i));
-					glVertex2d(Index2Pix(cursorX - brushRadius + j) + cellSize, Index2Pix(cursorY - brushRadius + i) + cellSize);
-					glVertex2d(Index2Pix(cursorX - brushRadius + j), Index2Pix(cursorY - brushRadius + i) + cellSize);
-				}
-			}
-		}
-	glEnd();*/
-	
-	//editorGUI->draw();
-
-	//SDL_GL_SwapBuffers();
 }
 
 void Universe::SetLocation(Location* location)
@@ -610,7 +588,12 @@ void Universe::Run(char* gameName)
 	SetLocation(game->data->locations[0]);
 
 
+	//DrawScene();
+	//render->smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
+	render->smgr->addCameraSceneNodeFPS();
+	render->device->getCursorControl()->setVisible(false);
 	DrawScene();
+	render->drawKub(0,0,0);
 	while (render->device->run())
 		{
 			//thear all logic
