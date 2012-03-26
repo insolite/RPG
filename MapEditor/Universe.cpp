@@ -465,7 +465,7 @@ void Universe::Run(char* gameName)
 	int mouseX, mouseY;
 	bool continueFlag;
 
-	game = new Game(gameName);
+	game = new Game(gameName, Editor);
 	SetLocation(game->data->locations[0]);
 	
 	BrushesInit();

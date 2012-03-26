@@ -5,8 +5,6 @@
 
 #pragma once
 
-// TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы
-
 #include "targetver.h"
 #include <stdio.h>
 #include <windows.h>

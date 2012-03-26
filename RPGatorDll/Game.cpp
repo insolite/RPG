@@ -1,13 +1,29 @@
 #include "StdAfx.h"
+#include "ForwardDeclaration.h"
+#include "utilities.h"
+#include "GameResources.h"
+#include "GameData.h"
 #include "Game.h"
 
-Game::Game(char* _name)
+Game::Game(char* _name, InitializationType initializationType)
 {
 	char path[279];
 
-	name = _name; //TODO: strcpy?
+	name = new char[strlen(_name) + 1];
+	strcpy(name, _name);
 
-	sprintf(path, "game/%s/db.sqlite", name);
+	switch (initializationType)
+	{
+		case Editor:
+			sprintf(path, "game/%s/db.sqlite", name);
+			break;
+		case Server:
+			sprintf(path, "server/%s/db.sqlite", name);
+			break;
+		case Client:
+			sprintf(path, "client/%s/db.sqlite", name);
+			break;
+	}
 	if (sqlite3_open_v2(path, &db, SQLITE_OPEN_READWRITE, NULL) != SQLITE_OK)
 	//if (sqlite3_open(path, &db) != SQLITE_OK)
 	{
@@ -19,7 +35,7 @@ Game::Game(char* _name)
 	instance = this;
 
 	resources = new GameResources();
-	data = new GameData();
+	data = new GameData(initializationType);
 }
 
 Game::~Game(void)
@@ -27,6 +43,7 @@ Game::~Game(void)
 	instance = NULL;
 	delete resources;
 	delete data;
+	delete name;
 	sqlite3_close(db);
 }
 

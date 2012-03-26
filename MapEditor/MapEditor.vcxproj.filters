@@ -97,6 +97,9 @@
     <ClInclude Include="TagCheckBox.h">
       <Filter>Заголовочные файлы\GUI\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="ClosableWindow.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -158,6 +161,12 @@
     </ClCompile>
     <ClCompile Include="TagCheckBox.cpp">
       <Filter>Файлы исходного кода\GUI\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Include\RPGator\GuichanOverride.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ClosableWindow.cpp">
+      <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

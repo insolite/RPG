@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BrushDropDown.h" />
+    <ClInclude Include="ClosableWindow.h" />
     <ClInclude Include="DeleteGameButton.h" />
     <ClInclude Include="FloorDropDown.h" />
     <ClInclude Include="FocusingWindow.h" />
@@ -101,7 +102,11 @@
     <ClInclude Include="Universe.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Include\RPGator\GuichanOverride.cpp">
+      <DeploymentContent>false</DeploymentContent>
+    </ClCompile>
     <ClCompile Include="BrushDropDown.cpp" />
+    <ClCompile Include="ClosableWindow.cpp" />
     <ClCompile Include="DeleteGameButton.cpp" />
     <ClCompile Include="FloorDropDown.cpp" />
     <ClCompile Include="FocusingWindow.cpp" />

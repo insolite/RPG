@@ -8,7 +8,9 @@ class Universe
 public:
 	static Universe* instance; //Self instance
 	ClientSocket* connectSocket; //Connection socket to the server
-	//Game game;
+	Game* game; //Current game, that server is running
+	CurrentCharacter* currentCharacter; //Current character, attached to the current client
+	Location* currentLocation; //Current location of the current character
 
 	void Run(); //Main loop
 

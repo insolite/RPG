@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "ForwardDeclaration.h"
+#include "SqliteResult.h"
 #include "utilities.h"
 
 extern "C" __declspec(dllexport) int ReadDir(const char* path, char** &elements, bool directoriesOnly)
@@ -98,27 +100,74 @@ extern "C" __declspec(dllexport) void PacketAddString(char* packet, char* str)
 	IncreasePacketLength(packet, strlen(str) + 1);
 }
 
-extern "C" __declspec(dllexport) void SetPacketType(char* packet, char type)
+extern "C" __declspec(dllexport) void PacketAddInt(char* packet, int n)
+{
+	memcpy(packet + GetPacketLength(packet) + 2, (char*)&n, 4);
+	IncreasePacketLength(packet, 4);
+}
+
+extern "C" __declspec(dllexport) void PacketAddShortInt(char* packet, short int n)
+{
+	memcpy(packet + GetPacketLength(packet) + 2, (char*)&n, 2);
+	IncreasePacketLength(packet, 2);
+}
+
+extern "C" __declspec(dllexport) void PacketAddByte(char* packet, char n)
+{
+	packet[GetPacketLength(packet) + 2] = n;
+	IncreasePacketLength(packet, 1);
+}
+
+extern "C" __declspec(dllexport) char* PacketGetString(char* packet, int pos)
+{
+	return packet + 2 + pos;
+}
+
+extern "C" __declspec(dllexport) int PacketGetInt(char* packet, int pos)
+{
+	return *((int*)(packet + 2 + pos));
+}
+
+extern "C" __declspec(dllexport) short int PacketGetShortInt(char* packet, int pos)
+{
+	return *((short int*)(packet + 2 + pos));
+}
+
+extern "C" __declspec(dllexport) char PacketGetByte(char* packet, int pos)
+{
+	return packet[2 + pos];
+}
+
+extern "C" __declspec(dllexport) void SetPacketType(char* packet, Packet type)
 {
 	packet[2] = type;
 }
 
-extern "C" __declspec(dllexport) int SqliteGetRow(sqlite3* db, char* query, std::map<std::string, std::string> &strings, std::map<std::string, int> &integers)
+extern "C" __declspec(dllexport) Packet GetPacketType(char* packet)
 {
-	int result, i, columnsCount;
+	return (Packet)packet[2];
+}
+
+extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlite3* db, char* query)
+{
+	int result, i, columnsCount, rowsCount;
 	sqlite3_stmt *stmt;
 	std::string columnName;
+	std::vector<SqliteResult> sqliteResults;
 
 	if (sqlite3_prepare(db, query, -1, &stmt, NULL) != SQLITE_OK)
 	{
-		printf("Couldn't load execute query '%s'\n", query);
-		return -1;
+		printf("Couldn't execute query '%s'\n", query);
+		return sqliteResults;
 	}
 	
+	rowsCount = 0;
 	while ((result = sqlite3_step(stmt)) != SQLITE_DONE)
 	{
 		if (result == SQLITE_ROW)
 		{
+			sqliteResults.push_back(SqliteResult());
+			
 			columnsCount = sqlite3_column_count(stmt);
 			for (i = 0; i < columnsCount; i++)
 			{
@@ -126,89 +175,23 @@ extern "C" __declspec(dllexport) int SqliteGetRow(sqlite3* db, char* query, std:
 				switch (sqlite3_column_type(stmt, i))
 				{
 					case SQLITE_TEXT:
-						strings[columnName] = (std::string)(char*)sqlite3_column_text(stmt, i);
+						sqliteResults[rowsCount].strings[columnName] = (std::string)(char*)sqlite3_column_text(stmt, i);
 						break;
 					case SQLITE_INTEGER:
-						integers[columnName] = sqlite3_column_int(stmt, i);
+						sqliteResults[rowsCount].integers[columnName] = sqlite3_column_int(stmt, i);
 						break;
 				}
 			}
+			rowsCount++;
 		}
 		else
 		{
 			printf("SQLite error. Code: %d\n", result);
 			sqlite3_finalize(stmt);
-			return -2;
+			return sqliteResults;
 		}
 	}
-
 	sqlite3_finalize(stmt);
-	return 1;
+
+	return sqliteResults;
 }
-
-
-
-/*
-int Str2Int(char *str)
-{
-	int i, num, decs;
-	bool minus;
-
-	i = 0;
-	num = 0;
-	decs = 1;
-	if (str[0] == '-')
-		minus = 1;
-	else
-		minus = 0;
-	while (*(str+i) != '\0')
-		i++;
-	while (--i >= minus)
-	{
-		num += (*(str + i) - 48) * decs;
-		decs *= 10;
-	}
-	if (str[0] != '-')
-		return num;
-	else
-		return -num;
-}
-
-char *Int2Str(int num)
-{
-	if (!num)
-		return "0";
-	char* str;
-	int len, i, j;
-
-	str = new char[32];
-	if (num < 0)
-	{
-		num =- num;
-		j = 1;
-		len = 1;
-		str[0] = '-';
-	}
-	else
-	{
-		j = 0;
-		len = 0;
-	}
-	i = 1;
-	while (num / i)
-	{
-		len++;
-		i *= 10;
-	}
-	while (j < len)
-	{
-		i = i / 10;
-		str[j] = num / i + 48;
-		num %= i;
-		j++;
-	}
-	str[j] = '\0';
-
-	return str;
-}
-*/

@@ -24,7 +24,7 @@ CREATE TABLE Item (
 	tags VARCHAR(1024)
 	);
 
-CREATE TABLE StaticObject (
+CREATE TABLE `Static` (
 	id INTEGER PRIMARY KEY,
 	name VARCHAR(64),
 	tags VARCHAR(1024)
@@ -62,25 +62,37 @@ CREATE TABLE CurrentMapCell (
 */
 CREATE TABLE CurrentNPC (
 	id INTEGER PRIMARY KEY,
-	npcId INTEGER
+	baseId INTEGER,
+	x INTEGER,
+	y INTEGER,
+	locationId INTEGER
 	);
 
 CREATE TABLE CurrentItem (
 	id INTEGER PRIMARY KEY,
-	itemId INTEGER
+	baseId INTEGER,
+	x INTEGER,
+	y INTEGER,
+	locationId INTEGER
 	);
 
-CREATE TABLE CurrentStaticObject (
+CREATE TABLE CurrentStatic (
 	id INTEGER PRIMARY KEY,
-	staticId INTEGER
+	baseId INTEGER,
+	x INTEGER,
+	y INTEGER,
+	locationId INTEGER
 	);
 
 CREATE TABLE `CurrentCharacter` (
 	id INTEGER PRIMARY KEY,
-	characterId INTEGER,
+	baseId INTEGER,
+	x INTEGER,
+	y INTEGER,
+	locationId INTEGER,
+	
 	login VARCHAR(32),
-	password VARCHAR(32),
-	locationId INTEGER
+	password VARCHAR(32)
 );
 
 CREATE TABLE CurrentQuest (
@@ -105,7 +117,7 @@ INSERT INTO NPC VALUES (1, 'Test NPC', '');
 
 INSERT INTO Item VALUES (1, 'Test Item', '');
 
-INSERT INTO StaticObject VALUES (1, 'Test StaticObject', '');
+INSERT INTO `Static` VALUES (1, 'Test Static', '');
 
 INSERT INTO `Character` VALUES (1, 'Dwarf', '');
 INSERT INTO CurrentCharacter VALUES (1, 1, 'admin', '1234', 1);

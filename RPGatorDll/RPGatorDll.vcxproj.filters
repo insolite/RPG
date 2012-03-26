@@ -13,14 +13,20 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Заголовочные файлы\Data">
+      <UniqueIdentifier>{ed5e0354-a593-424e-a80e-eb7ac3113eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Resources">
+      <UniqueIdentifier>{c8c38ef1-9129-4de6-b788-b21f0437e3a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Data">
+      <UniqueIdentifier>{03e482c4-61ec-4e02-8728-6947b81b6712}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Resources">
+      <UniqueIdentifier>{ca2eed03-afa0-4d9f-afa7-f4444eb49e2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Item.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="MapObject.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -30,106 +36,127 @@
     <ClInclude Include="RPGatorDll.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="Actor.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="CurrentMapObject.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="CurrentNPC.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="Game.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="GameResources.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="Location.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="MapCell.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="NPC.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="Static.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="BrushMask.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="GameData.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="utilities.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="Item.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="MapCell.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="MapObject.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Static.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
     </ClInclude>
     <ClInclude Include="CurrentCharacter.h">
+      <Filter>Заголовочные файлы\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="CurrentMapObject.h">
+      <Filter>Заголовочные файлы\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="CurrentNPC.h">
+      <Filter>Заголовочные файлы\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Location.h">
+      <Filter>Заголовочные файлы\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData.h">
+      <Filter>Заголовочные файлы\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="GameResources.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="SqliteResult.h">
       <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardDeclaration.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="CurrentStatic.h">
+      <Filter>Заголовочные файлы\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="CurrentItem.h">
+      <Filter>Заголовочные файлы\Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Item.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="MapObject.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="CurrentMapObject.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="CurrentNPC.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="GameResources.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="Location.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="MapCell.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="NPC.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="Static.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="BrushMask.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="GameData.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="utilities.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="Character.cpp">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Файлы исходного кода\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Static.cpp">
+      <Filter>Файлы исходного кода\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Файлы исходного кода\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="MapCell.cpp">
+      <Filter>Файлы исходного кода\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="MapObject.cpp">
+      <Filter>Файлы исходного кода\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC.cpp">
+      <Filter>Файлы исходного кода\Resources</Filter>
     </ClCompile>
     <ClCompile Include="CurrentCharacter.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="CurrentMapObject.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="CurrentNPC.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Location.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="GameResources.cpp">
+      <Filter>Файлы исходного кода\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="SqliteResult.cpp">
       <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="CurrentStatic.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="CurrentItem.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

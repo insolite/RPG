@@ -1,10 +1,10 @@
 #pragma once
-#include "CurrentMapObject.h"
-#include "NPC.h"
 
-class CurrentNPC : CurrentMapObject<NPC>
+class CurrentNPC :
+	public CurrentMapObject<NPC>
 {
 public:
-	__declspec(dllexport) CurrentNPC(std::map<std::string, std::string> strings, std::map<std::string, int> integers);
+	__declspec(dllexport) CurrentNPC(SqliteResult sqliteResult, Location* location);
+	__declspec(dllexport) CurrentNPC(char* currentMapObjectSpawnedPacket);
 	__declspec(dllexport) ~CurrentNPC(void);
 };

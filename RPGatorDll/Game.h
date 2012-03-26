@@ -1,6 +1,4 @@
 #pragma once
-#include "GameResources.h"
-#include "GameData.h"
 
 class Game
 {
@@ -13,6 +11,6 @@ public:
 	GameResources* resources;
 	GameData* data;
 
-	__declspec(dllexport) Game(char* _name);
+	__declspec(dllexport) Game(char* _name, InitializationType initializationType);
 	__declspec(dllexport) ~Game(void);
 };

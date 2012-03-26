@@ -1,11 +1,14 @@
 #include "StdAfx.h"
+#include "ForwardDeclaration.h"
+#include "SqliteResult.h"
+#include "utilities.h"
 #include "MapObject.h"
 
-MapObject::MapObject(std::map<std::string, std::string> strings, std::map<std::string, int> integers)
+MapObject::MapObject(SqliteResult sqliteResult)
 {
-	id = integers["id"];
-	name = new char[strings["name"].length() + 1];
-	strcpy(name, strings["name"].c_str());
+	id = sqliteResult.integers["id"];
+	name = new char[sqliteResult.strings["name"].length() + 1];
+	strcpy(name, sqliteResult.strings["name"].c_str());
 
 	int i, j, length;
 
@@ -13,7 +16,7 @@ MapObject::MapObject(std::map<std::string, std::string> strings, std::map<std::s
 	tags = NULL;
 
 	i = 0;
-	length = strings["tags"].length();
+	length = sqliteResult.strings["tags"].length();
 
 	while (i < length)
 	{
@@ -21,9 +24,9 @@ MapObject::MapObject(std::map<std::string, std::string> strings, std::map<std::s
 		tags = (char**)realloc(tags, tagsCount * sizeof(char*));
 		tags[tagsCount - 1] = new char[64];
 		j = 0;
-		while ((i + j) < length && strings["tags"][i + j] != '|')
+		while ((i + j) < length && sqliteResult.strings["tags"][i + j] != '|')
 		{
-			tags[tagsCount - 1][j] = strings["tags"][i + j];
+			tags[tagsCount - 1][j] = sqliteResult.strings["tags"][i + j];
 			j++;
 		}
 		tags[tagsCount - 1][j] = '\0';

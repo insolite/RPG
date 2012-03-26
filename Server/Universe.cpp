@@ -22,21 +22,16 @@ void Universe::Run()
 	ServerClientSocket** clients; //Connection sockets to the clients
 	int clientsCount; //The size of 'clients'
 	SOCKET tmp; //Socket for accepting clients. Used to initialize the element of 'clients'
-
-	bool isOnline;
-	int ci, i, j, result;
-	char query[256];
-	std::map<std::string, std::string> strings;
-	std::map<std::string, int> integers;
+	int ci;
 
 	continueFlag = true;
 	clientsCount = 0;
 	clients = NULL;
 
-	game = new Game("testgame");
+	game = new Game("testgame", Server);
 	printf("Game %s initialized\n", game->name);
 	serverSocket = new ServerSocket("3127");
-	
+	//ci = Free;
 	while (continueFlag)
 	{
 		//Accepting connections from clients
@@ -58,9 +53,15 @@ void Universe::Run()
 				if (iResult > 0)
 				{//Packet received
 					printf("Packet received\n");
-					switch (inPacket[2])
+					switch (GetPacketType(inPacket))
 					{
 						case LogIn:
+						{
+							bool isOnline;
+							int i, j;
+							char query[256];
+							std::vector<SqliteResult> sqliteResults;
+
 							printf("Client %d trying to log in:\nLogin: %s\nPassword: %s\n", ci, inPacket + 3, inPacket + 3 + strlen(inPacket + 3) + 1);
 							
 							if (clients[ci]->character)
@@ -71,7 +72,7 @@ void Universe::Run()
 
 							isOnline = false;
 							for (i = 0; i < game->data->locationsCount; i++)
-								for (j = 0; j < game->data->locations[i]->currentCharactersCount; j++)
+								for (j = 0; j < game->data->locations[i]->currentCharactersCount; j++) //TODO: GetCurrentMapObject. If NULL => Offline
 									if (!strcmp(game->data->locations[i]->currentCharacters[j]->login, inPacket + 3))
 									{
 										isOnline = true;
@@ -83,48 +84,37 @@ void Universe::Run()
 								printf("Character is currently in use\n");
 								break;
 							}
-						
+							
 							sprintf(query, "SELECT * FROM CurrentCharacter WHERE login='%s';", inPacket + 3);
-							result = SqliteGetRow(game->db, query, strings, integers);
-							if (result < 0)
-							{
-								strings.clear();
-								integers.clear();
-								break;
-							}
-							else if (result == 0)
+							sqliteResults = SqliteGetRows(game->db, query);
+							if (sqliteResults.size() == 0)
 							{
 								printf("Character does not exist\n");
-								strings.clear();
-								integers.clear();
 								break;
 							}
 							else
 							{
-								if (strcmp(inPacket + 3 + strlen(inPacket + 3) + 1, strings["password"].c_str()))
+								if (strcmp(inPacket + 3 + strlen(inPacket + 3) + 1, sqliteResults[0].strings["password"].c_str()))
 								{
 									printf("Password does not match this account\n");
-									strings.clear();
-									integers.clear();
 									break;
 								}
-								for (i = 0; i < game->data->locationsCount; i++)
-									if (game->data->locations[i]->id == integers["locationId"])
-									{
-										CurrentCharacter* newCurrentCharacter = new CurrentCharacter(strings, integers);
-										if (game->data->locations[i]->AddCurrentCharacter(newCurrentCharacter))
-											delete newCurrentCharacter;
-										else
-										{
-											clients[ci]->character = newCurrentCharacter;
-											printf("Character %s logged in\n", inPacket + 3);
-										}
-										break;
-									}
+								Location* location;
+								CurrentCharacter* newCurrentCharacter;
+
+								location = game->data->GetLocation(sqliteResults[0].integers["locationId"]);
+								newCurrentCharacter = new CurrentCharacter(sqliteResults[0], location);
+								location->AddCurrentCharacter(newCurrentCharacter);
+								clients[ci]->character = newCurrentCharacter;
+								printf("Character %s logged in\n", inPacket + 3);
+								SetPacketLength(outPacket, 1);
+								SetPacketType(outPacket, LoggedIn);
+								PacketAddString(outPacket, game->name);
+								PacketAddInt(outPacket, location->id);
+								clients[ci]->Send(outPacket);
 							}
-							strings.clear();
-							integers.clear();
 							break;
+						}
 						case LogOut:
 							break;
 					}
@@ -170,7 +160,7 @@ void Universe::Run()
 			SetPacketLength(outPacket, strlen(outPacket + 2) + 1);
 			//clients[cClient]->Send(outPacket);
 		}
-		//Sleep(200);
+		Sleep(20);
 	}
 	
 	delete serverSocket;

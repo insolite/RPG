@@ -1,7 +1,10 @@
 #include "StdAfx.h"
+#include "ForwardDeclaration.h"
+#include "MapObject.h"
+#include "SqliteResult.h"
 #include "Static.h"
 
-Static::Static(std::map<std::string, std::string> strings, std::map<std::string, int> integers) : MapObject(strings, integers)
+Static::Static(SqliteResult sqliteResult) : MapObject(sqliteResult)
 {
 	
 }

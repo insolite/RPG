@@ -1,11 +1,19 @@
 #include "StdAfx.h"
-#include "GameData.h"
+#include "ForwardDeclaration.h"
+#include "SqliteResult.h"
+#include "utilities.h"
+#include "CurrentMapObject.h"
+#include "CurrentNPC.h"
+#include "CurrentStatic.h"
+#include "CurrentItem.h"
+#include "CurrentCharacter.h"
+#include "Location.h"
 #include "Game.h"
+#include "GameData.h"
 
-GameData::GameData(void)
+GameData::GameData(InitializationType initializationType)
 {
-	LocationsInit();
-	MapObjectsInit();
+	LocationsInit(initializationType);
 }
 
 GameData::~GameData(void)
@@ -15,73 +23,30 @@ GameData::~GameData(void)
 	delete locations;
 }
 
-//Init for MapEditor
-void GameData::LocationsInit()
+void GameData::LocationsInit(InitializationType initializationType)
 {
-	sqlite3_stmt *stmt;
-	int result, i, columnsCount;
-	std::map<std::string, std::string> strings;
-	std::map<std::string, int> integers;
-	std::string columnName;
+	int rowsCount;
+	std::vector<SqliteResult> sqliteResult;
 
-	if (sqlite3_prepare(Game::instance->db, "SELECT * FROM Location;", -1, &stmt, NULL) != SQLITE_OK)
-	{
-		printf("Couldn't load table from game \"%s\" db\n", Game::instance->name);
-		return;
-	}
+	sqliteResult = SqliteGetRows(Game::instance->db, "SELECT * FROM Location");
 	
 	locationsCount = 0;
 	locations = NULL;
 	
-	while ((result = sqlite3_step(stmt)) != SQLITE_DONE)
+	while (locationsCount < sqliteResult.size())
 	{
-		if (result == SQLITE_ROW)
-		{
-			columnsCount = sqlite3_column_count(stmt);
-			for (i = 0; i < columnsCount; i++)
-			{
-				columnName = sqlite3_column_name(stmt, i);
-				switch (sqlite3_column_type(stmt, i))
-				{
-					case SQLITE_TEXT:
-						strings[columnName] = (std::string)(char*)sqlite3_column_text(stmt, i);
-						break;
-					case SQLITE_INTEGER:
-						integers[columnName] = sqlite3_column_int(stmt, i);
-						break;
-				}
-			}
-			locationsCount++;
-			locations = (Location**)realloc(locations, locationsCount * sizeof(Location*));
-			locations[locationsCount - 1] = new Location(strings, integers);
-		}
-		else
-		{
-			printf("SQLite error. Code: %d\n", result);
-		}
+		locationsCount++;
+		locations = (Location**)realloc(locations, locationsCount * sizeof(Location*));
+		locations[locationsCount - 1] = new Location(sqliteResult[locationsCount - 1], initializationType);
 	}
-
-	sqlite3_finalize(stmt);
-	/*
-	char locationsPath[256];
-	char **folders;
-	int id, i;
-
-	sprintf(locationsPath, "game/%s/data/location", Game::instance->name);
-	locationsCount = ReadDir(locationsPath, folders, false);
-	locations = new (Location*[locationsCount]);
-	for (i = 0; i < locationsCount; i++)
-	{
-		sscanf(folders[i], "%d", &id);
-		locations[i] = new Location(id);
-	}
-	delete[] folders;
-	//delete folders;
-	return false;
-	*/
 }
 
-void GameData::MapObjectsInit()
+Location* GameData::GetLocation(int id)
 {
-
+	for (int i = 0; i < locationsCount; i++)
+	{
+		if (locations[i]->id == id)
+			return locations[i];
+	}
+	return NULL;
 }

@@ -1,29 +1,26 @@
 #include "StdAfx.h"
-#include "Location.h"
+#include "ForwardDeclaration.h"
+#include "SqliteResult.h"
+#include "utilities.h"
+#include "CurrentMapObject.h"
+#include "CurrentNPC.h"
+#include "CurrentStatic.h"
+#include "CurrentItem.h"
+#include "CurrentCharacter.h"
+#include "GameResources.h"
 #include "Game.h"
-/*
-Location::Location(int _id)
-{
-	FILE *f;
-	int i, j;
-	char path[256];
+#include "Location.h"
 
-	id = _id;
-	sprintf(path, "game/%s/data/location/%d.loc", Game::instance->name, id);
-	f = fopen(path, "rb");
-	if (!f)
-		return;
-	name = new char[16];
-	//fgets(name, 15, f);
-	name[0] = fgetc(f);
-	for (i = 1; i < 15 && name[i - 1]; i++)
-		name[i] = fgetc(f);
-	//TODO: binary reader
-	width = fgetc(f) * 16;
-	width += fgetc(f);
-	height = fgetc(f) * 16;
-	height += fgetc(f);
-	
+Location::Location(SqliteResult sqliteResult, InitializationType initializationType)
+{
+	int i, j;
+
+	id = sqliteResult.integers["id"];
+	width = sqliteResult.integers["width"];
+	height = sqliteResult.integers["height"];
+	name = new char[sqliteResult.strings["name"].length() + 1];
+	strcpy(name, sqliteResult.strings["name"].c_str());
+
 	mask = new MapCell**[height];
 	for (i = 0; i < height; i++)
 	{
@@ -32,37 +29,56 @@ Location::Location(int _id)
 		{
 			//TODO:
 			//Warning! getMapCellById instead of fgetc(f) - 1
-			mask[i][j] = Game::instance->resources->mapCells[fgetc(f) - 1];
+			mask[i][j] = Game::instance->resources->mapCells[sqliteResult.strings["mask"][height * i + j] - 1];
 		}
 	}
-	fclose(f);
+
+	if (initializationType == Editor)
+	{
+		CurrentMapObjectsInit<CurrentNPC>(currentNPCs, currentNPCsCount, "CurrentNPC");
+		CurrentMapObjectsInit<CurrentItem>(currentItems, currentItemsCount, "CurrentItem");
+		CurrentMapObjectsInit<CurrentStatic>(currentStatics, currentStaticsCount, "CurrentStatic");
+		CurrentMapObjectsInit<CurrentCharacter>(currentCharacters, currentCharactersCount, "CurrentCharacter");
+	}
+	else if (initializationType == Server)
+	{
+		CurrentMapObjectsInit<CurrentNPC>(currentNPCs, currentNPCsCount, "CurrentNPC");
+		CurrentMapObjectsInit<CurrentItem>(currentItems, currentItemsCount, "CurrentItem");
+		CurrentMapObjectsInit<CurrentStatic>(currentStatics, currentStaticsCount, "CurrentStatic");
+		currentCharacters = NULL; //Online = 0
+		currentCharactersCount = 0;
+	}
+	else //Client
+	{
+		currentNPCs = NULL;
+		currentNPCsCount = 0;
+		currentStatics = NULL;
+		currentStaticsCount = 0;
+		currentItems = NULL;
+		currentItemsCount = 0;
+		currentCharacters = NULL;
+		currentCharactersCount = 0;
+	}
 }
-*/
 
-Location::Location(std::map<std::string, std::string> strings, std::map<std::string, int> integers)
+template<class T>
+void Location::CurrentMapObjectsInit(T** &currentMapObjects, int &currentMapObjectsCount, char* tableName)
 {
-	int i, j;
-
-	id = integers["id"];
-	width = integers["width"];
-	height = integers["height"];
-	name = new char[strings["name"].length() + 1];
-	strcpy(name, strings["name"].c_str());
-
-	mask = new MapCell**[height];
-	for (i = 0; i < height; i++)
+	char query[64];
+	std::vector<SqliteResult> sqliteResults;
+	
+	sprintf(query, "SELECT * FROM %s;", tableName); //TODO: Get class T name
+	sqliteResults = SqliteGetRows(Game::instance->db, query);
+	
+	currentMapObjectsCount = 0;
+	currentMapObjects = NULL;
+	
+	while (currentMapObjectsCount < sqliteResults.size())
 	{
-		mask[i] = new MapCell*[width];
-		for (j = 0; j < width; j++)
-		{
-			//TODO:
-			//Warning! getMapCellById instead of fgetc(f) - 1
-			mask[i][j] = Game::instance->resources->mapCells[strings["mask"][height * i + j] - 1];
-		}
+		currentMapObjectsCount++;
+		currentMapObjects = (T**)realloc(currentMapObjects, currentMapObjectsCount * sizeof(T*));
+		currentMapObjects[currentMapObjectsCount - 1] = new T(sqliteResults[currentMapObjectsCount - 1], this);
 	}
-
-	currentCharacters = NULL;
-	currentCharactersCount = 0;
 }
 
 Location::~Location(void)
@@ -73,6 +89,7 @@ Location::~Location(void)
 	//delete[] mask; //TODO: array of array
 	//delete mask;
 	delete mask;
+	//TODO: Delete currentMapObjects
 }
 
 void Location::AddNPC(CurrentNPC* currentNPC)
@@ -81,11 +98,18 @@ void Location::AddNPC(CurrentNPC* currentNPC)
 	//Adds record to GameData db (Universe::instance->game->data->db)
 }
 
-bool Location::AddCurrentCharacter(CurrentCharacter* currentCharacter)
+void Location::AddCurrentCharacter(CurrentCharacter* currentCharacter)
 {
 	currentCharactersCount++;
 	currentCharacters = (CurrentCharacter**)realloc(currentCharacters, currentCharactersCount * sizeof(CurrentCharacter));
 	currentCharacters[currentCharactersCount - 1] = currentCharacter;
+}
 
-	return false;
+template<class T>
+T* Location::GetCurrentMapObject(T** currentMapObjects, int currentMapObjectsCount, int id)
+{
+	for (int i = 0; i < currentCharactersCount; i++)
+		if (currentMapObjects[i]->id == id)
+			return currentMapObjects[i];
+	return NULL;
 }

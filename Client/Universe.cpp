@@ -25,10 +25,15 @@ void Universe::Run()
 
 	connectSocket = new ClientSocket("127.0.0.1", "3127");
 	printf("Connected to the server\n");
-	//TODO: receive game name
-	//game = new Game();
+	SetPacketLength(outPacket, 1);
+	SetPacketType(outPacket, LogIn);
+	PacketAddString(outPacket, "admin");
+	PacketAddString(outPacket, "1234");
+	connectSocket->Send(outPacket);
 
-	ping = SDL_GetTicks();
+	ping = SDL_GetTicks(); //TEST
+
+	currentCharacter = NULL;
 	
 	while (continueFlag)
 	{
@@ -40,6 +45,25 @@ void Universe::Run()
 			{//Packet received
 				printf("Packet received: '%s'; Length: %d; Ping: %d;\n", inPacket + 2, GetPacketLength(inPacket), SDL_GetTicks() - ping);
 				ping = SDL_GetTicks();
+				switch (GetPacketType(inPacket))
+				{
+					case LoggedIn:
+						game = new Game(inPacket + 3, Client);
+						printf("Game %s initialized\n", game->name);
+						currentLocation = game->data->GetLocation(atoi(inPacket + 3 + strlen(inPacket + 3) + 1));
+						break;
+					case CharacterSpawned:
+						if (!currentCharacter)
+						{
+							currentCharacter = new CurrentCharacter(inPacket);
+							currentLocation->AddCurrentCharacter(currentCharacter);
+						}
+						else
+						{
+							currentLocation->AddCurrentCharacter(new CurrentCharacter(inPacket));
+						}
+						break;
+				}
 			}
 			else if (iResult == -1)
 			{//Disconnected from the server
@@ -55,16 +79,12 @@ void Universe::Run()
 
 		//Drawing, events, etc.
 		//TODO: correct disconnect in events
-		SetPacketLength(outPacket, 1);
-		SetPacketType(outPacket, LogIn);
-		PacketAddString(outPacket, "admin");
-		PacketAddString(outPacket, "1234");
-		connectSocket->Send(outPacket);
-		system("pause");
+		//system("pause");
+		Sleep(20);
 	}
 
 	delete connectSocket;
-	//delete game;
+	delete game;
 
 	system("pause"); //TEST
 }

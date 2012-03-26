@@ -1,7 +1,23 @@
 #include "StdAfx.h"
+#include "ForwardDeclaration.h"
+#include "SqliteResult.h"
+#include "utilities.h"
+#include "MapObject.h"
+#include "NPC.h"
+#include "CurrentMapObject.h"
+#include "GameResources.h"
+#include "Game.h"
 #include "CurrentNPC.h"
 
-CurrentNPC::CurrentNPC(std::map<std::string, std::string> strings, std::map<std::string, int> integers) : CurrentMapObject<NPC>::CurrentMapObject(strings, integers)
+//Initialization from DB (Editor, Server)
+CurrentNPC::CurrentNPC(SqliteResult sqliteResult, Location* location) :
+	CurrentMapObject<NPC>::CurrentMapObject(sqliteResult, Game::instance->resources->npcs, Game::instance->resources->npcsCount, location)
+{
+}
+
+//Initialization from incoming packet (Client)
+CurrentNPC::CurrentNPC(char* currentMapObjectSpawnedPacket) :
+	CurrentMapObject<NPC>::CurrentMapObject(currentMapObjectSpawnedPacket, Game::instance->resources->npcs, Game::instance->resources->npcsCount)
 {
 }
 

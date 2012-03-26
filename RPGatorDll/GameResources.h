@@ -1,8 +1,4 @@
 #pragma once
-#include "MapCell.h"
-#include "NPC.h"
-#include "Static.h"
-#include "Character.h"
 
 class GameResources
 {
@@ -11,12 +7,22 @@ public:
 	NPC** npcs;
 	Static** statics;
 	Item** items;
-	//Player** players;
+	Character** characters;
 	
 	int mapCellsCount;
 	int npcsCount;
 	int staticsCount;
 	int itemsCount;
+	int charactersCount;
+	
+	template<class T>
+	__declspec(dllexport) T* GetMapObject(T** mapObjects, int mapObjectsCount, int id)
+	{
+		for (int i = 0; i < mapObjectsCount; i++)
+			if (mapObjects[i]->id == id)
+				return mapObjects[i];
+		return NULL;
+	}
 
 	__declspec(dllexport) GameResources(void);
 	__declspec(dllexport) ~GameResources(void);
@@ -24,10 +30,4 @@ public:
 private:
 	template<class T>
 	__declspec(dllexport) void MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName);
-	/*
-	bool MapCellsInit(void);
-	bool NpcsInit(void);
-	bool StaticsInit(void);
-	bool ItemsInit(void);
-	*/
 };

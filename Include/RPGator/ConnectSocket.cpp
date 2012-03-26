@@ -51,7 +51,7 @@ int ConnectSocket::Receive(char *packet)
 	return iResult;
 }
 
-bool ConnectSocket::Send(char *packet) //asdas
+bool ConnectSocket::Send(char *packet)
 {
 	return send(connectSocket, packet, *((short int*)packet) + 2, 0) == SOCKET_ERROR;
 }

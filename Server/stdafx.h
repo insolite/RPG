@@ -39,5 +39,3 @@
 #pragma comment(lib, "../Lib/sqlite3.lib")
 
 #pragma comment(lib, "../Release/RPGator.lib")
-
-// TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы
