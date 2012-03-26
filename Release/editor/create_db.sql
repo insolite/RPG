@@ -120,4 +120,4 @@ INSERT INTO Item VALUES (1, 'Test Item', '');
 INSERT INTO `Static` VALUES (1, 'Test Static', '');
 
 INSERT INTO `Character` VALUES (1, 'Dwarf', '');
-INSERT INTO CurrentCharacter VALUES (1, 1, 'admin', '1234', 1);
+INSERT INTO CurrentCharacter VALUES (1, 1, 4, 8, 1, 'admin', '1234');

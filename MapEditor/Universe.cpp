@@ -2,7 +2,6 @@
 #include "Universe.h"
 #include "SliderActionListener.h"
 
-
 Universe::Universe(void)
 {
 	char fontCharacters[256];
@@ -584,9 +583,8 @@ void Universe::Run(char* gameName)
 	DeleteTexture();
 	
 	delete game;*/
-	game = new Game(gameName);
+	game = new Game(gameName, Editor);
 	SetLocation(game->data->locations[0]);
-
 
 	//DrawScene();
 	//render->smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
@@ -595,18 +593,19 @@ void Universe::Run(char* gameName)
 	DrawScene();
 	render->drawKub(0,0,0);
 	while (render->device->run())
-		{
-			//thear all logic
+	{
+		//thear all logic
 
-			render->driver->beginScene(true, true, SColor(255,100,101,140));
-				//thear all graphics
+		render->driver->beginScene(true, true, SColor(255,100,101,140));
+			//thear all graphics
 				
-				render->smgr->drawAll();
-				render->guienv->drawAll();
-				//universe->DrawScene();
+			render->smgr->drawAll();
+			render->guienv->drawAll();
+			//universe->DrawScene();
 
-			render->driver->endScene();
-		}
+		render->driver->endScene();
+	}
+	delete game;
 }
 
 bool Universe::BrushesInit()
