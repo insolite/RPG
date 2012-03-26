@@ -12,7 +12,7 @@ using namespace gui;
 class Render
 {
 public:
-	Render(void);
+	Render(int screenWidth, int screenHeight);
 	~Render(void);
 
 	//irrlicht

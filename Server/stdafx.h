@@ -23,6 +23,12 @@
 #include "../Include/SDL/SDL.h"
 #include "../Include/SDL/SDL_image.h"
 #include "../Include/sqlite3.h"
+extern "C"
+{
+	#include "../Include/lua/lua.h"
+	#include "../Include/lua/lauxlib.h"
+	#include "../Include/lua/lualib.h"
+}
 
 #include "../RPGatorDll/RPGatorDll.h"
 
@@ -37,5 +43,6 @@
 #pragma comment(lib, "../Lib/SDLmain.lib")
 #pragma comment(lib, "../Lib/SDL_image.lib")
 #pragma comment(lib, "../Lib/sqlite3.lib")
+#pragma comment(lib, "../Lib/lua52.lib")
 
 #pragma comment(lib, "../Release/RPGator.lib")

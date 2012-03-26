@@ -23,7 +23,8 @@ Universe::Universe(void)
 	brushMaskMaxSize = 10;
 	instance = this;
 
-	GraphicsInit();
+	render = new Render(screenWidth, screenHeight);
+	//GraphicsInit();
 	
 	/*
 	graphics = new gcn::OpenGLGraphics(screenWidth, screenHeight);
@@ -107,19 +108,7 @@ bool Universe::GraphicsInit()
 
 	glMatrixMode(GL_MODELVIEW);
 	*/
-	render=new Render();
-	render->device = createDevice( video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 16,false, false, false, 0);
-
-        if (!render->device) return false;
-		render->device->setWindowCaption(L"RPGator");
-
-		
-		render->driver = render->device->getVideoDriver();
-        render->smgr = render->device->getSceneManager();
-        render->guienv = render->device->getGUIEnvironment();
-		
-		
-
+	
 	return false;
 }
 
@@ -191,103 +180,90 @@ void Universe::MenuGUIInit(gcn::SDLInput* &GUIInput)
 	menuMainContainer->add(newGameWindow, screenWidth / 2 - newGameWindow->getWidth() / 2, screenHeight / 2 - newGameWindow->getHeight() / 2);
 }
 
-void Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
+enum EditorGUIElements
 {
-	//Input init
-	GUIInput = new gcn::SDLInput();
+	QuitButton,
+	ToolBarWindow,
+	FloorsComboBox,
+	LocationsComboBox,
+	MapObjectsTabControl,
+	BrushMaskSizeScroll,
+	BrushMaskSizeStaticText,
 
-	//Edit area container init
-	editAreaContainer = new gcn::Container();
-	editAreaContainer->setDimension(gcn::Rectangle(0, 0, screenWidth - toolbarWidth, screenHeight));
-	editAreaContainer->setOpaque(false);
-	editAreaContainer->setFocusable(true);
+	//Order is critical
+	MapCellSelectWindow,
+	NPCSelectWindow,
+	ItemSelectWindow,
+	StaticSelectWindow,
+	CharacterSelectWindow,
+	MapCellSelectWindowTab,
+	NPCSelectWindowTab,
+	ItemSelectWindowTab,
+	StaticSelectWindowTab,
+	CharacterSelectWindowTab,
+	MapCellSelectWindowToggleButton,
+	NPCSelectWindowToggleButton,
+	ItemSelectWindowToggleButton,
+	StaticSelectWindowToggleButton,
+	CharacterSelectWindowToggleButton,
+};
 
-	//Toolbar container init
-	toolbarContainer = new FocusingWindow("Tools");
-	toolbarContainer->setDimension(gcn::Rectangle(0, 0, toolbarWidth, screenHeight));
-	toolbarContainer->setFocusable(true);
-	toolbarContainer->setMovable(true);
+wchar_t* strToWchart(char* cStr) 
+{
+	wchar_t* wCharOutput = new wchar_t[1023];
+	size_t* sizeOut = new size_t;
+	size_t sizeInWords = 256;
+
+	mbstowcs_s(sizeOut, wCharOutput, sizeInWords, cStr, strlen(cStr) + 1);
+
+	return wCharOutput;
+}
+
+void Universe::EditorGUIInit()
+{
+	IGUIWindow* wnd = render->guienv->addWindow(rect< s32 >(screenWidth - toolbarWidth, 0, screenWidth, screenHeight), false, L"Toolset", 0, ToolBarWindow);
 	
-	//Main container init
-	editorMainContainer = new gcn::Container();
-	editorMainContainer->setDimension(gcn::Rectangle(0, 0, screenWidth, screenHeight));
-	editorMainContainer->setOpaque(false);
-	editorMainContainer->add(editAreaContainer, 0, 0);
-	editorMainContainer->add(toolbarContainer, screenWidth - toolbarWidth, 0);
+	IGUIButton* btn = render->guienv->addButton(rect< s32 >(10, 128, 110, 128 + 32), wnd, QuitButton, L"Quit", L"Exits Program");
 	
-	//GUI init
-	editorGUI = new gcn::Gui();
-	editorGUI->setGraphics(graphics);
-	editorGUI->setInput(GUIInput);
-	editorGUI->setTop(editorMainContainer);
-
-	//GUI building
-
-	//Floor control DropDown
-	floorsDropDown = new FloorDropDown();
-	floorsDropDown->add("outside");
-	floorsDropDown->add("first fl.");
-	floorsDropDown->setSelected(0);
-	toolbarContainer->add(floorsDropDown, toolbarLeftMargin, 16);
-
-	//Location control DropDown
-	locationsDropDown = new LocationDropDown();
+	//Floors ComboBox
+	IGUIComboBox* floorsComboBox = render->guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 32, toolbarLeftMargin + 176, 48), wnd, FloorsComboBox);
+	floorsComboBox->addItem(L"outside");
+	floorsComboBox->addItem(L"first fl.");
+	
+	//Locations ComboBox
+	IGUIComboBox* locationsComboBox = render->guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 64, toolbarLeftMargin + 176, 80), wnd, LocationsComboBox);
 	for (int i = 0; i < game->data->locationsCount; i++)
-		locationsDropDown->add(game->data->locations[i]->name);
-	locationsDropDown->setSelected(0);
-	toolbarContainer->add(locationsDropDown, toolbarLeftMargin, 40);
-	
-	//MapCell select window
-	mapCellSelectWindow = new MapObjectSelectWindow("MapCell selection", (MapObject**)game->resources->mapCells, game->resources->mapCellsCount, 0); //TODO: explicit convertion? Really? o_0
-	editorMainContainer->add(mapCellSelectWindow);
-	
-	//NPC select window
-	npcSelectWindow = new MapObjectSelectWindow("NPC selection", (MapObject**)game->resources->npcs, game->resources->npcsCount, 1); //TODO: explicit convertion? Really? o_0
-	editorMainContainer->add(npcSelectWindow);
-	
-	//Static select window
-	staticSelectWindow = new MapObjectSelectWindow("Static selection", (MapObject**)game->resources->statics, game->resources->staticsCount, 2); //TODO: explicit convertion? Really? o_0
-	editorMainContainer->add(staticSelectWindow);
-	
-	//Item select window
-	itemSelectWindow = new MapObjectSelectWindow("Item selection", (MapObject**)game->resources->items, game->resources->itemsCount, 3); //TODO: explicit convertion? Really? o_0
-	editorMainContainer->add(itemSelectWindow);
-	
-	//Brush mask size slider
-	brushMaskSlider = new gcn::Slider(brushMaskMinSize - 0.5f, brushMaskMaxSize - 0.5f);
-	brushMaskSlider->setOrientation(gcn::Slider::HORIZONTAL);
-	brushMaskSlider->setSize(128, 12);
-	//brushMaskSlider->setStepLength(1); //Only for keyboard //Isn't needed due to line below
-	brushMaskSlider->setFocusable(false);
-	actionListener = new SliderActionListener();
-	brushMaskSlider->addActionListener(actionListener);
+	{
+		wchar_t* wstr = strToWchart(game->data->locations[i]->name);
+		locationsComboBox->addItem(wstr);
+		delete wstr;
+	}
 
-	//Brush mask size label
-	brushMaskSizeLabel = new gcn::Label("1x");
-	brushMaskSizeLabel->setSize(32, 16);
-
-	//MapCells tab container (#1)
-	mapCellSelectTabContainer = new MapObjectSelectTabContainer(mapCellSelectWindow);
-	mapCellSelectTabContainer->add(brushMaskSlider, 36, 204);
-	mapCellSelectTabContainer->add(brushMaskSizeLabel, 4, 200);
+	//MapObject select windows, tabs, buttons, etc.
+	IGUITabControl* tabc = render->guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 256, toolbarLeftMargin + 176, 256 + 176), wnd, true, true, MapObjectsTabControl);
+	IGUIWindow* wnd1;
+	IGUITab* tab;
+	for (int i = 0; i < 5; i++)
+	{
+		wnd1 = render->guienv->addWindow(rect< s32 >(64, 64, 536, 536), false, L"MapObject select", 0, i + MapCellSelectWindow);
+		wnd1->setVisible(false);
+		tab = tabc->addTab(L"MO", i + MapCellSelectWindowTab);
+		render->guienv->addButton(rect< s32 >(16, 16, 32, 32), tab, i + MapCellSelectWindowToggleButton, L"Select", L"Select MapObject from list");
+	}
 	
-	//Statics tab container (#2)
-	npcSelectTabContainer = new MapObjectSelectTabContainer(npcSelectWindow);
+	//Brush mask scroll bar
+	IGUIScrollBar* sb = render->guienv->addScrollBar(true, rect< s32 >(8, 64, 168, 80), tabc->getTab(0), BrushMaskSizeScroll);
+	sb->setMax(10);
+	sb->setMin(1);
+	sb->setPos(3);
+	//render->guienv->addSpinBox(L"asd", rect< s32 >(toolbarLeftMargin, 432, toolbarLeftMargin + 176, 464), true, wnd);
 
-	//Statics tab container (#3)
-	staticSelectTabContainer = new MapObjectSelectTabContainer(staticSelectWindow);
-	
-	//Statics tab container (#4)
-	itemSelectTabContainer = new MapObjectSelectTabContainer(itemSelectWindow);
+	IGUIStaticText* lbl = render->guienv->addStaticText(L"3x", rect< s32 >(8, 88, 168, 104), false, false, tabc->getTab(0), BrushMaskSizeStaticText, true);
 
-	//MapObjects selection TabbedArea
-	brushesTabbedArea = new gcn::TabbedArea();
-	brushesTabbedArea->setSize(176, 256);
-	brushesTabbedArea->addTab("Cell", mapCellSelectTabContainer);
-	brushesTabbedArea->addTab("NPC", npcSelectTabContainer);
-	brushesTabbedArea->addTab("Stat.", staticSelectTabContainer);
-	brushesTabbedArea->addTab("Item", itemSelectTabContainer);
-	toolbarContainer->add(brushesTabbedArea, toolbarLeftMargin, 96);
+	wnd->setDraggable(false); //TEST
+	wnd->getCloseButton()->setEnabled(false); //TEST
+
+	//render->guienv->getSkin()->setFont(render->guienv->getBuiltInFont(), EGDF_TOOLTIP);
 }
 
 void Universe::MenuGUIDestroy(gcn::SDLInput* GUIInput)
@@ -583,28 +559,48 @@ void Universe::Run(char* gameName)
 	DeleteTexture();
 	
 	delete game;*/
+	
+	bool continueFlag;
+	
 	game = new Game(gameName, Editor);
 	SetLocation(game->data->locations[0]);
 
+	BrushesInit();
+	
+	EditorGUIInit();
+	
+	CreateBrushMask(1); //TODO: slider get value
+	
+	continueFlag = true;
+	
+	int lastUpdate = SDL_GetTicks();
+
 	//DrawScene();
 	//render->smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
+	
 	render->smgr->addCameraSceneNodeFPS();
 	render->device->getCursorControl()->setVisible(false);
+	/* //Uncomment it (and comment two lines above) to enable gui control
+	//render->smgr->addCameraSceneNodeFPS();
+	render->device->getCursorControl()->setVisible(true);
+	*/
+
 	DrawScene();
 	render->drawKub(0,0,0);
-	while (render->device->run())
+	while (render->device->run() && continueFlag)
 	{
-		//thear all logic
-
 		render->driver->beginScene(true, true, SColor(255,100,101,140));
-			//thear all graphics
-				
 			render->smgr->drawAll();
 			render->guienv->drawAll();
-			//universe->DrawScene();
-
 		render->driver->endScene();
 	}
+
+	//EditorGUIDestroy();
+
+	for (int i = 0; i < brushesCount; i++)
+		delete brushMasks[i];
+	delete brushMasks;
+
 	delete game;
 }
 
@@ -742,7 +738,7 @@ bool Universe::LoadTexture()
 
 	// Picture loading
 	AUX_RGBImageRec *texture1;
-	texture1 = auxDIBImageLoad("grass.bmp");
+	//texture1 = auxDIBImageLoad("grass.bmp");
 
 	// Texture creating
 	glGenTextures(1, &texture[0]);

@@ -15,6 +15,34 @@ Universe::~Universe(void)
 
 void Universe::Run()
 {
+	//TEST Lua
+	lua_State* L = luaL_newstate();
+	
+	luaL_dostring(L, "a = 10 + 5");
+	lua_getglobal(L, "a");
+	int i = lua_tointeger(L, -1);
+	printf("%d\n", i);
+	
+	lua_close(L);
+	/*
+	int iErr = 0;
+	lua_State *lua = lua_open(2);  // Open Lua
+	luaopen_io (lua);              // Load io library
+	if ((iErr = luaL_loadfile (lua, "test.lua")) == 0)
+	{
+	   // Call main...
+	   if ((iErr = lua_pcall (lua, 0, LUA_MULTRET, 0)) == 0)
+	   { 
+		  // Push the function name onto the stack
+		  lua_pushstring (lua, "helloWorld");
+		  // Function is located in the Global Table
+		  lua_gettable (lua, LUA_GLOBALSINDEX);  
+		  lua_pcall (lua, 0, 0, 0);
+	   }
+	}
+	lua_close (lua);
+	*/
+
 	bool continueFlag; //Continue game or not
 	char inPacket[256]; //Holds the input packet
 	char outPacket[256]; //Holds the output packet
@@ -72,7 +100,7 @@ void Universe::Run()
 
 							isOnline = false;
 							for (i = 0; i < game->data->locationsCount; i++)
-								for (j = 0; j < game->data->locations[i]->currentCharactersCount; j++) //TODO: GetCurrentMapObject. If NULL => Offline
+								for (j = 0; j < game->data->locations[i]->currentCharactersCount; j++)
 									if (!strcmp(game->data->locations[i]->currentCharacters[j]->login, inPacket + 3))
 									{
 										isOnline = true;
@@ -121,8 +149,11 @@ void Universe::Run()
 				}
 				else if (iResult == -1)
 				{//Client disconnected
-					//TODO: data->UnspawnCharacter(clients[ci]->character)
-					delete clients[ci]->character;
+					if (clients[ci]->character)
+					{
+						//TODO: data->UnspawnCharacter(clients[ci]->character)
+						delete clients[ci]->character;
+					}
 
 					delete clients[ci];
 					clientsCount--;

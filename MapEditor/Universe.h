@@ -94,7 +94,7 @@ public:
 	void DeleteTexture(); //TEST
 	bool GraphicsInit();
 	void MenuGUIInit(gcn::SDLInput* &GUIInput);
-	void EditorGUIInit(gcn::SDLInput* &GUIInput);
+	void EditorGUIInit();
 	void MenuGUIDestroy(gcn::SDLInput* GUIInput);
 	void EditorGUIDestroy(gcn::SDLInput* GUIInput);
 	bool BrushesInit();

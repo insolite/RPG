@@ -2,9 +2,17 @@
 #include "Render.h"
 
 
-Render::Render(void)
+Render::Render(int screenWidth, int screenHeight)
 {
-	//universe = Universe::instance;
+	device = createDevice( video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 16, false, false, false, 0);
+
+	if (!device)
+		return;
+	device->setWindowCaption(L"RPGator");
+
+	driver = device->getVideoDriver();
+	smgr = device->getSceneManager();
+	guienv = device->getGUIEnvironment();		
 }
 
 
