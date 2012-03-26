@@ -11,6 +11,41 @@
 #include "Game.h"
 #include "GameResources.h"
 
+template<class T>
+T** GameResources::FilterByTag(T** mapObjects, int mapObjectsCounter, char** tags, int numberOfTags)
+{
+	int i, j, k;
+	T** result;
+	int resultSize = 0;
+	bool flag = true;
+
+	for (i = 0; i < mapObjectsCounter; i++)
+	{
+		for (k = 0; k < numberOfTags; k++)	
+		{
+			flag = false;
+			for (j = 0; j < mapObjects[i]->tagsCount; j++)
+			{
+				if (strcmp(tags[k], mapObjects[i]->tags[j]) != 0)
+				{
+					flag = true;
+					break;
+				}
+			}
+
+			if (!flag) break;
+		}
+
+		if (flag)
+		{
+			result = (T**)realloc(mapobjects, (++resultSize) * sizeof(T));
+			result[resultSize - 1] = mapObjects[i];
+		}
+	}
+
+	return result;
+}
+
 GameResources::GameResources(void)
 {
 	MapObjectsInit<MapCell>(mapCells, mapCellsCount, "MapCell");

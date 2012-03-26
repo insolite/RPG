@@ -14,7 +14,10 @@ public:
 	int staticsCount;
 	int itemsCount;
 	int charactersCount;
-	
+
+	template<class T>
+	__declspec(dllexport) T** FilterByTag(T** mapObjects, int mapObjectsCounter, char** tag, int numberOfTags);
+
 	template<class T>
 	__declspec(dllexport) T* GetMapObject(T** mapObjects, int mapObjectsCount, int id)
 	{
