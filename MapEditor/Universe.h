@@ -11,6 +11,7 @@
 #include "DeleteGameButton.h"
 #include "NewGameWindow.h"
 #include "QuitButton.h"
+#include "Render.h"
 using namespace std;
 
 class Universe
@@ -82,6 +83,7 @@ public:
 	gcn::Container* staticSelectTabContainer;
 	gcn::Container* itemSelectTabContainer;
 
+	Render* render;
 
 	void CreateBrushMask(int r);
 	void DeleteBrushMask();

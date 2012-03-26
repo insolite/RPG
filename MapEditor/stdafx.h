@@ -30,6 +30,8 @@
 
 #include "../RPGatorDll/RPGatorDll.h"
 
+#include "../Include/Irrlicht/irrlicht.h"
+
 //Lib
 
 #pragma comment(lib, "kernel32.lib")
@@ -43,3 +45,5 @@
 #pragma comment(lib, "../Lib/guichan.lib")
 
 #pragma comment(lib, "../Release/RPGator.lib")
+
+#pragma comment(lib, "../Lib/Irrlicht.lib")

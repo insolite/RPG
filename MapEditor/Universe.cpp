@@ -2,6 +2,7 @@
 #include "Universe.h"
 #include "SliderActionListener.h"
 
+
 Universe::Universe(void)
 {
 	char fontCharacters[256];
@@ -15,7 +16,7 @@ Universe::Universe(void)
 	screenHeight = 768;
 	fullscreen = true;
 	*/
-	cellSize = 24;
+	cellSize = 10;
 	cameraMoveZoneWidth = 24;
 	toolbarWidth = 192;
 	toolbarLeftMargin = 8;
@@ -25,6 +26,7 @@ Universe::Universe(void)
 
 	GraphicsInit();
 	
+	/*
 	graphics = new gcn::OpenGLGraphics(screenWidth, screenHeight);
 	gcn::Image::setImageLoader(new gcn::OpenGLSDLImageLoader());
 
@@ -35,7 +37,7 @@ Universe::Universe(void)
 	fgets(fontCharacters, 256, f);
 	fclose(f);
 	
-	gcn::Widget::setGlobalFont(new gcn::ImageFont("editor/_font/face.png", fontCharacters));
+	gcn::Widget::setGlobalFont(new gcn::ImageFont("editor/_font/face.png", fontCharacters));*/
 }
 
 Universe::~Universe(void)
@@ -72,6 +74,7 @@ void Universe::CursorReset()
 
 bool Universe::GraphicsInit()
 {
+	/*
 	Uint32 flags = SDL_OPENGL;
 	
 	if (fullscreen)
@@ -104,7 +107,20 @@ bool Universe::GraphicsInit()
 	glEnable(GL_BLEND);
 
 	glMatrixMode(GL_MODELVIEW);
-	
+	*/
+	render=new Render();
+	render->device = createDevice( video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 16,false, false, false, 0);
+
+        if (!render->device) return false;
+		render->device->setWindowCaption(L"RPGator");
+
+		
+		render->driver = render->device->getVideoDriver();
+        render->smgr = render->device->getSceneManager();
+        render->guienv = render->device->getGUIEnvironment();
+		
+		
+
 	return false;
 }
 
@@ -191,7 +207,7 @@ void Universe::EditorGUIInit(gcn::SDLInput* &GUIInput)
 	toolbarContainer = new FocusingWindow("Tools");
 	toolbarContainer->setDimension(gcn::Rectangle(0, 0, toolbarWidth, screenHeight));
 	toolbarContainer->setFocusable(true);
-	toolbarContainer->setMovable(false);
+	toolbarContainer->setMovable(true);
 	
 	//Main container init
 	editorMainContainer = new gcn::Container();
@@ -342,7 +358,7 @@ void Universe::DrawScene()
 {
 	int i, j, drawWidth, drawHeight;
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	glTranslated(-cameraX, -cameraY, 0); //Camera positioning
 	
@@ -351,60 +367,39 @@ void Universe::DrawScene()
 	if (drawWidth > currentLocation->width)
 		drawWidth = currentLocation->width;
 	if (drawHeight > currentLocation->height)
-		drawHeight = currentLocation->height;
+		drawHeight = currentLocation->height;*/
 	//for (i = 0; i < currentLocation->height; i++)
-	for (i = cameraY / cellSize; i < drawHeight; i++)
+	for (i = 0; i < currentLocation->height; i++)
 	{
 		//for (j = 0; j < currentLocation->width; j++)
-		for (j = cameraX / cellSize; j < drawWidth; j++)
+		for (j = 0; j < currentLocation->width; j++)
 		{
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
 				case Free:
-					glColor4d(0, 1, 0, 1);
+					render->drawKub(j*cellSize,-20,i*cellSize);
 					break;
-				case Locked:
+				/*case Locked:
 					glColor4d(1, 0, 0, 0.5);
 					break;
 				default:
-					glColor4d(1, 1, 1, 1);
+					glColor4d(1, 1, 1, 1);*/
 			}
-			glBindTexture(GL_TEXTURE_2D, texture[0]);
+			/*glBindTexture(GL_TEXTURE_2D, texture[0]);
 			glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, 0.0f); glVertex2d(j * cellSize, i * cellSize);
 			glTexCoord2f(1.0f, 0.0f); glVertex2d(j * cellSize, i * cellSize + cellSize);
 			glTexCoord2f(1.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize + cellSize);
 			glTexCoord2f(0.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize);
-			glEnd();
+			glEnd();*/
 		}
 	}
-	
-	glBegin(GL_QUADS);
-		glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-		for (i = 0; i < 2 * brushRadius + 1; i++)
-		{
-			for (j = 0; j < 2 * brushRadius + 1; j++)
-			{
-				if (brushMask[i][j])
-				{
-					glVertex2d(Index2Pix(cursorX - brushRadius + j), Index2Pix(cursorY - brushRadius + i));
-					glVertex2d(Index2Pix(cursorX - brushRadius + j) + cellSize, Index2Pix(cursorY - brushRadius + i));
-					glVertex2d(Index2Pix(cursorX - brushRadius + j) + cellSize, Index2Pix(cursorY - brushRadius + i) + cellSize);
-					glVertex2d(Index2Pix(cursorX - brushRadius + j), Index2Pix(cursorY - brushRadius + i) + cellSize);
-				}
-			}
-		}
-	glEnd();
-	
-	editorGUI->draw();
-
-	SDL_GL_SwapBuffers();
 }
 
 void Universe::SetLocation(Location* location)
 {
-	CameraReset();
-	CursorReset();
+	//CameraReset();
+	//CursorReset();
 	currentLocation = location;
 }
 
@@ -459,6 +454,7 @@ bool Universe::Menu(char* &gameName)
 
 void Universe::Run(char* gameName)
 {
+	/*
 	Uint8 *keys;
 	SDL_Event event;
 	gcn::SDLInput* GUIInput;
@@ -485,10 +481,10 @@ void Universe::Run(char* gameName)
 
 	continueFlag = true;
 	
-	keys = SDL_GetKeyState(NULL);
-	SDL_GetMouseState(&mouseX, &mouseY);
+	//keys = SDL_GetKeyState(NULL);
+	//SDL_GetMouseState(&mouseX, &mouseY);
 	int lastUpdate = SDL_GetTicks();
-	
+	/*
 	while (continueFlag)
 	{
 		SDL_PumpEvents();
@@ -578,7 +574,7 @@ void Universe::Run(char* gameName)
 		Sleep(1);
 	}
 	
-	EditorGUIDestroy(GUIInput);
+	//EditorGUIDestroy(GUIInput);
 
 	for (int i = 0; i < brushesCount; i++)
 		delete brushMasks[i];
@@ -587,7 +583,30 @@ void Universe::Run(char* gameName)
 	//TEST
 	DeleteTexture();
 	
-	delete game;
+	delete game;*/
+	game = new Game(gameName);
+	SetLocation(game->data->locations[0]);
+
+
+	//DrawScene();
+	//render->smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
+	render->smgr->addCameraSceneNodeFPS();
+	render->device->getCursorControl()->setVisible(false);
+	DrawScene();
+	render->drawKub(0,0,0);
+	while (render->device->run())
+		{
+			//thear all logic
+
+			render->driver->beginScene(true, true, SColor(255,100,101,140));
+				//thear all graphics
+				
+				render->smgr->drawAll();
+				render->guienv->drawAll();
+				//universe->DrawScene();
+
+			render->driver->endScene();
+		}
 }
 
 bool Universe::BrushesInit()
