@@ -45,4 +45,4 @@ extern "C"
 #pragma comment(lib, "../Lib/sqlite3.lib")
 #pragma comment(lib, "../Lib/lua52.lib")
 
-#pragma comment(lib, "../Release/RPGator.lib")
+#pragma comment(lib, "../Debug/RPGator.lib")

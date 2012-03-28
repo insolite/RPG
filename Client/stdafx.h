@@ -23,10 +23,6 @@
 #include "../Include/SDL/SDL.h"
 #include "../Include/SDL/SDL_image.h"
 #include "../Include/sqlite3.h"
-#include "../Include/guichan/guichan.hpp"
-#include "../Include/guichan/guichan/opengl.hpp"
-#include "../Include/guichan/guichan/sdl.hpp"
-#include "../Include/guichan/guichan/opengl/openglsdlimageloader.hpp"
 
 #include "../RPGatorDll/RPGatorDll.h"
 
@@ -43,6 +39,5 @@
 #pragma comment(lib, "../Lib/SDLmain.lib")
 #pragma comment(lib, "../Lib/SDL_image.lib")
 #pragma comment(lib, "../Lib/sqlite3.lib")
-#pragma comment(lib, "../Lib/guichan.lib")
 
-#pragma comment(lib, "../Release/RPGator.lib")
+#pragma comment(lib, "../Debug/RPGator.lib")

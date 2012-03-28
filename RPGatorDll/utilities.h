@@ -15,6 +15,8 @@ enum InitializationType
 	Client
 };
 
+#define CELL_SIZE 10
+
 extern "C" __declspec(dllexport) int ReadDir(const char* path, char** &elements, bool directoriesOnly);
 extern "C" __declspec(dllexport) void ClearDir(const char* path);
 
@@ -36,5 +38,12 @@ extern "C" __declspec(dllexport) void SetPacketType(char* packet, Packet type);
 extern "C" __declspec(dllexport) Packet GetPacketType(char* packet);
 
 extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlite3* db, char* query);
+
+extern "C++" __declspec(dllexport) int Pix2Index(int pos);
+extern "C++" __declspec(dllexport) int Index2Pix(int pos);
+extern "C++" __declspec(dllexport) int PixRound(int pos);
+
+extern "C++" __declspec(dllexport) wchar_t* strToWchart(char* cStr);
+
 //extern "C" __declspec(dllexport) int Str2Int(char *str);
 //extern "C" __declspec(dllexport) char *Int2Str(int num);

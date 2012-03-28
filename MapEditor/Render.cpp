@@ -1,10 +1,13 @@
 #include "StdAfx.h"
+#include "ForcedDeclaration.h"
+#include "MenuEventReceiver.h"
+#include "EditorEventReceiver.h"
+#include "Universe.h"
 #include "Render.h"
-
 
 Render::Render(int screenWidth, int screenHeight)
 {
-	device = createDevice( video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 16, false, false, false, 0);
+	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 16, false, false, false, NULL); //(IEventReceiver*)editorEventReceiver
 
 	if (!device)
 		return;
@@ -12,9 +15,9 @@ Render::Render(int screenWidth, int screenHeight)
 
 	driver = device->getVideoDriver();
 	smgr = device->getSceneManager();
-	guienv = device->getGUIEnvironment();		
+	
+	
 }
-
 
 Render::~Render(void)
 {

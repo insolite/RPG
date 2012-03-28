@@ -1,18 +1,40 @@
 #pragma once
-#include "StringListModel.h"
-#include "MapObjectSelectTabContainer.h"
-#include "MapObjectSelectWindow.h"
-#include "FloorDropDown.h"
-#include "LocationDropDown.h"
-#include "BrushDropDown.h"
-#include "ToggleWindowVisibilityButton.h"
-#include "FocusingWindow.h"
-#include "LoadGameButton.h"
-#include "DeleteGameButton.h"
-#include "NewGameWindow.h"
-#include "QuitButton.h"
-#include "Render.h"
-using namespace std;
+
+
+enum MenuGUIElements
+{
+	GamesListBox,
+	LoadGameButton,
+	QuitButton
+};
+
+enum EditorGUIElements
+{
+	//QuitButton,
+	ToolBarWindow,
+	FloorsComboBox,
+	LocationsComboBox,
+	MapObjectsTabControl,
+	BrushMaskSizeScroll,
+	BrushMaskSizeStaticText,
+
+	//Order is critical
+	MapCellSelectWindow,
+	NPCSelectWindow,
+	ItemSelectWindow,
+	StaticSelectWindow,
+	CharacterSelectWindow,
+	MapCellSelectWindowTab,
+	NPCSelectWindowTab,
+	ItemSelectWindowTab,
+	StaticSelectWindowTab,
+	CharacterSelectWindowTab,
+	MapCellSelectWindowToggleButton,
+	NPCSelectWindowToggleButton,
+	ItemSelectWindowToggleButton,
+	StaticSelectWindowToggleButton,
+	CharacterSelectWindowToggleButton,
+};
 
 class Universe
 {
@@ -27,15 +49,12 @@ public:
 	int toolbarWidth; //pixels
 	int cameraMoveZoneWidth; //pixels
 	int toolbarLeftMargin; //pixels
-	int cellSize; //pixels
 	int brushMaskMinSize; //points
 	int brushMaskMaxSize; //points
+	char* gameName; //Buffer between menu and editor
 
 	bool** brushMask;
 	int brushRadius;
-
-
-	GLuint* texture; //TEST
 
 	//CellProperty currentCellProperty;
 	BrushMask** brushMasks;
@@ -45,43 +64,14 @@ public:
 	MapObject* brush[4];
 	int brushIndex; //TODO: char
 
-	// GUI
-	gcn::Graphics* graphics;
+	//GUI, input
+	IGUIEnvironment* guienv;
+	IGUIEnvironment* menuGuienv;
+	MenuEventReceiver* menuEventReceiver;
+	EditorEventReceiver* editorEventReceiver;
 
-	// Menu GUI
-	gcn::Gui* menuGUI;
-	gcn::Container* menuMainContainer;
-	gcn::Button* newGameButton;
-	LoadGameButton* loadGameButton;
-	gcn::Button* deleteGameButton;
-	QuitButton* quitButton;
-	StringListModel* gamesListModel;
-	gcn::ListBox* gamesListBox;
-	gcn::ScrollArea* gamesListBoxScrollArea;
-	gcn::Window* newGameWindow;
-
-	// Editor GUI
-	gcn::Gui* editorGUI;
-	gcn::Window* toolbarContainer;
-	gcn::Container* editorMainContainer;
-	gcn::Container* editAreaContainer;
-	gcn::Window* mapCellSelectWindow;
-	gcn::Window* npcSelectWindow;
-	gcn::Window* staticSelectWindow;
-	gcn::Window* itemSelectWindow;
-	
-	FloorDropDown* floorsDropDown;
-	LocationDropDown* locationsDropDown;
-	gcn::ActionListener* actionListener;
-	gcn::TabbedArea* brushesTabbedArea;
-
-	gcn::Slider* brushMaskSlider;
-	gcn::Label* brushMaskSizeLabel;
-
-	gcn::Container* mapCellSelectTabContainer;
-	gcn::Container* npcSelectTabContainer;
-	gcn::Container* staticSelectTabContainer;
-	gcn::Container* itemSelectTabContainer;
+	//GUI elements
+	IGUIListBox* lb;
 
 	Render* render;
 
@@ -89,28 +79,17 @@ public:
 	void DeleteBrushMask();
 	void PrintBrushMask();
 
-
-	bool LoadTexture(); //TEST
-	void DeleteTexture(); //TEST
-	bool GraphicsInit();
-	void MenuGUIInit(gcn::SDLInput* &GUIInput);
+	void MenuGUIInit();
 	void EditorGUIInit();
-	void MenuGUIDestroy(gcn::SDLInput* GUIInput);
-	void EditorGUIDestroy(gcn::SDLInput* GUIInput);
+	void MenuGUIDestroy();
+	void EditorGUIDestroy();
 	bool BrushesInit();
 	void SetLocation(Location* location);
-	void DrawMenu();
 	void DrawScene();
-	bool Menu(char* &gameName);
-	void Run(char* gameName);
+	bool Menu();
+	void Run();
 	void CameraMove(int x, int y);
-	void CameraReset();
-	void CursorReset();
 	void PaintMapCell();
-	
-	int Pix2Index(int pos);
-	int Index2Pix(int pos);
-	int PixRound(int pos);
 	
 	Universe(void);
 	~Universe(void);

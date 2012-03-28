@@ -79,58 +79,23 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BrushDropDown.h" />
-    <ClInclude Include="ClosableWindow.h" />
-    <ClInclude Include="DeleteGameButton.h" />
-    <ClInclude Include="FloorDropDown.h" />
-    <ClInclude Include="FocusingWindow.h" />
-    <ClInclude Include="LoadGameButton.h" />
-    <ClInclude Include="LocationDropDown.h" />
-    <ClInclude Include="MapObjectSelectOKButton.h" />
-    <ClInclude Include="MapObjectSelectTabContainer.h" />
-    <ClInclude Include="MapObjectSelectWindow.h" />
-    <ClInclude Include="NewGameOKButton.h" />
-    <ClInclude Include="NewGameWindow.h" />
-    <ClInclude Include="QuitButton.h" />
+    <ClInclude Include="EditorEventReceiver.h" />
+    <ClInclude Include="ForcedDeclaration.h" />
+    <ClInclude Include="MenuEventReceiver.h" />
     <ClInclude Include="Render.h" />
-    <ClInclude Include="SliderActionListener.h" />
-    <ClInclude Include="TagCheckBox.h" />
-    <ClInclude Include="ToggleWindowVisibilityButton.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="StringDropDown.h" />
-    <ClInclude Include="StringListModel.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Universe.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Include\RPGator\GuichanOverride.cpp">
-      <DeploymentContent>false</DeploymentContent>
-    </ClCompile>
-    <ClCompile Include="BrushDropDown.cpp" />
-    <ClCompile Include="ClosableWindow.cpp" />
-    <ClCompile Include="DeleteGameButton.cpp" />
-    <ClCompile Include="myEventReceiver.cpp" />
-    <ClCompile Include="FloorDropDown.cpp" />
-    <ClCompile Include="FocusingWindow.cpp" />
-    <ClCompile Include="LoadGameButton.cpp" />
-    <ClCompile Include="LocationDropDown.cpp" />
+    <ClCompile Include="EditorEventReceiver.cpp" />
     <ClCompile Include="MapEditor.cpp" />
-    <ClCompile Include="MapObjectSelectOKButton.cpp" />
-    <ClCompile Include="MapObjectSelectTabContainer.cpp" />
-    <ClCompile Include="MapObjectSelectWindow.cpp" />
-    <ClCompile Include="NewGameOKButton.cpp" />
-    <ClCompile Include="NewGameWindow.cpp" />
-    <ClCompile Include="QuitButton.cpp" />
+    <ClCompile Include="MenuEventReceiver.cpp" />
     <ClCompile Include="Render.cpp" />
-    <ClCompile Include="SliderActionListener.cpp" />
-    <ClCompile Include="TagCheckBox.cpp" />
-    <ClCompile Include="ToggleWindowVisibilityButton.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="StringDropDown.cpp" />
-    <ClCompile Include="StringListModel.cpp" />
     <ClCompile Include="Universe.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
