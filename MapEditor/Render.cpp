@@ -8,7 +8,7 @@
 Render::Render(int screenWidth, int screenHeight)
 {
 	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 16, false, false, false, NULL); //(IEventReceiver*)editorEventReceiver
-
+	device->setResizable(true);
 	if (!device)
 		return;
 	device->setWindowCaption(L"RPGator");

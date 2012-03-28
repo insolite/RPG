@@ -229,8 +229,9 @@ void Universe::Run()
 	//DrawScene();
 	//render->smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
 	
-	render->smgr->addCameraSceneNodeFPS();
-	render->device->getCursorControl()->setVisible(false);
+	//render->smgr->addCameraSceneNodeFPS();
+	ICameraSceneNode *camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
+	//render->device->getCursorControl()->setVisible(false);
 	/* //Uncomment it (and comment two lines above) to enable gui control
 	//render->smgr->addCameraSceneNodeFPS();
 	render->device->getCursorControl()->setVisible(true);
@@ -240,6 +241,15 @@ void Universe::Run()
 	render->drawKub(0,0,0);
 	while (render->device->run() && Universe::instance->gameName)
 	{
+		//core::vector3df<f32> Km = camera->getPosition();
+		//core::p
+		//core::vector2df<f32> m = render->device->getCursorControl()->getPosition();
+		if(editorEventReceiver->IsKeyDown(irr::KEY_LEFT))
+		{
+			//Km.X-=2;
+		}
+		//camera->setPosition(Km)
+
 		render->driver->beginScene(true, true, SColor(255,100,101,140));
 			render->smgr->drawAll();
 			guienv->drawAll();
