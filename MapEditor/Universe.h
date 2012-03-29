@@ -1,16 +1,29 @@
 #pragma once
 
+enum ProgramState
+{
+	Continue,
+	NextLevel,
+	Exit
+};
 
 enum MenuGUIElements
 {
 	GamesListBox,
+	NewGameButton,
 	LoadGameButton,
-	QuitButton
+	DeleteGameButton,
+	NewGameWindow,
+	NewGameOKButton,
+	GameNameEditBox,
+	DefaultLocationWidthEditBox,
+	DefaultLocationHeightEditBox,
+	QuitMenuButton
 };
 
 enum EditorGUIElements
 {
-	//QuitButton,
+	QuitEditorButton,
 	ToolBarWindow,
 	FloorsComboBox,
 	LocationsComboBox,
@@ -72,6 +85,13 @@ public:
 
 	//GUI elements
 	IGUIListBox* lb;
+	IGUIWindow* newGameWindow;
+	IGUIEditBox* gameNameEditBox;
+	IGUIEditBox* defaultLocationWidthEditBox;
+	IGUIEditBox* defaultLocationHeightEditBox;
+	IGUIComboBox* locationsComboBox;
+
+	ProgramState state;
 
 	Render* render;
 
@@ -87,7 +107,7 @@ public:
 	void SetLocation(Location* location);
 	void DrawScene();
 	bool Menu();
-	void Run();
+	bool Run();
 	void CameraMove(int x, int y);
 	void PaintMapCell();
 	

@@ -13,7 +13,8 @@ int main(int argc, char* argv[])
 
 	while (!universe->Menu())
 	{
-		universe->Run();
+		if (universe->Run())
+			break;
 	}
 
 	return 0;

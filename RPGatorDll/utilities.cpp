@@ -174,6 +174,8 @@ extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlit
 				columnName = sqlite3_column_name(stmt, i);
 				switch (sqlite3_column_type(stmt, i))
 				{
+					case SQLITE_BLOB:
+						sqliteResults[rowsCount].strings[columnName] = (std::string)(char*)sqlite3_column_blob(stmt, i);
 					case SQLITE_TEXT:
 						sqliteResults[rowsCount].strings[columnName] = (std::string)(char*)sqlite3_column_text(stmt, i);
 						break;
@@ -220,4 +222,11 @@ wchar_t* strToWchart(char* cStr)
 	mbstowcs_s(sizeOut, wCharOutput, sizeInWords, cStr, strlen(cStr) + 1);
 
 	return wCharOutput;
+}
+
+int WCharToInt(const wchar_t* str)
+{
+	char n[16];
+	wcstombs(n, str, 255);
+	return atoi(n);
 }

@@ -45,7 +45,7 @@ void Universe::MenuGUIInit()
 	char** games;
 	int gamesCount;
 	gamesCount = ReadDir("game", games, true);
-	lb = menuGuienv->addListBox(rect< s32 >(128, 128, 256, 512), NULL, GamesListBox, true);
+	lb = menuGuienv->addListBox(rect< s32 >(256, 160, 480, 512), NULL, GamesListBox, true);
 	for (int i = 0; i < gamesCount; i++)
 	{
 		wchar_t* wstr = strToWchart(games[i]);
@@ -58,7 +58,19 @@ void Universe::MenuGUIInit()
 		lb->setSelected(0);
 	
 	//IGUIButton* lb = menuGuienv->addListBox(rect< s32 >(128, 128, 256, 512), NULL, GamesListBox, true);
-	IGUIButton* btn = menuGuienv->addButton(rect< s32 >(10, 128, 110, 128 + 32), NULL, LoadGameButton, L"Load", L"Loads selected game");
+	menuGuienv->addButton(rect< s32 >(488, 160, 544, 184), NULL, NewGameButton, L"New", L"Create new game");
+	menuGuienv->addButton(rect< s32 >(488, 192, 544, 216), NULL, LoadGameButton, L"Load", L"Loads selected game");
+	menuGuienv->addButton(rect< s32 >(488, 224, 544, 248), NULL, DeleteGameButton, L"Delete", L"Deletes selected game");
+
+	menuGuienv->addButton(rect< s32 >(488, 224, 544, 248), NULL, QuitMenuButton, L"Quit", L"Exits editor");
+
+	for (u32 i=0; i<EGDC_COUNT ; ++i)
+	{
+		SColor color = menuGuienv->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
+		color.setAlpha(255);
+		menuGuienv->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, color);
+	}
+
 
 	/*
 	//New game window
@@ -87,9 +99,9 @@ void Universe::EditorGUIInit()
 	guienv = render->device->getGUIEnvironment();
 	render->device->setEventReceiver((IEventReceiver*)editorEventReceiver);
 
-	IGUIWindow* wnd = guienv->addWindow(rect< s32 >(screenWidth - toolbarWidth, 0, screenWidth, screenHeight), false, L"Toolset", 0, ToolBarWindow);
+	IGUIWindow* wnd = guienv->addWindow(rect< s32 >(0, 0, toolbarWidth, screenHeight), false, L"Toolbar", 0, ToolBarWindow);
 	
-	IGUIButton* btn = guienv->addButton(rect< s32 >(10, 128, 110, 128 + 32), wnd, QuitButton, L"Quit", L"Exits Program");
+	//IGUIButton* btn = guienv->addButton(rect< s32 >(10, 128, 110, 128 + 32), wnd, QuitEditorButton, L"Quit", L"Exits to main menu");
 	
 	//Floors ComboBox
 	IGUIComboBox* floorsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 32, toolbarLeftMargin + 176, 48), wnd, FloorsComboBox);
@@ -97,7 +109,7 @@ void Universe::EditorGUIInit()
 	floorsComboBox->addItem(L"first fl.");
 	
 	//Locations ComboBox
-	IGUIComboBox* locationsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 64, toolbarLeftMargin + 176, 80), wnd, LocationsComboBox);
+	locationsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 64, toolbarLeftMargin + 176, 80), wnd, LocationsComboBox);
 	for (int i = 0; i < game->data->locationsCount; i++)
 	{
 		wchar_t* wstr = strToWchart(game->data->locations[i]->name);
@@ -106,15 +118,12 @@ void Universe::EditorGUIInit()
 	}
 
 	//MapObject select windows, tabs, buttons, etc.
-	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 256, toolbarLeftMargin + 176, 256 + 176), wnd, true, true, MapObjectsTabControl);
-	IGUIWindow* wnd1;
+	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 92, toolbarLeftMargin + 176, 92 + 256), wnd, true, true, MapObjectsTabControl);
 	IGUITab* tab;
 	for (int i = 0; i < 5; i++)
 	{
-		wnd1 = guienv->addWindow(rect< s32 >(64, 64, 536, 536), false, L"MapObject select", 0, i + MapCellSelectWindow);
-		wnd1->setVisible(false);
 		tab = tabc->addTab(L"MO", i + MapCellSelectWindowTab);
-		guienv->addButton(rect< s32 >(16, 16, 32, 32), tab, i + MapCellSelectWindowToggleButton, L"Select", L"Select MapObject from list");
+		guienv->addButton(rect< s32 >(16, 16, 64, 32), tab, i + MapCellSelectWindowToggleButton, L"Select", L"Select MapObject from list");
 	}
 	
 	//Brush mask scroll bar
@@ -129,7 +138,9 @@ void Universe::EditorGUIInit()
 	wnd->setDraggable(false); //TEST
 	wnd->getCloseButton()->setEnabled(false); //TEST
 
-	//guienv->getSkin()->setFont(guienv->getBuiltInFont(), EGDF_TOOLTIP);
+	//gui::IGUIFont* font = device->getGUIEnvironment()->getBuiltInFont();
+	gui::IGUIFont* font2 = render->device->getGUIEnvironment()->getFont("editor/font.bmp");
+	guienv->getSkin()->setFont(font2);
 }
 
 void Universe::MenuGUIDestroy()
@@ -198,9 +209,10 @@ bool Universe::Menu()
 
 	MenuGUIInit();
 	
-	while (render->device->run() && !Universe::instance->gameName) // && render->device->
+	state = Continue;
+	while (render->device->run() && state == Continue)
 	{
-		render->driver->beginScene(true, true, SColor(255,100,101,140));
+		render->driver->beginScene(true, true, SColor(255, 100, 101, 140));
 			menuGuienv->drawAll();
 		render->driver->endScene();
 	}
@@ -213,7 +225,7 @@ bool Universe::Menu()
 	return true;
 }
 
-void Universe::Run()
+bool Universe::Run()
 {
 	game = new Game(gameName, Editor);
 	SetLocation(game->data->locations[0]);
@@ -239,7 +251,8 @@ void Universe::Run()
 
 	DrawScene();
 	render->drawKub(0,0,0);
-	while (render->device->run() && Universe::instance->gameName)
+	state = Continue;
+	while (render->device->run() && state == Continue)
 	{
 		//core::vector3df<f32> Km = camera->getPosition();
 		//core::p
@@ -263,6 +276,10 @@ void Universe::Run()
 	delete brushMasks;
 
 	delete game;
+
+	if (state == NextLevel)
+		return false;
+	return true;
 }
 
 bool Universe::BrushesInit()
