@@ -95,13 +95,25 @@ void GameResources::MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* 
 		mapObjects[mapObjectsCount - 1] = new T(sqliteResult[mapObjectsCount - 1]);
 	}
 }
-/*
-template<class T> //T inherits MapObject
-T* GameResources::GetMapObject(T** mapObjects, int mapObjectsCount, int id)
+
+int GameResources::GetMapObjectsTags(MapObject** mapObjects, int mapObjectsCount, char** &tags)
 {
-	for (int i = 0; i < mapObjectsCount; i++)
-		if (mapObjects[i]->id == id)
-			return mapObjects[i];
-	return NULL;
+	int tagsCount;
+	int i, j;
+
+	tagsCount = 0;
+	tags = NULL;
+	for (i = 0; i < mapObjectsCount; i++)
+	{
+		for (j = 0; j < mapObjects[i]->tagsCount; j++)
+		{
+			if (std::find(tags, tags + tagsCount, mapObjects[i]->tags[j]) == (tags + tagsCount))
+			{
+				tagsCount++;
+				tags = (char**)realloc(tags, tagsCount * sizeof(char*));
+				tags[tagsCount - 1] = mapObjects[i]->tags[j];
+			}
+		}
+	}
+	return tagsCount;
 }
-*/

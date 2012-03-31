@@ -47,6 +47,16 @@ enum EditorGUIElements
 	ItemSelectWindowToggleButton,
 	StaticSelectWindowToggleButton,
 	CharacterSelectWindowToggleButton,
+	MapCellSelectWindowListBox,
+	NPCSelectWindowListBox,
+	ItemSelectWindowListBox,
+	StaticSelectWindowListBox,
+	CharacterSelectWindowListBox,
+	MapCellSelectWindowOKButton,
+	NPCSelectWindowOKButton,
+	ItemSelectWindowOKButton,
+	StaticSelectWindowOKButton,
+	CharacterSelectWindowOKButton,
 };
 
 class Universe
@@ -74,8 +84,8 @@ public:
 	BrushMask* currentBrushMask;
 	int brushesCount;
 
-	MapObject* brush[4];
-	int brushIndex; //TODO: char
+	MapObject* brush[5];
+	int brushIndex;
 
 	//GUI, input
 	IGUIEnvironment* guienv;

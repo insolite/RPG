@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <algorithm>
 #include <math.h>
 
 //Include

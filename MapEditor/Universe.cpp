@@ -9,9 +9,6 @@ Universe* Universe::instance;
 
 Universe::Universe(void)
 {
-	char fontCharacters[256];
-	FILE* f;
-
 	screenWidth = 800;
 	screenHeight = 600;
 	fullscreen = false;
@@ -44,11 +41,12 @@ void Universe::MenuGUIInit()
 
 	char** games;
 	int gamesCount;
+	wchar_t* wstr;
 	gamesCount = ReadDir("game", games, true);
 	lb = menuGuienv->addListBox(rect< s32 >(256, 160, 480, 512), NULL, GamesListBox, true);
 	for (int i = 0; i < gamesCount; i++)
 	{
-		wchar_t* wstr = strToWchart(games[i]);
+		wstr = strToWchart(games[i]);
 		lb->addItem(wstr);
 		delete wstr;
 		delete games[i];
@@ -57,12 +55,10 @@ void Universe::MenuGUIInit()
 	if (lb->getItemCount() > 0)
 		lb->setSelected(0);
 	
-	//IGUIButton* lb = menuGuienv->addListBox(rect< s32 >(128, 128, 256, 512), NULL, GamesListBox, true);
 	menuGuienv->addButton(rect< s32 >(488, 160, 544, 184), NULL, NewGameButton, L"New", L"Create new game");
 	menuGuienv->addButton(rect< s32 >(488, 192, 544, 216), NULL, LoadGameButton, L"Load", L"Loads selected game");
 	menuGuienv->addButton(rect< s32 >(488, 224, 544, 248), NULL, DeleteGameButton, L"Delete", L"Deletes selected game");
-
-	menuGuienv->addButton(rect< s32 >(488, 224, 544, 248), NULL, QuitMenuButton, L"Quit", L"Exits editor");
+	menuGuienv->addButton(rect< s32 >(488, 256, 544, 280), NULL, QuitMenuButton, L"Quit", L"Exits editor");
 
 	for (u32 i=0; i<EGDC_COUNT ; ++i)
 	{
@@ -70,28 +66,6 @@ void Universe::MenuGUIInit()
 		color.setAlpha(255);
 		menuGuienv->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, color);
 	}
-
-
-	/*
-	//New game window
-	newGameWindow = new NewGameWindow("New game");
-
-	//Buttons init
-	newGameButton = new ToggleWindowVisibilityButton("New", newGameWindow);
-	loadGameButton = new LoadGameButton("Load");
-	deleteGameButton = new DeleteGameButton("Delete", gamesListBox);
-	quitButton = new QuitButton("Quit");
-	newGameButton->setWidth(128);
-	loadGameButton->setWidth(128);
-	deleteGameButton->setWidth(128);
-	quitButton->setWidth(128);
-	menuMainContainer->add(newGameButton, 520, 64);
-	menuMainContainer->add(loadGameButton, 520, 96);
-	menuMainContainer->add(deleteGameButton, 520, 128);
-	menuMainContainer->add(quitButton, 520, 360);
-
-	menuMainContainer->add(newGameWindow, screenWidth / 2 - newGameWindow->getWidth() / 2, screenHeight / 2 - newGameWindow->getHeight() / 2);
-	*/
 }
 
 void Universe::EditorGUIInit()

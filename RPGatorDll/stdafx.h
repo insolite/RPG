@@ -11,6 +11,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <algorithm>
 
 #include "../Include/gl/GL.h"
 #include "../Include/gl/GLU.h"

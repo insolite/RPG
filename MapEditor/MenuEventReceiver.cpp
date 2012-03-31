@@ -4,10 +4,8 @@
 #include "Universe.h"
 #include "MenuEventReceiver.h"
 
-// наш собственный обработчик событий
 bool MenuEventReceiver::OnEvent(const SEvent& event)
 {
-	// просто запоминаем состояние любой клавиши - нажата/отжата
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 	{
 		KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
@@ -18,12 +16,12 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 	}
 	else if (event.EventType == EET_GUI_EVENT)
 	{
-		s32 id = event.GUIEvent.Caller->getID(); // получаем идентификатор элемента, вызвавшего событие
+		s32 eventCallerId = event.GUIEvent.Caller->getID();
 
-		switch(event.GUIEvent.EventType) // обрабатываем события относительно типа
+		switch(event.GUIEvent.EventType)
 		{
 			case EGET_BUTTON_CLICKED:
-				switch (id)
+				switch (eventCallerId)
 				{
 					case LoadGameButton:
 						if (Universe::instance->lb->getSelected() >= 0)
@@ -51,14 +49,13 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						char tmp[1024];
 						int i, width, height;
 
-						//Universe::instance->gameNameEditBox->getText();
 						wcstombs(gameName, Universe::instance->gameNameEditBox->getText(), 255);
 						sprintf(path, "game/%s", gameName);
 						CreateDirectory(path, NULL);
 						/*
-						sprintf(path, "game/%s/data", parent->gameName->getText().c_str());
+						sprintf(path, "game/%s/data", gameName);
 						CreateDirectory(path, NULL);
-						sprintf(path, "game/%s/data/location", parent->gameName->getText().c_str());
+						sprintf(path, "game/%s/data/location", gameName);
 						CreateDirectory(path, NULL);
 						*/
 						sprintf(path, "game/%s/resource", gameName);
@@ -73,8 +70,7 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						//Create game db
 						sprintf(path, "game/%s/db.sqlite", gameName);
 						sqlite3_open(path, &db);
-						//TODO: Init SQL file exec here
-						//...
+						//TODO: If possible, init SQL file with sqlite library function
 						f = fopen("editor/create_db.sql", "rt");
 						query = "";
 						while (!feof(f))
@@ -85,25 +81,39 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						fclose(f);
 						sqlite3_exec(db, query.c_str(), NULL, NULL, NULL);
 
-						//sscanf(parent->mapWidth->getText().c_str(), "%d", &width);
-						//sscanf(parent->mapWidth->getText().c_str(), "%d", &height);
 						width = WCharToInt(Universe::instance->defaultLocationWidthEditBox->getText());
 						height = WCharToInt(Universe::instance->defaultLocationHeightEditBox->getText());
+						
 						char* locationMask = new char[width * height + 1];
-						for (i = 0; i < width * height; i++)
+						for (i = width * height - 1; i >= 0; i--)
 						{
 							locationMask[i] = '\1';
 						}
 						locationMask[width * height] = '\0';
 						sql = new char[width * height + 256];
 						sprintf(sql, "INSERT INTO Location VALUES (1, 'start1', %d, %d, '%s');", width, height, locationMask); //CAST(X'%s' AS TEXT))
+						/*
+						char* locationMask = new char[2 * width * height + 1];
+						for (i = 2 * width * height - 1; i >= 0; i -= 2)
+						{
+							locationMask[i] = '1';
+							locationMask[i - 1] = '0';
+						}
+						locationMask[2 * width * height] = '\0';
+						sql = new char[2 * width * height + 256];
+						sprintf(sql, "INSERT INTO Location VALUES (1, 'start1', %d, %d, X'%s');", width, height, locationMask); //CAST(X'%s' AS TEXT))
+						*/
+
 						sqlite3_exec(db, sql, NULL, NULL, NULL);
 						sqlite3_close(db);
 						delete locationMask;
 						delete sql;
 
-						Universe::instance->lb->addItem(Universe::instance->gameNameEditBox->getText());
-						//Universe::instance->newGameWindow->drop();
+						//Add this game to the games ListBox and select it
+						Universe::instance->lb->setSelected(Universe::instance->lb->addItem(Universe::instance->gameNameEditBox->getText()));
+						//TODO: reorder list in alphabetical order
+						//Close the newGameWindow
+						Universe::instance->newGameWindow->remove();
 						}
 						break;
 					case DeleteGameButton:

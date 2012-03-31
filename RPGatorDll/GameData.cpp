@@ -25,7 +25,6 @@ GameData::~GameData(void)
 
 void GameData::LocationsInit(InitializationType initializationType)
 {
-	int rowsCount;
 	std::vector<SqliteResult> sqliteResult;
 
 	sqliteResult = SqliteGetRows(Game::instance->db, "SELECT * FROM Location");

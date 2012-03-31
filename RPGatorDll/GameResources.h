@@ -26,7 +26,11 @@ public:
 				return mapObjects[i];
 		return NULL;
 	}
-
+	__declspec(dllexport) int GetMapObjectsTags(MapObject** mapObjects, int mapObjectsCount, char** &tags); /*
+																											Seachs for all unique tags in 'mapObjects' and creates new char** array of pointers on them
+																											Return value: The found tags count
+																											Warning! You're only to delete the top pointer on array, but not each pointer on char array, because they points to the real tags in MapObjects and is not duplicated
+																											*/
 	__declspec(dllexport) GameResources(void);
 	__declspec(dllexport) ~GameResources(void);
 
