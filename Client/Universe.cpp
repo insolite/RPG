@@ -63,6 +63,21 @@ void Universe::Run()
 							currentLocation->AddCurrentCharacter(new CurrentCharacter(inPacket));
 						}
 						break;
+					case Say:
+						printf("Message: %s\n", PacketGetString(inPacket, 6));
+						break;
+					case CharacterMoving:
+						printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
+						break;
+					case ItemSpawned:
+						printf ("Type: %d\n", (PacketGetByte(inPacket, 1)));
+						switch(PacketGetByte(inPacket, 1))
+						{
+							case Ground:
+								//Adding item to currentItems of the location
+								break;
+								
+						}
 				}
 			}
 			else if (iResult == -1)
@@ -77,10 +92,7 @@ void Universe::Run()
 			}
 		}
 
-		//Drawing, events, etc.
-		//TODO: correct disconnect in events
-		//system("pause");
-		Sleep(20);
+		Sleep(200);
 	}
 
 	delete connectSocket;

@@ -148,6 +148,37 @@ extern "C" __declspec(dllexport) Packet GetPacketType(char* packet)
 	return (Packet)packet[2];
 }
 
+void CreatePacket( char* packet, Packet packetType, char* formatStr, ... )
+{
+	SetPacketLength(packet, 1);
+	SetPacketType(packet, packetType);
+
+	va_list params;
+
+	va_start(params, formatStr);
+	
+	char tmp[256];
+	strcpy(tmp, formatStr);
+	char* token;
+	char* nextToken;
+	token = strtok_s(tmp,"% ", &nextToken);
+	
+	while(token != NULL)
+	{
+		if (!strcmp(token,"i")) 
+			PacketAddInt(packet, va_arg(params, int));
+		else if (!strcmp(token,"b"))
+			PacketAddByte(packet, va_arg(params, char));
+		else if (!strcmp(token,"s")) 
+			PacketAddString(packet, va_arg(params, char*));
+		else if (!strcmp(token,"si")) 
+			PacketAddShortInt(packet, va_arg(params, short));
+		token = strtok_s(NULL, "% ", &nextToken);
+	}
+
+	va_end(params);
+}
+
 extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlite3* db, char* query)
 {
 	int result, i, columnsCount, rowsCount;

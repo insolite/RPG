@@ -1,11 +1,22 @@
 #pragma once
 
+
 enum Packet
 {
 	LogIn = 0,
 	LogOut,
 	LoggedIn,
-	CharacterSpawned
+	CharacterSpawned,
+	Say,
+	Move,
+	CharacterMoving,
+	ItemSpawned
+};
+
+enum SpawnType
+{
+	Inventory,
+	Ground
 };
 
 enum InitializationType
@@ -13,6 +24,12 @@ enum InitializationType
 	Editor,
 	Server,
 	Client
+};
+
+enum MessageType
+{
+	Private,
+	Public
 };
 
 #define CELL_SIZE 10
@@ -36,6 +53,8 @@ extern "C" __declspec(dllexport) char PacketGetByte(char* packet, int pos);
 
 extern "C" __declspec(dllexport) void SetPacketType(char* packet, Packet type);
 extern "C" __declspec(dllexport) Packet GetPacketType(char* packet);
+
+extern "C++" __declspec(dllexport) void CreatePacket(char* packet, Packet packetType, char* formatStr, ...);
 
 extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlite3* db, char* query);
 
