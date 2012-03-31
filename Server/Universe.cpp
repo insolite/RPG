@@ -72,7 +72,7 @@ void Universe::Run()
 
 							isOnline = false;
 							for (i = 0; i < game->data->locationsCount; i++)
-								for (j = 0; j < game->data->locations[i]->currentCharactersCount; j++) //TODO: GetCurrentMapObject. If NULL => Offline
+								for (j = 0; j < game->data->locations[i]->currentCharactersCount; j++)
 									if (!strcmp(game->data->locations[i]->currentCharacters[j]->login, inPacket + 3))
 									{
 										isOnline = true;
@@ -154,8 +154,11 @@ void Universe::Run()
 				}
 				else if (iResult == -1)
 				{//Client disconnected
-					//TODO: data->UnspawnCharacter(clients[ci]->character)
-					delete clients[ci]->character;
+					if (clients[ci]->character)
+					{
+						//TODO: data->UnspawnCharacter(clients[ci]->character)
+						delete clients[ci]->character;
+					}
 
 					delete clients[ci];
 					clientsCount--;

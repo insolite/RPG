@@ -3,13 +3,12 @@
 #include "SqliteResult.h"
 #include "utilities.h"
 #include "CurrentGameObject.h"
-#include "CurrentMapObject.h"
 /*
-CurrentMapObject::CurrentMapObject(void)
+CurrentGameObject::CurrentGameObject(void)
 {
 }
 
-CurrentMapObject::~CurrentMapObject(void)
+CurrentGameObject::~CurrentGameObject(void)
 {
 }
 */

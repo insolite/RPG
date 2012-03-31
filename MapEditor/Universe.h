@@ -79,27 +79,13 @@ public:
 	bool** brushMask;
 	int brushRadius;
 
-	//CellProperty currentCellProperty;
-	BrushMask** brushMasks;
-	BrushMask* currentBrushMask;
-	int brushesCount;
-
 	MapObject* brush[5];
 	int brushIndex;
 
 	//GUI, input
 	IGUIEnvironment* guienv;
-	IGUIEnvironment* menuGuienv;
 	MenuEventReceiver* menuEventReceiver;
 	EditorEventReceiver* editorEventReceiver;
-
-	//GUI elements
-	IGUIListBox* lb;
-	IGUIWindow* newGameWindow;
-	IGUIEditBox* gameNameEditBox;
-	IGUIEditBox* defaultLocationWidthEditBox;
-	IGUIEditBox* defaultLocationHeightEditBox;
-	IGUIComboBox* locationsComboBox;
 
 	ProgramState state;
 
@@ -113,7 +99,7 @@ public:
 	void EditorGUIInit();
 	void MenuGUIDestroy();
 	void EditorGUIDestroy();
-	bool BrushesInit();
+	void BrushesInit();
 	void SetLocation(Location* location);
 	void DrawScene();
 	bool Menu();

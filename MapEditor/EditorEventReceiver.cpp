@@ -10,7 +10,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 	{
 		KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
 		if (KeyIsDown[KEY_ESCAPE])
-		{
+		{ //Return to the main menu
 			delete Universe::instance->gameName;
 			Universe::instance->gameName = NULL;
 			Universe::instance->state = NextLevel;
@@ -25,8 +25,8 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 			case EGET_BUTTON_CLICKED:
 				if (eventCallerId >= MapCellSelectWindowToggleButton && eventCallerId <= CharacterSelectWindowToggleButton)
 				{
-					if (!Universe::instance->menuGuienv->getRootGUIElement()->getElementFromId(eventCallerId - 10))
-					{
+					if (!Universe::instance->guienv->getRootGUIElement()->getElementFromId(eventCallerId - 10))
+					{ //Window is not created
 						wchar_t wstr[512]; //Buffer
 						MapObject** mapObjects; //General pointer to any MapObjects in GameResources. Is defined in the switch below
 						int mapObjectsCount; //'mapObjects' count
@@ -84,7 +84,8 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						IGUIListBox* molb = Universe::instance->guienv->addListBox(rect< s32 >(128, 64, 128 + 224, 64 + 320), wnd1, eventCallerId + 5, true);
 						for (int i = 0; i < mapObjectsCount; i++)
 						{
-							mbstowcs(wstr, mapObjects[i]->name, 511);
+							swprintf(wstr, L"[%d] ", mapObjects[i]->id);
+							mbstowcs(wstr + wcslen(wstr), mapObjects[i]->name, 511);
 							molb->addItem(wstr);
 							if (Universe::instance->brush[brushIndex] == mapObjects[i])
 								molb->setSelected(i); //Select item in list that was used last time in this MapObject list
@@ -92,8 +93,10 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 
 						tagsCount = Universe::instance->game->resources->GetMapObjectsTags(mapObjects, mapObjectsCount, tags);
 						if (tagsCount > 0)
-						{//Tags exists. Therefore we're to put 'All' CheckBox
+						{ //Tags exists. Therefore we're to put 'All' CheckBox
 							Universe::instance->guienv->addCheckBox(true, rect< s32 >(32, 64, 32 + 92, 64 + 16), wnd1, -1, L"All");
+							//IGUIElement* container = Universe::instance->guienv->addModalScreen(wnd1);
+							//IGUIElement* container = Universe::instance->guienv->addScrollBar(false, rect< s32 >(16, 64, 16 + 92, 64 + 256), wnd1, -1);
 							for (int i = 0; i < tagsCount; i++)
 							{
 								mbstowcs(wstr, tags[i], 511);
@@ -105,27 +108,36 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						Universe::instance->guienv->addButton(rect< s32 >(415, 420, 415 + 96, 420 + 32), wnd1, eventCallerId + 10, L"OK", L"Select current map object");
 					}
 					//Focus just created MapObject selection window (or focus old window)
-					Universe::instance->guienv->setFocus(Universe::instance->menuGuienv->getRootGUIElement()->getElementFromId(eventCallerId - 10));
+					Universe::instance->guienv->setFocus(Universe::instance->guienv->getRootGUIElement()->getElementFromId(eventCallerId - 10));
 				}
-				else
+				else if (eventCallerId >= MapCellSelectWindowOKButton && eventCallerId <= CharacterSelectWindowOKButton)
 				{
-					switch (eventCallerId)
+					IGUIListBox* lb = (IGUIListBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(eventCallerId - 20)->getElementFromId(eventCallerId - 5);
+					if (lb->getSelected() >= 0)
 					{
-						case MapCellSelectWindowOKButton:
-							//Universe::instance->currentLocation->mask[cursorY][cursorX] = 
-							break;
-						case NPCSelectWindowOKButton:
-							//Universe::instance->currentLocation->AddNPC
-							break;
-						case ItemSelectWindowOKButton:
-							//Universe::instance->currentLocation->AddItem
-							break;
-						case StaticSelectWindowOKButton:
-							//Universe::instance->currentLocation->AddStatic
-							break;
-						case CharacterSelectWindowOKButton:
-							//Universe::instance->currentLocation->AddCharacter
-							break;
+						int mapObjectId;
+						swscanf(lb->getListItem(lb->getSelected()), L"[%d]", &mapObjectId);
+						switch (eventCallerId)
+						{
+							case MapCellSelectWindowOKButton:
+								Universe::instance->brush[0] = Universe::instance->game->resources->GetMapObject<MapCell>(Universe::instance->game->resources->mapCells, Universe::instance->game->resources->mapCellsCount, mapObjectId);
+								//Universe::instance->currentLocation->mask[cursorY][cursorX] = 
+								break;
+							case NPCSelectWindowOKButton:
+								//Universe::instance->currentLocation->AddNPC
+								break;
+							case ItemSelectWindowOKButton:
+								//Universe::instance->currentLocation->AddItem
+								break;
+							case StaticSelectWindowOKButton:
+								//Universe::instance->currentLocation->AddStatic
+								break;
+							case CharacterSelectWindowOKButton:
+								//Universe::instance->currentLocation->AddCharacter
+								break;
+						}
+						//Close parent window (MapObject selection window)
+						lb->getParent()->remove();
 					}
 				}
 				break;
@@ -133,11 +145,22 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 				switch (eventCallerId)
 				{
 					case LocationsComboBox:
-						Universe::instance->SetLocation(Universe::instance->game->data->locations[Universe::instance->locationsComboBox->getSelected()]);
+						Universe::instance->SetLocation(Universe::instance->game->data->locations[((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox))->getSelected()]);
 						break;
 				}
 				break;
 			case EGET_CHECKBOX_CHANGED:
+				/*
+				IGUIListBox* molb = Universe::instance->guienv->addListBox(rect< s32 >(128, 64, 128 + 224, 64 + 320), wnd1, eventCallerId + 5, true);
+				for (int i = 0; i < mapObjectsCount; i++)
+				{
+					swprintf(wstr, L"[%d] ", mapObjects[i]->id);
+					mbstowcs(wstr + wcslen(wstr), mapObjects[i]->name, 511);
+					molb->addItem(wstr);
+					if (Universe::instance->brush[brushIndex] == mapObjects[i])
+						molb->setSelected(i); //Select item in list that was used last time in this MapObject list
+				}
+				*/
 				//Filter
 				//Universe::instance->game->resources->FilterByTag<MapCell>(Universe::instance->game->resources->mapCells, Universe::instance->game->resources->mapCellsCount, , );
 				break;

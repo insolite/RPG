@@ -4,6 +4,7 @@
 #include "utilities.h"
 #include "MapObject.h"
 #include "NPC.h"
+#include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
 #include "GameResources.h"
 #include "Game.h"

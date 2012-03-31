@@ -8,6 +8,8 @@
 #include "Item.h"
 #include "Static.h"
 #include "Character.h"
+#include "Quest.h"
+#include "Skill.h"
 #include "Game.h"
 #include "GameResources.h"
 
@@ -53,6 +55,8 @@ GameResources::GameResources(void)
 	MapObjectsInit<Item>(items, itemsCount, "Item");
 	MapObjectsInit<Static>(statics, staticsCount, "`Static`");
 	MapObjectsInit<Character>(characters, charactersCount, "Character");
+	MapObjectsInit<Quest>(quests, questsCount, "Quest");
+	MapObjectsInit<Skill>(skills, skillsCount, "Skill");
 }
 
 GameResources::~GameResources(void)
@@ -74,6 +78,12 @@ GameResources::~GameResources(void)
 	for (i = 0; i < charactersCount; i++)
 		delete characters[i];
 	delete characters;
+	for (i = 0; i < questsCount; i++)
+		delete quests[i];
+	delete quests;
+	for (i = 0; i < skillsCount; i++)
+		delete skills[i];
+	delete skills;
 }
 
 template<class T> //T inherits MapObject

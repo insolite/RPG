@@ -2,12 +2,12 @@
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "MapObject.h"
-#include "NPC.h"
+#include "Quest.h"
 
-NPC::NPC(SqliteResult sqliteResult) : MapObject(sqliteResult)
+Quest::Quest(SqliteResult sqliteResult) : MapObject(sqliteResult)
 {
 }
 
-NPC::~NPC(void)
+Quest::~Quest(void)
 {
 }

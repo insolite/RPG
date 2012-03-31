@@ -2,12 +2,12 @@
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "MapObject.h"
-#include "NPC.h"
+#include "Skill.h"
 
-NPC::NPC(SqliteResult sqliteResult) : MapObject(sqliteResult)
+Skill::Skill(SqliteResult sqliteResult) : MapObject(sqliteResult)
 {
 }
 
-NPC::~NPC(void)
+Skill::~Skill(void)
 {
 }

@@ -4,7 +4,10 @@
 #include "utilities.h"
 #include "MapObject.h"
 #include "Character.h"
+#include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
+#include "CurrentItem.h"
+#include "CurrentQuest.h"
 #include "GameResources.h"
 #include "Game.h"
 #include "CurrentCharacter.h"
@@ -17,6 +20,33 @@ CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location
 	strcpy(login, sqliteResult.strings["login"].c_str());
 	password = new char[sqliteResult.strings["password"].length() + 1];
 	strcpy(password, sqliteResult.strings["password"].c_str());
+
+	char query[256];
+	std::vector<SqliteResult> sqliteResultChildren;
+
+	//CurrentItems
+	sprintf(query, "SELECT * FROM CurrentItem WHERE locationId=0 AND currentCharacterId=%d", id);
+	sqliteResultChildren = SqliteGetRows(Game::instance->db, query);
+	currentItems = NULL;
+	currentItemsCount = 0;
+	while (currentItemsCount < sqliteResultChildren.size())
+	{
+		currentItemsCount++;
+		currentItems = (CurrentItem**)realloc(currentItems, currentItemsCount * sizeof(CurrentItem*));
+		currentItems[currentItemsCount - 1] = new CurrentItem(sqliteResultChildren[currentItemsCount - 1], NULL, this);
+	}
+
+	//CurrentQuests
+	sprintf(query, "SELECT * FROM CurrentQuest WHERE currentCharacterId=%d", id);
+	sqliteResultChildren = SqliteGetRows(Game::instance->db, query);
+	currentQuests = NULL;
+	currentQuestsCount = 0;
+	while (currentQuestsCount < sqliteResultChildren.size())
+	{
+		currentQuestsCount++;
+		currentQuests = (CurrentQuest**)realloc(currentQuests, currentQuestsCount * sizeof(CurrentQuest*));
+		currentQuests[currentQuestsCount - 1] = new CurrentQuest(sqliteResultChildren[currentQuestsCount - 1], this);
+	}
 }
 
 //Initialization from incoming packet (Client)

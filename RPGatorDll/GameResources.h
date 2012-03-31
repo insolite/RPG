@@ -8,12 +8,18 @@ public:
 	Static** statics;
 	Item** items;
 	Character** characters;
+
+	Quest** quests;
+	Skill** skills;
 	
 	int mapCellsCount;
 	int npcsCount;
 	int staticsCount;
 	int itemsCount;
 	int charactersCount;
+
+	int questsCount;
+	int skillsCount;
 
 	template<class T>
 	__declspec(dllexport) T** FilterByTag(T** mapObjects, int mapObjectsCounter, char** tag, int numberOfTags);

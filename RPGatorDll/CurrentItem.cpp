@@ -4,15 +4,17 @@
 #include "utilities.h"
 #include "MapObject.h"
 #include "Item.h"
+#include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
 #include "GameResources.h"
 #include "Game.h"
 #include "CurrentItem.h"
 
 //Initialization from DB (Editor, Server)
-CurrentItem::CurrentItem(SqliteResult sqliteResult, Location* location) :
+CurrentItem::CurrentItem(SqliteResult sqliteResult, Location* location, CurrentCharacter* currentCharacter) :
 	CurrentMapObject<Item>::CurrentMapObject(sqliteResult, Game::instance->resources->items, Game::instance->resources->itemsCount, location)
 {
+	owner = currentCharacter;
 }
 
 //Initialization from incoming packet (Client)

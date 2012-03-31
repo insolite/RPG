@@ -2,6 +2,7 @@
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "utilities.h"
+#include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
 #include "CurrentNPC.h"
 #include "CurrentStatic.h"

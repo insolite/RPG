@@ -2,6 +2,7 @@
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "utilities.h"
+#include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
 #include "CurrentNPC.h"
 #include "CurrentStatic.h"
@@ -67,7 +68,7 @@ void Location::CurrentMapObjectsInit(T** &currentMapObjects, int &currentMapObje
 	char query[64];
 	std::vector<SqliteResult> sqliteResults;
 	
-	sprintf(query, "SELECT * FROM %s;", tableName); //TODO: Get class T name
+	sprintf(query, "SELECT * FROM %s WHERE locationId=%d;", tableName, id); //TODO: Get class T name
 	sqliteResults = SqliteGetRows(Game::instance->db, query);
 	
 	currentMapObjectsCount = 0;

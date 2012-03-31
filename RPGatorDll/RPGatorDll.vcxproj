@@ -76,10 +76,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BrushMask.h" />
+    <ClInclude Include="CurrentGameObject.h" />
     <ClInclude Include="CurrentItem.h" />
     <ClInclude Include="CurrentMapObject.h" />
     <ClInclude Include="CurrentNPC.h" />
     <ClInclude Include="CurrentCharacter.h" />
+    <ClInclude Include="CurrentQuest.h" />
+    <ClInclude Include="CurrentSkill.h" />
     <ClInclude Include="CurrentStatic.h" />
     <ClInclude Include="ForwardDeclaration.h" />
     <ClInclude Include="Game.h" />
@@ -91,7 +94,9 @@
     <ClInclude Include="MapObject.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Quest.h" />
     <ClInclude Include="RPGatorDll.h" />
+    <ClInclude Include="Skill.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SqliteResult.h" />
     <ClInclude Include="Static.h" />
@@ -101,10 +106,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BrushMask.cpp" />
+    <ClCompile Include="CurrentGameObject.cpp" />
     <ClCompile Include="CurrentItem.cpp" />
     <ClCompile Include="CurrentMapObject.cpp" />
     <ClCompile Include="CurrentNPC.cpp" />
     <ClCompile Include="CurrentCharacter.cpp" />
+    <ClCompile Include="CurrentQuest.cpp" />
+    <ClCompile Include="CurrentSkill.cpp" />
     <ClCompile Include="CurrentStatic.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameData.cpp" />
@@ -115,6 +123,8 @@
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Quest.cpp" />
+    <ClCompile Include="Skill.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SqliteResult.cpp" />
     <ClCompile Include="Static.cpp" />

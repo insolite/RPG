@@ -28,22 +28,29 @@ Universe::Universe(void)
 
 	menuEventReceiver = new MenuEventReceiver();
 	editorEventReceiver = new EditorEventReceiver();
+	guienv = render->device->getGUIEnvironment();
+
+	gui::IGUIFont* font2 = guienv->getFont("editor/font.bmp");
+	guienv->getSkin()->setFont(font2);
+	//TODO: font delete?
 }
 
 Universe::~Universe(void)
 {
+	delete render;
+	delete menuEventReceiver;
+	delete editorEventReceiver;
 }
 
 void Universe::MenuGUIInit()
 {
-	menuGuienv = render->device->getGUIEnvironment();
 	render->device->setEventReceiver((IEventReceiver*)menuEventReceiver);
 
 	char** games;
 	int gamesCount;
 	wchar_t* wstr;
 	gamesCount = ReadDir("game", games, true);
-	lb = menuGuienv->addListBox(rect< s32 >(256, 160, 480, 512), NULL, GamesListBox, true);
+	IGUIListBox* lb = guienv->addListBox(rect< s32 >(256, 160, 480, 512), NULL, GamesListBox, true);
 	for (int i = 0; i < gamesCount; i++)
 	{
 		wstr = strToWchart(games[i]);
@@ -55,27 +62,24 @@ void Universe::MenuGUIInit()
 	if (lb->getItemCount() > 0)
 		lb->setSelected(0);
 	
-	menuGuienv->addButton(rect< s32 >(488, 160, 544, 184), NULL, NewGameButton, L"New", L"Create new game");
-	menuGuienv->addButton(rect< s32 >(488, 192, 544, 216), NULL, LoadGameButton, L"Load", L"Loads selected game");
-	menuGuienv->addButton(rect< s32 >(488, 224, 544, 248), NULL, DeleteGameButton, L"Delete", L"Deletes selected game");
-	menuGuienv->addButton(rect< s32 >(488, 256, 544, 280), NULL, QuitMenuButton, L"Quit", L"Exits editor");
+	guienv->addButton(rect< s32 >(488, 160, 544, 184), NULL, NewGameButton, L"New", L"Create new game");
+	guienv->addButton(rect< s32 >(488, 192, 544, 216), NULL, LoadGameButton, L"Load", L"Loads selected game");
+	guienv->addButton(rect< s32 >(488, 224, 544, 248), NULL, DeleteGameButton, L"Delete", L"Deletes selected game");
+	guienv->addButton(rect< s32 >(488, 256, 544, 280), NULL, QuitMenuButton, L"Quit", L"Exits editor");
 
-	for (u32 i=0; i<EGDC_COUNT ; ++i)
+	for (u32 i = 0; i < EGDC_COUNT; i++)
 	{
-		SColor color = menuGuienv->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
+		SColor color = guienv->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
 		color.setAlpha(255);
-		menuGuienv->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, color);
+		guienv->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, color);
 	}
 }
 
 void Universe::EditorGUIInit()
 {
-	guienv = render->device->getGUIEnvironment();
 	render->device->setEventReceiver((IEventReceiver*)editorEventReceiver);
 
 	IGUIWindow* wnd = guienv->addWindow(rect< s32 >(0, 0, toolbarWidth, screenHeight), false, L"Toolbar", 0, ToolBarWindow);
-	
-	//IGUIButton* btn = guienv->addButton(rect< s32 >(10, 128, 110, 128 + 32), wnd, QuitEditorButton, L"Quit", L"Exits to main menu");
 	
 	//Floors ComboBox
 	IGUIComboBox* floorsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 32, toolbarLeftMargin + 176, 48), wnd, FloorsComboBox);
@@ -83,10 +87,11 @@ void Universe::EditorGUIInit()
 	floorsComboBox->addItem(L"first fl.");
 	
 	//Locations ComboBox
-	locationsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 64, toolbarLeftMargin + 176, 80), wnd, LocationsComboBox);
+	IGUIComboBox* locationsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 64, toolbarLeftMargin + 176, 80), wnd, LocationsComboBox);
+	wchar_t* wstr;
 	for (int i = 0; i < game->data->locationsCount; i++)
 	{
-		wchar_t* wstr = strToWchart(game->data->locations[i]->name);
+		wstr = strToWchart(game->data->locations[i]->name);
 		locationsComboBox->addItem(wstr);
 		delete wstr;
 	}
@@ -100,26 +105,21 @@ void Universe::EditorGUIInit()
 		guienv->addButton(rect< s32 >(16, 16, 64, 32), tab, i + MapCellSelectWindowToggleButton, L"Select", L"Select MapObject from list");
 	}
 	
-	//Brush mask scroll bar
+	//Brush mask ScrollBar and StaticText
 	IGUIScrollBar* sb = guienv->addScrollBar(true, rect< s32 >(8, 64, 168, 80), tabc->getTab(0), BrushMaskSizeScroll);
 	sb->setMax(10);
 	sb->setMin(1);
 	sb->setPos(3);
-	//guienv->addSpinBox(L"asd", rect< s32 >(toolbarLeftMargin, 432, toolbarLeftMargin + 176, 464), true, wnd);
-
-	IGUIStaticText* lbl = guienv->addStaticText(L"3x", rect< s32 >(8, 88, 168, 104), false, false, tabc->getTab(0), BrushMaskSizeStaticText, true);
+	guienv->addStaticText(L"3x", rect< s32 >(8, 88, 168, 104), false, false, tabc->getTab(0), BrushMaskSizeStaticText, true);
 
 	wnd->setDraggable(false); //TEST
 	wnd->getCloseButton()->setEnabled(false); //TEST
-
-	//gui::IGUIFont* font = device->getGUIEnvironment()->getBuiltInFont();
-	gui::IGUIFont* font2 = render->device->getGUIEnvironment()->getFont("editor/font.bmp");
-	guienv->getSkin()->setFont(font2);
+	wnd->getCloseButton()->setVisible(false); //TEST
 }
 
 void Universe::MenuGUIDestroy()
 {
-	menuGuienv->clear();
+	guienv->clear();
 }
 
 void Universe::EditorGUIDestroy()
@@ -187,7 +187,7 @@ bool Universe::Menu()
 	while (render->device->run() && state == Continue)
 	{
 		render->driver->beginScene(true, true, SColor(255, 100, 101, 140));
-			menuGuienv->drawAll();
+			guienv->drawAll();
 		render->driver->endScene();
 	}
 
@@ -245,10 +245,6 @@ bool Universe::Run()
 
 	EditorGUIDestroy();
 
-	for (int i = 0; i < brushesCount; i++)
-		delete brushMasks[i];
-	delete brushMasks;
-
 	delete game;
 
 	if (state == NextLevel)
@@ -256,42 +252,15 @@ bool Universe::Run()
 	return true;
 }
 
-bool Universe::BrushesInit()
+void Universe::BrushesInit()
 {
-	int i, j, k, count;
-	FILE* f;
-	
-	f = fopen("editor/brushes.dat", "rb");
-	if (!f)
-		return true;
-	count = fgetc(f);
-	if (!count) //No brushes found
-	{
-		fclose(f);
-		return true;
-	}
-	brushMasks = new BrushMask*[count];
-	for (k = 0; k < count; k++)
-	{
-		brushMasks[k] = new BrushMask();
-		brushMasks[k]->Init(fgetc(f));
-		for (i = 0; i < brushMasks[k]->width; i++)
-			for (j = 0; j < brushMasks[k]->width; j++)
-				brushMasks[k]->data[i][j] = fgetc(f) ? true : false; //the same as fgetc(f), but VC warnings...
-	}
-	fclose(f);
-	brushesCount = count;
-	currentBrushMask = brushMasks[0];
-
 	brush[0] = game->resources->mapCells[1];
-	/*
 	brush[1] = game->resources->npcs[0];
 	brush[2] = game->resources->statics[0];
 	brush[3] = game->resources->items[0];
-	*/
+	brush[4] = game->resources->characters[0];
+	
 	brushIndex = 0;
-
-	return false;
 }
 
 void Universe::CreateBrushMask(int r)

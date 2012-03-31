@@ -11,12 +11,17 @@
 #include "Item.h"
 #include "Static.h"
 #include "Character.h"
+#include "Quest.h"
+#include "Skill.h"
 
+#include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
 #include "CurrentNPC.h"
 #include "CurrentItem.h"
 #include "CurrentStatic.h"
 #include "CurrentCharacter.h"
+#include "CurrentQuest.h"
+#include "CurrentSkill.h"
 
 #include "Location.h"
 #include "GameResources.h"

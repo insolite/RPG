@@ -96,6 +96,21 @@
     <ClInclude Include="CurrentItem.h">
       <Filter>Заголовочные файлы\Data</Filter>
     </ClInclude>
+    <ClInclude Include="Quest.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="CurrentQuest.h">
+      <Filter>Заголовочные файлы\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="CurrentSkill.h">
+      <Filter>Заголовочные файлы\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="CurrentGameObject.h">
+      <Filter>Заголовочные файлы\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Skill.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -157,6 +172,21 @@
     </ClCompile>
     <ClCompile Include="CurrentItem.cpp">
       <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Quest.cpp">
+      <Filter>Файлы исходного кода\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="CurrentQuest.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="CurrentSkill.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="CurrentGameObject.cpp">
+      <Filter>Файлы исходного кода\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Skill.cpp">
+      <Filter>Файлы исходного кода\Resources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

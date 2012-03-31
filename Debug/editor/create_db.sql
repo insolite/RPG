@@ -38,12 +38,14 @@ CREATE TABLE `Character` (
 
 CREATE TABLE Quest (
 	id INTEGER PRIMARY KEY,
-	name VARCHAR(64)
+	name VARCHAR(64),
+	tags VARCHAR(1024)
 );
 
 CREATE TABLE Skill (
 	id INTEGER PRIMARY KEY,
-	name VARCHAR(64)
+	name VARCHAR(64),
+	tags VARCHAR(1024)
 );
 
 /*=============Game Data=============*/
@@ -73,7 +75,8 @@ CREATE TABLE CurrentItem (
 	baseId INTEGER,
 	x INTEGER,
 	y INTEGER,
-	locationId INTEGER
+	locationId INTEGER,
+	currentCharacterId INTEGER
 	);
 
 CREATE TABLE CurrentStatic (
@@ -97,15 +100,15 @@ CREATE TABLE `CurrentCharacter` (
 
 CREATE TABLE CurrentQuest (
 	id INTEGER PRIMARY KEY,
-	questId INTEGER,
-	characterId INTEGER,
+	baseId INTEGER,
+	currentCharacterId INTEGER,
 	`state` INTEGER
 );
 
 CREATE TABLE CurrentSkill (
 	id INTEGER PRIMARY KEY,
-	skillId INTEGER,
-	characterId INTEGER
+	baseId INTEGER,
+	currentCharacterId INTEGER
 );
 
 /*=============Init data=============*/

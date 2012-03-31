@@ -254,10 +254,3 @@ wchar_t* strToWchart(char* cStr)
 
 	return wCharOutput;
 }
-
-int WCharToInt(const wchar_t* str)
-{
-	char n[16];
-	wcstombs(n, str, 255);
-	return atoi(n);
-}

@@ -24,22 +24,30 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 				switch (eventCallerId)
 				{
 					case LoadGameButton:
-						if (Universe::instance->lb->getSelected() >= 0)
+					{
+						IGUIListBox* lb;
+						lb = (IGUIListBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(GamesListBox);
+						if (lb->getSelected() >= 0)
 						{
 							Universe::instance->gameName = new char[256];
-							wcstombs(Universe::instance->gameName, Universe::instance->lb->getListItem(Universe::instance->lb->getSelected()), 255);
+							wcstombs(Universe::instance->gameName, lb->getListItem(lb->getSelected()), 255);
 							Universe::instance->state = NextLevel;
 						}
 						break;
+					}
 					case NewGameButton:
-						Universe::instance->newGameWindow = Universe::instance->menuGuienv->addWindow(rect< s32 >(278, 208, 522, 392), false, L"New game", 0, NewGameWindow);
-						Universe::instance->gameNameEditBox = Universe::instance->menuGuienv->addEditBox(L"game name", rect< s32 >(80, 32, 160, 56), true, Universe::instance->newGameWindow, GameNameEditBox);
-						Universe::instance->defaultLocationWidthEditBox = Universe::instance->menuGuienv->addEditBox(L"64", rect< s32 >(80, 80, 112, 104), true, Universe::instance->newGameWindow, DefaultLocationWidthEditBox);
-						Universe::instance->defaultLocationHeightEditBox = Universe::instance->menuGuienv->addEditBox(L"64", rect< s32 >(128, 80, 160, 104), true, Universe::instance->newGameWindow, DefaultLocationHeightEditBox);
-						Universe::instance->menuGuienv->addButton(rect< s32 >(128, 128, 192, 160), Universe::instance->newGameWindow, NewGameOKButton, L"OK", L"Create new game");
+					{
+						//IGUIWindow* wnd = (IGUIWindow*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(NewGameWindow);
+						IGUIWindow* wnd;
+						wnd = Universe::instance->guienv->addWindow(rect< s32 >(278, 208, 522, 392), false, L"New game", 0, NewGameWindow);
+						Universe::instance->guienv->addEditBox(L"game name", rect< s32 >(80, 32, 160, 56), true, wnd, GameNameEditBox);
+						Universe::instance->guienv->addEditBox(L"64", rect< s32 >(80, 80, 112, 104), true, wnd, DefaultLocationWidthEditBox);
+						Universe::instance->guienv->addEditBox(L"64", rect< s32 >(128, 80, 160, 104), true, wnd, DefaultLocationHeightEditBox);
+						Universe::instance->guienv->addButton(rect< s32 >(128, 128, 192, 160), wnd, NewGameOKButton, L"OK", L"Create new game");
 						break;
+					}
 					case NewGameOKButton:
-						{
+					{
 						char path[262 + 64];
 						char gameName[256];
 						char* sql;
@@ -48,8 +56,12 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						std::string query;
 						char tmp[1024];
 						int i, width, height;
+						IGUIWindow* wnd;
+						IGUIEditBox* gneb;
 
-						wcstombs(gameName, Universe::instance->gameNameEditBox->getText(), 255);
+						wnd = (IGUIWindow*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(NewGameWindow);
+						gneb = (IGUIEditBox*)wnd->getElementFromId(GameNameEditBox);
+						wcstombs(gameName, gneb->getText(), 255);
 						sprintf(path, "game/%s", gameName);
 						CreateDirectory(path, NULL);
 						/*
@@ -81,8 +93,8 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						fclose(f);
 						sqlite3_exec(db, query.c_str(), NULL, NULL, NULL);
 
-						width = WCharToInt(Universe::instance->defaultLocationWidthEditBox->getText());
-						height = WCharToInt(Universe::instance->defaultLocationHeightEditBox->getText());
+						swscanf(((IGUIEditBox*)wnd->getElementFromId(DefaultLocationWidthEditBox))->getText(), L"%d", &width);
+						swscanf(((IGUIEditBox*)wnd->getElementFromId(DefaultLocationHeightEditBox))->getText(), L"%d", &height);
 						
 						char* locationMask = new char[width * height + 1];
 						for (i = width * height - 1; i >= 0; i--)
@@ -110,25 +122,30 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						delete sql;
 
 						//Add this game to the games ListBox and select it
-						Universe::instance->lb->setSelected(Universe::instance->lb->addItem(Universe::instance->gameNameEditBox->getText()));
+						IGUIListBox* lb = (IGUIListBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(GamesListBox);
+						lb->setSelected(lb->addItem(gneb->getText()));
 						//TODO: reorder list in alphabetical order
-						//Close the newGameWindow
-						Universe::instance->newGameWindow->remove();
-						}
+						//Close the NewGameWindow
+						wnd->remove();
 						break;
+					}
 					case DeleteGameButton:
-						if (Universe::instance->lb->getSelected() >= 0)
+					{
+						IGUIListBox* lb;
+						lb = (IGUIListBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(GamesListBox);
+						if (lb->getSelected() >= 0)
 						{
 							char path[262];
 							char str[256];
 
-							wcstombs(str, Universe::instance->lb->getListItem(Universe::instance->lb->getSelected()), 255);
+							wcstombs(str, lb->getListItem(lb->getSelected()), 255);
 							sprintf(path, "game/%s", str);
 							ClearDir(path);
 							RemoveDirectory(path);
-							Universe::instance->lb->removeItem(Universe::instance->lb->getSelected());
+							lb->removeItem(lb->getSelected());
 						}
 						break;
+					}
 					case QuitMenuButton:
 						Universe::instance->state = Exit;
 						break;

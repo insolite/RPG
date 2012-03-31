@@ -4,7 +4,9 @@ class CurrentItem :
 	public CurrentMapObject<Item>
 {
 public:
-	__declspec(dllexport) CurrentItem(SqliteResult sqliteResult, Location* location);
+	CurrentCharacter* owner;
+
+	__declspec(dllexport) CurrentItem(SqliteResult sqliteResult, Location* location, CurrentCharacter* currentCharacter = NULL);
 	__declspec(dllexport) CurrentItem(char* currentMapObjectSpawnedPacket);
 	__declspec(dllexport) ~CurrentItem(void);
 };
