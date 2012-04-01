@@ -213,30 +213,47 @@ bool Universe::Run()
 	
 	int lastUpdate = SDL_GetTicks();
 
-	//DrawScene();
-	//render->smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
-	
-	//render->smgr->addCameraSceneNodeFPS();
+//wariables for camera)
+	ISceneNode* camPos=render->smgr->addEmptySceneNode();
+	camPos->setPosition(vector3df(50,50,10));
 	ICameraSceneNode *camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
-	//render->device->getCursorControl()->setVisible(false);
-	/* //Uncomment it (and comment two lines above) to enable gui control
-	//render->smgr->addCameraSceneNodeFPS();
-	render->device->getCursorControl()->setVisible(true);
-	*/
+
 
 	DrawScene();
 	render->drawKub(0,0,0);
 	state = Continue;
 	while (render->device->run() && state == Continue)
 	{
-		//core::vector3df<f32> Km = camera->getPosition();
-		//core::p
-		//core::vector2df<f32> m = render->device->getCursorControl()->getPosition();
+		core::vector3df Km = camPos->getPosition();
+		core::vector3df Kt = camera->getTarget();
+		
 		if(editorEventReceiver->IsKeyDown(irr::KEY_LEFT))
 		{
-			//Km.X-=2;
+			Kt.X-=3;
+			Km.X-=3;
+			camPos->setPosition(Km);
+		}
+		if(editorEventReceiver->IsKeyDown(irr::KEY_RIGHT))
+		{
+			Kt.X+=3;
+			Km.X+=3;
+			camPos->setPosition(Km);
+		}
+		if(editorEventReceiver->IsKeyDown(irr::KEY_UP))
+		{
+			Kt.Z+=3;
+			Km.Z+=3;
+			camPos->setPosition(Km);
+		}
+		if(editorEventReceiver->IsKeyDown(irr::KEY_DOWN))
+		{
+			Kt.Z-=3;
+			Km.Z-=3;
+			camPos->setPosition(Km);
 		}
 		//camera->setPosition(Km)
+		camera->setPosition(Km);
+		camera->setTarget(Kt);
 
 		render->driver->beginScene(true, true, SColor(255,100,101,140));
 			render->smgr->drawAll();
