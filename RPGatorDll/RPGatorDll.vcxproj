@@ -75,7 +75,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BrushMask.h" />
     <ClInclude Include="CurrentGameObject.h" />
     <ClInclude Include="CurrentItem.h" />
     <ClInclude Include="CurrentMapObject.h" />
@@ -97,7 +96,6 @@
     <ClInclude Include="Quest.h" />
     <ClInclude Include="RPGatorDll.h" />
     <ClInclude Include="Skill.h" />
-    <ClInclude Include="Sprite.h" />
     <ClInclude Include="SqliteResult.h" />
     <ClInclude Include="Static.h" />
     <ClInclude Include="stdafx.h" />
@@ -105,7 +103,6 @@
     <ClInclude Include="utilities.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BrushMask.cpp" />
     <ClCompile Include="CurrentGameObject.cpp" />
     <ClCompile Include="CurrentItem.cpp" />
     <ClCompile Include="CurrentMapObject.cpp" />
@@ -125,7 +122,6 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Quest.cpp" />
     <ClCompile Include="Skill.cpp" />
-    <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SqliteResult.cpp" />
     <ClCompile Include="Static.cpp" />
     <ClCompile Include="stdafx.cpp" />

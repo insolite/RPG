@@ -16,7 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="..\Release\editor\create_db.sql" />
+    <None Include="..\Debug\editor\create_db.sql" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

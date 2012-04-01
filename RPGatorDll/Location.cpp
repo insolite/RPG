@@ -9,6 +9,7 @@
 #include "CurrentItem.h"
 #include "CurrentCharacter.h"
 #include "GameResources.h"
+#include "GameData.h"
 #include "Game.h"
 #include "Location.h"
 
@@ -84,6 +85,7 @@ void Location::CurrentMapObjectsInit(T** &currentMapObjects, int &currentMapObje
 
 Location::~Location(void)
 {
+	id = id;
 	delete name;
 	for (int i = 0; i < height; i++)
 		delete[] mask[i];

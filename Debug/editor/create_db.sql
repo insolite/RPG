@@ -51,7 +51,7 @@ CREATE TABLE Skill (
 /*=============Game Data=============*/
 
 CREATE TABLE Location (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
 	width INTEGER,
 	height INTEGER,

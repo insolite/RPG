@@ -30,6 +30,14 @@ enum EditorGUIElements
 	MapObjectsTabControl,
 	BrushMaskSizeScroll,
 	BrushMaskSizeStaticText,
+	LocationsEditButton,
+	LocationsEditWindow,
+	LocationsEditSaveButton,
+	LocationsEditAddButton,
+	LocationsEditDeleteButton,
+	LocationNameEditBox,
+	LocationWidthEditBox,
+	LocationHeightEditBox,
 
 	//Order is critical
 	MapCellSelectWindow,

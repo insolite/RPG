@@ -140,12 +140,97 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						lb->getParent()->remove();
 					}
 				}
+				else
+				{
+					switch (eventCallerId)
+					{
+						case LocationsEditButton:
+						{
+							IGUIWindow* wnd;
+							wnd = (IGUIWindow*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow);
+							if (wnd)
+							{
+								wnd->remove();
+								Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox)->setEnabled(true);
+							}
+							else
+							{
+								wnd = Universe::instance->guienv->addWindow(rect< s32 >(Universe::instance->toolbarWidth, 0, Universe::instance->toolbarWidth + 242, 184), false, L"Locations edit", 0, LocationsEditWindow);
+								wnd->getCloseButton()->setEnabled(false);
+								wnd->getCloseButton()->setVisible(false);
+								Universe::instance->guienv->addEditBox(Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox)->getText(), rect< s32 >(32, 32, 208, 56), true, wnd, LocationNameEditBox);
+								Universe::instance->guienv->addEditBox(L"64", rect< s32 >(32, 80, 112, 104), true, wnd, LocationWidthEditBox);
+								Universe::instance->guienv->addEditBox(L"64", rect< s32 >(128, 80, 208, 104), true, wnd, LocationHeightEditBox);
+								Universe::instance->guienv->addButton(rect< s32 >(32, 128, 32 + 48, 160), wnd, LocationsEditDeleteButton, L"Delete", L"Delete current location");
+								Universe::instance->guienv->addButton(rect< s32 >(96, 128, 96 + 48, 160), wnd, LocationsEditSaveButton, L"Save", L"Apply settings to the current location")->setEnabled(false);
+								Universe::instance->guienv->addButton(rect< s32 >(160, 128, 160 + 48, 160), wnd, LocationsEditAddButton, L"Save as", L"Apply settings to the new location");
+								Universe::instance->guienv->setFocus(wnd);
+								Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox)->setEnabled(false);
+							}
+							break;
+						}
+						case LocationsEditSaveButton:
+						{
+							char str[256];
+							int width, height;
+							wcstombs(str, Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationNameEditBox)->getText(), 256);
+							swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationWidthEditBox)->getText(), L"%d", &width);
+							swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationHeightEditBox)->getText(), L"%d", &height);
+							delete Universe::instance->currentLocation->name;
+							Universe::instance->currentLocation->name = new char[strlen(str) + 1];
+							strcpy(Universe::instance->currentLocation->name, str);
+							//Update ComboBox
+							// ((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox))->updateItem(L"sd");
+							//TODO: Rebuild location mask, delete objects out of it
+							//Close locations edit Window and enable locations ComboBox
+							Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->remove();
+							Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox)->setEnabled(true);
+							break;
+						}
+						case LocationsEditAddButton:
+						{
+							char str[256];
+							int width, height;
+							wcstombs(str, Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationNameEditBox)->getText(), 255);
+							swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationWidthEditBox)->getText(), L"%d", &width);
+							swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationHeightEditBox)->getText(), L"%d", &height);
+							//Add location to DB and spawn it
+							Universe::instance->game->data->LocationSpawn(Universe::instance->game->data->AddLocation(str, width, height), Editor);
+							//Add location to the locations list
+							((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox))->addItem(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationNameEditBox)->getText());
+							//Close locations edit Window and enable locations ComboBox
+							Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->remove();
+							Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox)->setEnabled(true);
+							break;
+						}
+						case LocationsEditDeleteButton:
+						{
+							IGUIComboBox* lcb = (IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox);
+							if (lcb->getItemCount() > 1)
+							{ //It's not the last location
+								//Delete location from DB and unspawn it
+								Universe::instance->game->data->LocationDelete(lcb->getSelected());
+								//Delete location from the locations list
+								lcb->removeItem(lcb->getSelected());
+								//Select another location
+								lcb->setSelected(0);
+								//Close locations edit Window and enable locations ComboBox
+								Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->remove();
+								Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox)->setEnabled(true);
+							}
+							break;
+						}
+					}
+				}
 				break;
 			case EGET_COMBO_BOX_CHANGED:
 				switch (eventCallerId)
 				{
 					case LocationsComboBox:
+						Universe::instance->render->smgr->clear();
 						Universe::instance->SetLocation(Universe::instance->game->data->locations[((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox))->getSelected()]);
+						ICameraSceneNode *camera = Universe::instance->render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
+						Universe::instance->DrawScene();
 						break;
 				}
 				break;

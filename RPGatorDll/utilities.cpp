@@ -243,14 +243,3 @@ int PixRound(int pos)
 {
 	return Index2Pix(Pix2Index(pos));
 }
-
-wchar_t* strToWchart(char* cStr)
-{
-	wchar_t* wCharOutput = new wchar_t[1023];
-	size_t* sizeOut = new size_t;
-	size_t sizeInWords = 256;
-
-	mbstowcs_s(sizeOut, wCharOutput, sizeInWords, cStr, strlen(cStr) + 1);
-
-	return wCharOutput;
-}

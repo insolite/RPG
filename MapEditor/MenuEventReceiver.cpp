@@ -51,7 +51,6 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						char path[262 + 64];
 						char gameName[256];
 						char* sql;
-						sqlite3* db;
 						FILE* f;
 						std::string query;
 						char tmp[1024];
@@ -80,8 +79,6 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						//Create subdirs
 
 						//Create game db
-						sprintf(path, "game/%s/db.sqlite", gameName);
-						sqlite3_open(path, &db);
 						//TODO: If possible, init SQL file with sqlite library function
 						f = fopen("editor/create_db.sql", "rt");
 						query = "";
@@ -91,35 +88,18 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 							query += tmp;
 						}
 						fclose(f);
+						sprintf(path, "game/%s/db.sqlite", gameName);
+						sqlite3* db;
+						sqlite3_open(path, &db);
 						sqlite3_exec(db, query.c_str(), NULL, NULL, NULL);
+						sqlite3_close(db);
 
 						swscanf(((IGUIEditBox*)wnd->getElementFromId(DefaultLocationWidthEditBox))->getText(), L"%d", &width);
 						swscanf(((IGUIEditBox*)wnd->getElementFromId(DefaultLocationHeightEditBox))->getText(), L"%d", &height);
-						
-						char* locationMask = new char[width * height + 1];
-						for (i = width * height - 1; i >= 0; i--)
-						{
-							locationMask[i] = '\1';
-						}
-						locationMask[width * height] = '\0';
-						sql = new char[width * height + 256];
-						sprintf(sql, "INSERT INTO Location VALUES (1, 'start1', %d, %d, '%s');", width, height, locationMask); //CAST(X'%s' AS TEXT))
-						/*
-						char* locationMask = new char[2 * width * height + 1];
-						for (i = 2 * width * height - 1; i >= 0; i -= 2)
-						{
-							locationMask[i] = '1';
-							locationMask[i - 1] = '0';
-						}
-						locationMask[2 * width * height] = '\0';
-						sql = new char[2 * width * height + 256];
-						sprintf(sql, "INSERT INTO Location VALUES (1, 'start1', %d, %d, X'%s');", width, height, locationMask); //CAST(X'%s' AS TEXT))
-						*/
-
-						sqlite3_exec(db, sql, NULL, NULL, NULL);
-						sqlite3_close(db);
-						delete locationMask;
-						delete sql;
+						//We need to initialize game before add new location to it
+						Game* newGame = new Game(gameName, Editor);
+						newGame->data->AddLocation("default", width, height);
+						delete newGame;
 
 						//Add this game to the games ListBox and select it
 						IGUIListBox* lb = (IGUIListBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(GamesListBox);

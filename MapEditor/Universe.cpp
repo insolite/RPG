@@ -26,8 +26,6 @@ Universe::Universe(void)
 
 	render = new Render(screenWidth, screenHeight);
 
-	menuEventReceiver = new MenuEventReceiver();
-	editorEventReceiver = new EditorEventReceiver();
 	guienv = render->device->getGUIEnvironment();
 
 	gui::IGUIFont* font2 = guienv->getFont("editor/font.bmp");
@@ -38,24 +36,22 @@ Universe::Universe(void)
 Universe::~Universe(void)
 {
 	delete render;
-	delete menuEventReceiver;
-	delete editorEventReceiver;
 }
 
 void Universe::MenuGUIInit()
 {
+	menuEventReceiver = new MenuEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)menuEventReceiver);
 
 	char** games;
 	int gamesCount;
-	wchar_t* wstr;
+	wchar_t wstr[512];
 	gamesCount = ReadDir("game", games, true);
 	IGUIListBox* lb = guienv->addListBox(rect< s32 >(256, 160, 480, 512), NULL, GamesListBox, true);
 	for (int i = 0; i < gamesCount; i++)
 	{
-		wstr = strToWchart(games[i]);
+		mbstowcs(wstr, games[i], 255);
 		lb->addItem(wstr);
-		delete wstr;
 		delete games[i];
 	}
 	delete games;
@@ -77,6 +73,7 @@ void Universe::MenuGUIInit()
 
 void Universe::EditorGUIInit()
 {
+	editorEventReceiver = new EditorEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)editorEventReceiver);
 
 	IGUIWindow* wnd = guienv->addWindow(rect< s32 >(0, 0, toolbarWidth, screenHeight), false, L"Toolbar", 0, ToolBarWindow);
@@ -87,14 +84,16 @@ void Universe::EditorGUIInit()
 	floorsComboBox->addItem(L"first fl.");
 	
 	//Locations ComboBox
-	IGUIComboBox* locationsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 64, toolbarLeftMargin + 176, 80), wnd, LocationsComboBox);
-	wchar_t* wstr;
+	IGUIComboBox* locationsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 64, toolbarLeftMargin + 160, 80), wnd, LocationsComboBox);
+	wchar_t wstr[512];
 	for (int i = 0; i < game->data->locationsCount; i++)
 	{
-		wstr = strToWchart(game->data->locations[i]->name);
+		mbstowcs(wstr, game->data->locations[i]->name, 255);
 		locationsComboBox->addItem(wstr);
-		delete wstr;
 	}
+
+	//Locations control buttons
+	guienv->addButton(rect< s32 >(toolbarLeftMargin + 128 + 32, 64, toolbarLeftMargin + 128 + 48, 80), wnd, LocationsEditButton, L"*", L"Edit locations");
 
 	//MapObject select windows, tabs, buttons, etc.
 	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 92, toolbarLeftMargin + 176, 92 + 256), wnd, true, true, MapObjectsTabControl);
@@ -120,11 +119,13 @@ void Universe::EditorGUIInit()
 void Universe::MenuGUIDestroy()
 {
 	guienv->clear();
+	delete menuEventReceiver;
 }
 
 void Universe::EditorGUIDestroy()
 {
 	guienv->clear();
+	delete editorEventReceiver;
 }
 
 void Universe::CameraMove(int x, int y)
@@ -242,6 +243,7 @@ bool Universe::Run()
 			guienv->drawAll();
 		render->driver->endScene();
 	}
+	render->smgr->clear();
 
 	EditorGUIDestroy();
 

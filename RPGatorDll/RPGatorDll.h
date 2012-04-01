@@ -2,9 +2,6 @@
 #include "SqliteResult.h"
 #include "utilities.h"
 
-#include "BrushMask.h"
-#include "Sprite.h"
-
 #include "MapObject.h"
 #include "MapCell.h"
 #include "NPC.h"
