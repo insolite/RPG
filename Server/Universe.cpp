@@ -104,7 +104,7 @@ void Universe::Run()
 
 								location = game->data->GetLocation(sqliteResults[0].integers["locationId"]);
 								newCurrentCharacter = new CurrentCharacter(sqliteResults[0], location);
-								location->AddCurrentCharacter(newCurrentCharacter);
+								location->SpawnCharacter(newCurrentCharacter);
 								clients[ci]->character = newCurrentCharacter;
 								printf("Character %s logged in\n", inPacket + 3);
 								SetPacketLength(outPacket, 1);

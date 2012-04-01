@@ -50,11 +50,10 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 					{
 						char path[262 + 64];
 						char gameName[256];
-						char* sql;
 						FILE* f;
 						std::string query;
 						char tmp[1024];
-						int i, width, height;
+						int width, height;
 						IGUIWindow* wnd;
 						IGUIEditBox* gneb;
 

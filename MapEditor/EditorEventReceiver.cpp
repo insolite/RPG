@@ -174,14 +174,14 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 							char str[256];
 							int width, height;
 							wcstombs(str, Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationNameEditBox)->getText(), 256);
-							swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationWidthEditBox)->getText(), L"%d", &width);
-							swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationHeightEditBox)->getText(), L"%d", &height);
+							//swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationWidthEditBox)->getText(), L"%d", &width);
+							//swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationHeightEditBox)->getText(), L"%d", &height);
 							delete Universe::instance->currentLocation->name;
 							Universe::instance->currentLocation->name = new char[strlen(str) + 1];
 							strcpy(Universe::instance->currentLocation->name, str);
+							Universe::instance->currentLocation->Update();
 							//Update ComboBox
-							// ((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox))->updateItem(L"sd");
-							//TODO: Rebuild location mask, delete objects out of it
+								// ((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox))->updateItem(L"sd");
 							//Close locations edit Window and enable locations ComboBox
 							Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->remove();
 							Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox)->setEnabled(true);

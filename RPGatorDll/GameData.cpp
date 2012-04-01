@@ -27,12 +27,14 @@ GameData::~GameData(void)
 void GameData::LocationsInit(InitializationType initializationType)
 {
 	std::vector<SqliteResult> sqliteResult;
+	int rowsCount;
 
 	sqliteResult = SqliteGetRows(Game::instance->db, "SELECT * FROM Location");
 	
 	locationsCount = 0;
 	locations = NULL;
-	while (locationsCount < sqliteResult.size())
+	rowsCount = sqliteResult.size();
+	while (locationsCount < rowsCount)
 	{
 		LocationSpawn(sqliteResult[locationsCount], initializationType);
 	}
@@ -91,21 +93,9 @@ int GameData::AddLocation(char* name, int width, int height)
 	locationMask[width * height] = '\0';
 	sql = new char[width * height + 256];
 	sprintf(sql, "INSERT INTO Location(name, width, height, mask) VALUES ('%s', %d, %d, '%s');", name, width, height, locationMask);
-	/*
-	char* locationMask = new char[2 * width * height + 1];
-	for (i = 2 * width * height - 1; i >= 0; i -= 2)
-	{
-		locationMask[i] = '1';
-		locationMask[i - 1] = '0';
-	}
-	locationMask[2 * width * height] = '\0';
-	sql = new char[2 * width * height + 256];
-	sprintf(sql, "INSERT INTO Location VALUES (1, 'start1', %d, %d, X'%s');", width, height, locationMask); //CAST(X'%s' AS TEXT))
-	*/
-
 	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
 	delete locationMask;
 	delete sql;
 
-	return sqlite3_last_insert_rowid(Game::instance->db);
+	return (int)sqlite3_last_insert_rowid(Game::instance->db);
 }

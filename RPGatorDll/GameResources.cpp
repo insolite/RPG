@@ -90,19 +90,20 @@ template<class T> //T inherits MapObject
 void GameResources::MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName)
 {
 	char query[64];
-	std::vector<SqliteResult> sqliteResult;
+	std::vector<SqliteResult> sqliteResults;
 	
 	sprintf(query, "SELECT * FROM %s;", tableName); //TODO: Get class T name
-	sqliteResult = SqliteGetRows(Game::instance->db, query);
+	sqliteResults = SqliteGetRows(Game::instance->db, query);
 	
 	mapObjectsCount = 0;
 	mapObjects = NULL;
 	
-	while (mapObjectsCount < sqliteResult.size())
+	int rowsCount = sqliteResults.size();
+	while (mapObjectsCount < rowsCount)
 	{
 		mapObjectsCount++;
 		mapObjects = (T**)realloc(mapObjects, mapObjectsCount * sizeof(T*));
-		mapObjects[mapObjectsCount - 1] = new T(sqliteResult[mapObjectsCount - 1]);
+		mapObjects[mapObjectsCount - 1] = new T(sqliteResults[mapObjectsCount - 1]);
 	}
 }
 

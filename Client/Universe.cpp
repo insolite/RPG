@@ -56,11 +56,11 @@ void Universe::Run()
 						if (!currentCharacter)
 						{
 							currentCharacter = new CurrentCharacter(inPacket);
-							currentLocation->AddCurrentCharacter(currentCharacter);
+							currentLocation->AddCharacter(currentCharacter);
 						}
 						else
 						{
-							currentLocation->AddCurrentCharacter(new CurrentCharacter(inPacket));
+							currentLocation->AddCharacter(new CurrentCharacter(inPacket));
 						}
 						break;
 					case Say:
