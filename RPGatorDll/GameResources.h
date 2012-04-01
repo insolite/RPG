@@ -22,9 +22,6 @@ public:
 	int skillsCount;
 
 	template<class T>
-	__declspec(dllexport) T** FilterByTag(T** mapObjects, int mapObjectsCounter, char** tag, int numberOfTags);
-
-	template<class T>
 	__declspec(dllexport) T* GetMapObject(T** mapObjects, int mapObjectsCount, int id)
 	{
 		for (int i = 0; i < mapObjectsCount; i++)
@@ -32,6 +29,13 @@ public:
 				return mapObjects[i];
 		return NULL;
 	}
+	__declspec(dllexport) MapCell* GetMapCell(int id);
+	__declspec(dllexport) NPC* GetNPC(int id);
+	__declspec(dllexport) Static* GetStatic(int id);
+	__declspec(dllexport) Item* GetItem(int id);
+	__declspec(dllexport) Character* GetCharacter(int id);
+	template<class T>
+	__declspec(dllexport) T** FilterByTag(T** mapObjects, int mapObjectsCounter, char** tag, int numberOfTags);
 	__declspec(dllexport) int GetMapObjectsTags(MapObject** mapObjects, int mapObjectsCount, char** &tags); /*
 																											Seachs for all unique tags in 'mapObjects' and creates new char** array of pointers on them
 																											Return value: The found tags count

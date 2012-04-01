@@ -60,6 +60,12 @@ CurrentCharacter::CurrentCharacter(char* currentMapObjectSpawnedPacket) :
 	login = new char[strlen(currentMapObjectSpawnedPacket + 3) + 1];
 	strcpy(login, PacketGetString(currentMapObjectSpawnedPacket, 17));
 	password = NULL;
+
+	currentItems = NULL;
+	currentItemsCount = 0;
+
+	currentQuests = NULL;
+	currentQuestsCount = 0;
 }
 
 CurrentCharacter::~CurrentCharacter(void)

@@ -44,9 +44,9 @@ private:
 	template<class T>
 	__declspec(dllexport) void CurrentMapObjectsInit(T** &currentMapObjects, int &currentMapObjectsCount, char* tableName);
 	template<class T>
-	__declspec(dllexport) void SpawnCurrentMapObject(T** &currentMapObjects, int currentMapObjectsCount, T* currentMapObject);
+	__declspec(dllexport) void SpawnCurrentMapObject(T** &currentMapObjects, int &currentMapObjectsCount, T* currentMapObject);
 	template<class T>
-	__declspec(dllexport) void UnSpawnCurrentMapObject(T** &currentMapObjects, int currentMapObjectsCount, T* currentMapObject);
+	__declspec(dllexport) void UnSpawnCurrentMapObject(T** &currentMapObjects, int &currentMapObjectsCount, T* currentMapObject);
 	template<class T>
-	__declspec(dllexport) void DeleteCurrentMapObject(T** &currentMapObjects, int currentMapObjectsCount, char* tableName, T* currentMapObject);
+	__declspec(dllexport) void DeleteCurrentMapObject(T** &currentMapObjects, int &currentMapObjectsCount, char* tableName, T* currentMapObject);
 };

@@ -89,11 +89,7 @@ void Location::CurrentMapObjectsInit(T** &currentMapObjects, int &currentMapObje
 	
 	int rowsCount = sqliteResults.size();
 	while (currentMapObjectsCount < rowsCount)
-	{
-		currentMapObjectsCount++;
-		currentMapObjects = (T**)realloc(currentMapObjects, currentMapObjectsCount * sizeof(T*));
-		currentMapObjects[currentMapObjectsCount - 1] = new T(sqliteResults[currentMapObjectsCount - 1], this);
-	}
+		SpawnCurrentMapObject<T>(currentMapObjects, currentMapObjectsCount, new T(sqliteResults[currentMapObjectsCount], this));
 }
 
 Location::~Location(void)
@@ -205,7 +201,7 @@ void Location::AddCharacter(CurrentCharacter* currentCharacter)
 }
 
 template<class T>
-void Location::SpawnCurrentMapObject(T** &currentMapObjects, int currentMapObjectsCount, T* currentMapObject)
+void Location::SpawnCurrentMapObject(T** &currentMapObjects, int &currentMapObjectsCount, T* currentMapObject)
 {
 	currentMapObjectsCount++;
 	currentMapObjects = (T**)realloc(currentMapObjects, currentMapObjectsCount * sizeof(T*));
@@ -213,7 +209,7 @@ void Location::SpawnCurrentMapObject(T** &currentMapObjects, int currentMapObjec
 }
 
 template<class T>
-void Location::UnSpawnCurrentMapObject(T** &currentMapObjects, int currentMapObjectsCount, T* currentMapObject)
+void Location::UnSpawnCurrentMapObject(T** &currentMapObjects, int &currentMapObjectsCount, T* currentMapObject)
 {
 	for (int i = 0; i < currentMapObjectsCount; i++)
 	{
@@ -230,7 +226,7 @@ void Location::UnSpawnCurrentMapObject(T** &currentMapObjects, int currentMapObj
 }
 
 template<class T>
-void Location::DeleteCurrentMapObject(T** &currentMapObjects, int currentMapObjectsCount, char* tableName, T* currentMapObject)
+void Location::DeleteCurrentMapObject(T** &currentMapObjects, int &currentMapObjectsCount, char* tableName, T* currentMapObject)
 {
 	char query[256];
 

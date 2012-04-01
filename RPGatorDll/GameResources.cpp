@@ -128,3 +128,28 @@ int GameResources::GetMapObjectsTags(MapObject** mapObjects, int mapObjectsCount
 	}
 	return tagsCount;
 }
+
+MapCell* GameResources::GetMapCell(int id)
+{
+	return GetMapObject<MapCell>(mapCells, mapCellsCount, id);
+}
+
+NPC* GameResources::GetNPC(int id)
+{
+	return GetMapObject<NPC>(npcs, npcsCount, id);
+}
+
+Static* GameResources::GetStatic(int id)
+{
+	return GetMapObject<Static>(statics, staticsCount, id);
+}
+
+Item* GameResources::GetItem(int id)
+{
+	return GetMapObject<Item>(items, itemsCount, id);
+}
+
+Character* GameResources::GetCharacter(int id)
+{
+	return GetMapObject<Character>(characters, charactersCount, id);
+}

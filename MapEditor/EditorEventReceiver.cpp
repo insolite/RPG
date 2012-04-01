@@ -120,10 +120,11 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						switch (eventCallerId)
 						{
 							case MapCellSelectWindowOKButton:
-								Universe::instance->brush[0] = Universe::instance->game->resources->GetMapObject<MapCell>(Universe::instance->game->resources->mapCells, Universe::instance->game->resources->mapCellsCount, mapObjectId);
+								Universe::instance->brush[0] = Universe::instance->game->resources->GetMapCell(mapObjectId);
 								//Universe::instance->currentLocation->mask[cursorY][cursorX] = 
 								break;
 							case NPCSelectWindowOKButton:
+								Universe::instance->brush[1] = Universe::instance->game->resources->GetNPC(mapObjectId);
 								//Universe::instance->currentLocation->AddNPC
 								break;
 							case ItemSelectWindowOKButton:
@@ -231,6 +232,14 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						Universe::instance->SetLocation(Universe::instance->game->data->locations[((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox))->getSelected()]);
 						ICameraSceneNode *camera = Universe::instance->render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
 						Universe::instance->DrawScene();
+						break;
+				}
+				break;
+			case EGET_TAB_CHANGED:
+				switch (eventCallerId)
+				{
+					case MapObjectsTabControl:
+						Universe::instance->brushIndex = ((IGUITabControl*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(MapObjectsTabControl))->getActiveTab();
 						break;
 				}
 				break;
