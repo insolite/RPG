@@ -153,24 +153,20 @@ void Universe::Run()
 					}
 				}
 				else if (iResult == -1)
-				{//Client disconnected
-					if (clients[ci]->character)
-					{
-						//TODO: data->UnspawnCharacter(clients[ci]->character)
-						delete clients[ci]->character;
-					}
+				{ //Client disconnected
+					if (clients[ci]->character) //Client logged in
+						clients[ci]->character->currentLocation->UnSpawnCharacter(clients[ci]->character);
 
 					delete clients[ci];
 					clientsCount--;
-					
-					//Moving the last client to disconnected client position
-					clients[ci] = clients[clientsCount];
+					if (ci != clientsCount) //Deleting character is not the last, so we need to 'patch a hole' in array
+						clients[ci] = clients[clientsCount];
 					clients = (ServerClientSocket**)realloc(clients, clientsCount * sizeof(ServerClientSocket*));
 					
 					printf("Client %d: Disconnected\n", ci);
 				}
 				else
-				{//Wrong packet from the server
+				{ //Wrong packet from the server
 					printf("Warning! Wrong packet from client %d\n", ci);
 				}
 			}

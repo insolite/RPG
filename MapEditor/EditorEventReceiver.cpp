@@ -32,7 +32,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						int mapObjectsCount; //'mapObjects' count
 						int brushIndex; //Current brush (0: MapCell, 1:NPC, 2:Item, 3:Static, 4:Character)
 
-						brushIndex = MapCellSelectWindowToggleButton - eventCallerId;
+						brushIndex = eventCallerId - MapCellSelectWindowToggleButton;
 
 						switch (eventCallerId)
 						{
@@ -121,20 +121,18 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						{
 							case MapCellSelectWindowOKButton:
 								Universe::instance->brush[0] = Universe::instance->game->resources->GetMapCell(mapObjectId);
-								//Universe::instance->currentLocation->mask[cursorY][cursorX] = 
 								break;
 							case NPCSelectWindowOKButton:
 								Universe::instance->brush[1] = Universe::instance->game->resources->GetNPC(mapObjectId);
-								//Universe::instance->currentLocation->AddNPC
 								break;
 							case ItemSelectWindowOKButton:
-								//Universe::instance->currentLocation->AddItem
+								Universe::instance->brush[2] = Universe::instance->game->resources->GetItem(mapObjectId);
 								break;
 							case StaticSelectWindowOKButton:
-								//Universe::instance->currentLocation->AddStatic
+								Universe::instance->brush[3] = Universe::instance->game->resources->GetStatic(mapObjectId);
 								break;
 							case CharacterSelectWindowOKButton:
-								//Universe::instance->currentLocation->AddCharacter
+								Universe::instance->brush[4] = Universe::instance->game->resources->GetCharacter(mapObjectId);
 								break;
 						}
 						//Close parent window (MapObject selection window)
@@ -230,6 +228,9 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 					case LocationsComboBox:
 						Universe::instance->render->smgr->clear();
 						Universe::instance->SetLocation(Universe::instance->game->data->locations[((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox))->getSelected()]);
+						//The code below (3 lines) does not prevent exception during loading another locations due to camera test mode
+						ISceneNode* camPos = Universe::instance->render->smgr->addEmptySceneNode();
+						camPos->setPosition(vector3df(50,50,10));
 						ICameraSceneNode *camera = Universe::instance->render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
 						Universe::instance->DrawScene();
 						break;
