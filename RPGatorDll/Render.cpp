@@ -41,3 +41,46 @@ void Render::drawKub(f32 xPos,f32 yPos,f32 zPos)
 				//n->scal
         }
 }
+
+ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
+{
+	IAnimatedMesh* mesh = smgr->getMesh(model);
+	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh);
+
+	if(node)
+	{
+		node->setPosition(pos);
+		node->setRotation(rotation);
+		node->setScale(scale);
+		node->setAnimationSpeed(20.f);
+
+		if(isMD2)
+		{
+			//node->setMD2Animation(scene::EMAT_POINT); //or interval of frame for scelet animation
+			//node->setAnimationSpeed(20.f);
+			video::SMaterial material;
+			material.setTexture(0, driver->getTexture(texture));
+			material.Lighting = light;
+			//material.NormalizeNormals = true;// on future
+			node->getMaterial(0) = material;
+		}
+		else
+		{
+			//
+			//...
+		}
+	}
+
+	return node;
+}
+
+void Render::moveNode(ISceneNode* node/*dolgno prokotit*/,core::vector3df nextpos)
+{
+	scene::ISceneNodeAnimator* anim =
+		smgr->createFlyStraightAnimator(node->getPosition(), nextpos, 3500/*тут швидкість має рахуватись динамічно, взалежності від відстані і т п..*/);
+                if (anim)
+                {
+                        node->addAnimator(anim);
+                        anim->drop();
+                }
+}
