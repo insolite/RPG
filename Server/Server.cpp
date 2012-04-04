@@ -8,6 +8,7 @@ typedef unsigned char byte;
 
 int main(int argc, char* argv[])
 {
+	SetConsoleTitle("Server");
 	//TEST
 	system("color 80");
 
@@ -15,7 +16,15 @@ int main(int argc, char* argv[])
 
 	universe = new Universe();
 
-	universe->Run();
+	if (argc < 2)
+	{
+		char gameName[256];
+		printf("Please enter the game name\n");
+		scanf("%s", gameName);
+		universe->Run(gameName);
+	}
+	else
+		universe->Run(argv[1]);
 
 	return 0;
 }

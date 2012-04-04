@@ -10,6 +10,7 @@ using namespace std;
 class Render
 {
 public:
+	static Render* instance;
 	//irrlicht
 	IrrlichtDevice *device;
 	IVideoDriver* driver ;

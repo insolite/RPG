@@ -20,7 +20,7 @@ public:
 	Game* game; //Game instance
 	lua_State* luaState;
 
-	void Run(); //Main loop
+	void Run(char* gameName); //Main loop
 	void Log(LogMessageType messageType, char* str, ...)
 	{
 		//Method does not work correctly yet

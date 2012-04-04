@@ -135,11 +135,11 @@ bool Universe::Run()
 						if (!currentCharacter)
 						{
 							currentCharacter = new CurrentCharacter(inPacket);
-							currentLocation->AddCharacter(currentCharacter);
+							currentLocation->SpawnCharacter(currentCharacter);
 						}
 						else
 						{
-							currentLocation->AddCharacter(new CurrentCharacter(inPacket));
+							currentLocation->SpawnCharacter(new CurrentCharacter(inPacket));
 						}
 						break;
 					case Say:
@@ -147,6 +147,8 @@ bool Universe::Run()
 						break;
 					case CharacterMoving:
 						printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
+						render->moveNode(currentLocation->GetCharacter(PacketGetInt(inPacket,1))->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
+						
 						break;
 					case ItemSpawned:
 						printf ("Type: %d\n", (PacketGetByte(inPacket, 1)));

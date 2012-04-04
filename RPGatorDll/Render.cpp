@@ -2,6 +2,8 @@
 #include "ForwardDeclaration.h"
 #include "Render.h"
 
+Render* Render::instance = NULL;
+
 Render::Render(int screenWidth, int screenHeight, wchar_t* windowTitle)
 {
 	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 16, false, false, false, NULL); //(IEventReceiver*)editorEventReceiver
@@ -13,11 +15,13 @@ Render::Render(int screenWidth, int screenHeight, wchar_t* windowTitle)
 	driver = device->getVideoDriver();
 	smgr = device->getSceneManager();
 	
+	instance = this;
 	
 }
 
 Render::~Render(void)
 {
+	instance = NULL;
 }
 
 void Render::drawScene()
@@ -77,7 +81,7 @@ ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool ligh
 void Render::moveNode(ISceneNode* node/*dolgno prokotit*/,core::vector3df nextpos)
 {
 	scene::ISceneNodeAnimator* anim =
-		smgr->createFlyStraightAnimator(node->getPosition(), nextpos, 3500/*тут швидкість має рахуватись динамічно, взалежності від відстані і т п..*/);
+		smgr->createFlyStraightAnimator(node->getPosition(), nextpos, 10000/*тут швидкість має рахуватись динамічно, взалежності від відстані і т п..*/);
                 if (anim)
                 {
                         node->addAnimator(anim);

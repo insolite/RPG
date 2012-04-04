@@ -19,7 +19,7 @@ Universe::~Universe(void)
 	fclose(log);
 }
 
-void Universe::Run()
+void Universe::Run(char* gameName)
 {
 	bool continueFlag; //Continue game or not
 	char inPacket[256]; //Holds the input packet
@@ -34,7 +34,7 @@ void Universe::Run()
 	clientsCount = 0;
 	clients = NULL;
 
-	game = new Game("testgame", Server);
+	game = new Game(gameName, Server);
 	printf("Game %s initialized\n", game->name);
 	serverSocket = new ServerSocket("3127");
 	//ci = Free;
@@ -43,7 +43,7 @@ void Universe::Run()
 		//Accepting connections from clients
 		tmp = accept(serverSocket->connectSocket, NULL, NULL);
 		if (tmp != INVALID_SOCKET)
-		{//Client connected
+		{ //Client connected
 			clientsCount++;
 			clients = (ServerClientSocket**)realloc(clients, clientsCount * sizeof(ServerClientSocket*));
 			clients[clientsCount - 1] = new ServerClientSocket(tmp);
@@ -57,7 +57,7 @@ void Universe::Run()
 			if (iResult)
 			{
 				if (iResult > 0)
-				{//Packet received
+				{ //Packet received
 					printf("Packet received\n");
 					switch (GetPacketType(inPacket))
 					{
@@ -116,6 +116,24 @@ void Universe::Run()
 								printf("Character %s logged in\n", newCurrentCharacter->login);
 								CreatePacket(outPacket, LoggedIn, "%s%i", game->name, location->id);
 								clients[ci]->Send(outPacket);
+								for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
+								{
+									CreatePacket(outPacket, CharacterSpawned, "%i%i%i%i%s",
+										clients[ci]->character->currentLocation->currentCharacters[i]->id,
+										clients[ci]->character->currentLocation->currentCharacters[i]->base->id,
+										clients[ci]->character->currentLocation->currentCharacters[i]->x,
+										clients[ci]->character->currentLocation->currentCharacters[i]->y,
+										clients[ci]->character->currentLocation->currentCharacters[i]->login
+										);
+									clients[ci]->Send(outPacket);
+									//TEST
+									CreatePacket(outPacket, CharacterMoving, "%i%i%i",
+										clients[ci]->character->currentLocation->currentCharacters[i]->id,
+										clients[ci]->character->currentLocation->currentCharacters[i]->x + 15,
+										clients[ci]->character->currentLocation->currentCharacters[i]->y - 8
+										);
+									clients[ci]->Send(outPacket);
+								}
 							}
 							break;
 						}
@@ -141,8 +159,6 @@ void Universe::Run()
 							}
 							break;
 						case Move:
-							//char movingStarted[256];
-
 							printf("Client %d requested moving into %d %d\n", ci,PacketGetInt(inPacket, 1),PacketGetInt(inPacket, 5));
 
 							CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, PacketGetInt(inPacket, 1), PacketGetInt(inPacket, 5));

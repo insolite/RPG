@@ -7,6 +7,7 @@
 #include "Static.h"
 #include "Item.h"
 #include "Character.h"
+#include "Render.h"
 #include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
 #include "CurrentNPC.h"
