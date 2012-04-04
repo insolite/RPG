@@ -1,8 +1,7 @@
 #include "StdAfx.h"
-#include "ForcedDeclaration.h"
+#include "ForwardDeclaration.h"
 #include "MenuEventReceiver.h"
 #include "EditorEventReceiver.h"
-#include "Render.h"
 #include "Universe.h"
 
 Universe* Universe::instance;
@@ -213,11 +212,13 @@ bool Universe::Run()
 	
 	int lastUpdate = SDL_GetTicks();
 
-//wariables for camera)
+	//variables for camera
 	ISceneNode* camPos=render->smgr->addEmptySceneNode();
 	camPos->setPosition(vector3df(50,50,10));
-	ICameraSceneNode *camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
-
+	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
+	camera2=render->smgr->addCameraSceneNode(0, vector3df(0,50,-20), vector3df(0,0,0));
+	render->smgr->setActiveCamera(camera);
+	
 
 	DrawScene();
 	render->drawKub(0,0,0);
@@ -225,7 +226,7 @@ bool Universe::Run()
 	while (render->device->run() && state == Continue)
 	{
 		core::vector3df Km = camPos->getPosition();
-		core::vector3df Kt = camera->getTarget();
+		Kt = camera->getTarget();
 		
 		if(editorEventReceiver->IsKeyDown(irr::KEY_LEFT))
 		{
@@ -256,8 +257,27 @@ bool Universe::Run()
 		camera->setTarget(Kt);
 
 		render->driver->beginScene(true, true, SColor(255,100,101,140));
+			
+			//render->driver->setViewPort(rect<s32>(0,0,screenWidth,screenHeight));
 			render->smgr->drawAll();
-			guienv->drawAll();
+			
+
+			IGUIWindow* wnd;
+			for (int i = 0; i < 5; i++)
+				if (wnd = (IGUIWindow*)guienv->getRootGUIElement()->getElementFromId(MapCellSelectWindow))
+					break;
+			if (wnd)
+			{
+				//rect< s32 > mvRect = wnd->getElementFromId(MapObjectMeshViever)->getAbsolutePosition();
+				//render->smgr->setActiveCamera(camera2);
+				guienv->drawAll();
+				
+				//render->driver->setViewPort(mvRect);
+				//render->smgr->setActiveCamera(camera);
+			}
+			else
+				guienv->drawAll();
+			
 		render->driver->endScene();
 	}
 	render->smgr->clear();

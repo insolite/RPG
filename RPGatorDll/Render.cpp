@@ -1,8 +1,5 @@
 #include "StdAfx.h"
-#include "ForcedDeclaration.h"
-#include "MenuEventReceiver.h"
-#include "EditorEventReceiver.h"
-#include "Universe.h"
+#include "ForwardDeclaration.h"
 #include "Render.h"
 
 Render::Render(int screenWidth, int screenHeight)

@@ -94,6 +94,7 @@
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Quest.h" />
+    <ClInclude Include="Render.h" />
     <ClInclude Include="RPGatorDll.h" />
     <ClInclude Include="Skill.h" />
     <ClInclude Include="SqliteResult.h" />
@@ -121,6 +122,7 @@
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Quest.cpp" />
+    <ClCompile Include="Render.cpp" />
     <ClCompile Include="Skill.cpp" />
     <ClCompile Include="SqliteResult.cpp" />
     <ClCompile Include="Static.cpp" />

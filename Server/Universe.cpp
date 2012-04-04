@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "LuaFunctions.h"
 #include "Universe.h"
 
 Universe* Universe::instance;
@@ -6,11 +7,16 @@ Universe* Universe::instance;
 Universe::Universe(void)
 {
 	instance = this;
+	luaState = luaL_newstate();
+	lua_register(luaState, "SayHello", LuaFunctions::SayHello);
+	log = fopen("server.log", "wt");
 }
 
 Universe::~Universe(void)
 {
 	instance = NULL;
+	lua_close(luaState);
+	fclose(log);
 }
 
 void Universe::Run()
@@ -104,13 +110,11 @@ void Universe::Run()
 
 								location = game->data->GetLocation(sqliteResults[0].integers["locationId"]);
 								newCurrentCharacter = new CurrentCharacter(sqliteResults[0], location);
+								newCurrentCharacter->connectSocket = clients[ci];
 								location->SpawnCharacter(newCurrentCharacter);
 								clients[ci]->character = newCurrentCharacter;
-								printf("Character %s logged in\n", inPacket + 3);
-								SetPacketLength(outPacket, 1);
-								SetPacketType(outPacket, LoggedIn);
-								PacketAddString(outPacket, game->name);
-								PacketAddInt(outPacket, location->id);
+								printf("Character %s logged in\n", newCurrentCharacter->login);
+								CreatePacket(outPacket, LoggedIn, "%s%d", game->name, location->id);
 								clients[ci]->Send(outPacket);
 							}
 							break;
@@ -121,41 +125,60 @@ void Universe::Run()
 							switch(PacketGetByte(inPacket, 1))
 							{
 								case Public:
-									printf("Message: %s\n",PacketGetString(inPacket,2));
+									printf("Message: %s\n", PacketGetString(inPacket,2));
 									for (int i = 0; i < clientsCount; i++)
 									{
-										if (i != ci) clients[i]->Send(inPacket);
+										clients[i]->Send(inPacket);
 									}
 									break;
 								case Private:
 									for (int i = 0; i < clientsCount; i++)
 									{
-										if (i != ci && clients[i]->character->id == PacketGetInt(inPacket, 2)) clients[i]->Send(inPacket);
+										if (clients[i]->character->id == PacketGetInt(inPacket, 2))
+											clients[i]->Send(inPacket);
 									}
 									break;
 							}
 							break;
 						case Move:
-							char movingStarted[256];
+							//char movingStarted[256];
 
 							printf("Client %d requested moving into %d %d\n", ci,PacketGetInt(inPacket, 1),PacketGetInt(inPacket, 5));
 
-							SetPacketLength(movingStarted,1);
-							SetPacketType(movingStarted,CharacterMoving);
-							PacketAddInt(movingStarted,clients[ci]->character->id);
-							PacketAddInt(movingStarted, PacketGetInt(inPacket, 1));
-							PacketAddInt(movingStarted, PacketGetInt(inPacket, 5));
-							for (int i = 0; i < clientsCount; i++)
+							CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, PacketGetInt(inPacket, 1), PacketGetInt(inPacket, 5));
+							for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
 							{
-								if (i != ci) clients[i]->Send(movingStarted);
+								clients[i]->Send(outPacket);
 							}
 							break;
+						case SkillUse:
+						{
+							CurrentSkill* currentSkill = clients[ci]->character->GetSkill(PacketGetInt(inPacket, 1));
+							if (currentSkill)
+							{
+								luaL_dofile(luaState, currentSkill->path);
+							}
+							else
+							{
+								Log(Warning, "Client requested skill use which is not in the list of skills of his character");
+							}
+							break;
+						}
 					}
 				}
 				else if (iResult == -1)
 				{ //Client disconnected
 					if (clients[ci]->character) //Client logged in
+					{
+						//TODO: pointer to client in character
+						for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
+							if (clients[ci]->character->currentLocation->currentCharacters[i] != clients[ci]->character)
+							{ //It's not a character, that's unspawning
+								CreatePacket(outPacket, CharacterUnspawned, "%i", clients[ci]->character->id);
+								clients[ci]->character->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
+							}
 						clients[ci]->character->currentLocation->UnSpawnCharacter(clients[ci]->character);
+					}
 
 					delete clients[ci];
 					clientsCount--;
@@ -166,8 +189,8 @@ void Universe::Run()
 					printf("Client %d: Disconnected\n", ci);
 				}
 				else
-				{ //Wrong packet from the server
-					printf("Warning! Wrong packet from client %d\n", ci);
+				{ //Wrong packet from client
+					Log(Warning, "Wrong packet from client %d", ci);
 				}
 			}
 

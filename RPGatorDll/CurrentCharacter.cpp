@@ -8,8 +8,10 @@
 #include "CurrentMapObject.h"
 #include "CurrentItem.h"
 #include "CurrentQuest.h"
+#include "CurrentSkill.h"
 #include "GameResources.h"
 #include "Game.h"
+#include "../Include/RPGator/ConnectSocket.h"
 #include "CurrentCharacter.h"
 
 //Initialization from DB (Editor, Server)
@@ -50,6 +52,19 @@ CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location
 		currentQuests = (CurrentQuest**)realloc(currentQuests, currentQuestsCount * sizeof(CurrentQuest*));
 		currentQuests[currentQuestsCount - 1] = new CurrentQuest(sqliteResultsChildren[currentQuestsCount - 1], this);
 	}
+
+	//CurrentSkills
+	sprintf(query, "SELECT * FROM CurrentSkill WHERE currentCharacterId=%d", id);
+	sqliteResultsChildren = SqliteGetRows(Game::instance->db, query);
+	currentSkills = NULL;
+	currentSkillsCount = 0;
+	rowsCount = sqliteResultsChildren.size();
+	while (currentSkillsCount < rowsCount)
+	{
+		currentSkillsCount++;
+		currentSkills = (CurrentSkill**)realloc(currentSkills, currentSkillsCount * sizeof(CurrentSkill*));
+		currentSkills[currentSkillsCount - 1] = new CurrentSkill(sqliteResultsChildren[currentSkillsCount - 1], this);
+	}
 }
 
 //Initialization from incoming packet (Client)
@@ -66,6 +81,9 @@ CurrentCharacter::CurrentCharacter(char* currentMapObjectSpawnedPacket) :
 
 	currentQuests = NULL;
 	currentQuestsCount = 0;
+
+	currentSkills = NULL;
+	currentSkillsCount = 0;
 }
 
 CurrentCharacter::~CurrentCharacter(void)
@@ -73,4 +91,28 @@ CurrentCharacter::~CurrentCharacter(void)
 	delete login;
 	if (password) //Client does not hold passwords
 		delete password;
+}
+
+CurrentItem* CurrentCharacter::GetItem(int id)
+{
+	for (int i = 0; i < currentItemsCount; i++)
+		if (currentItems[i]->id == id)
+			return currentItems[i];
+	return NULL;
+}
+
+CurrentQuest* CurrentCharacter::GetQuest(int id)
+{
+	for (int i = 0; i < currentQuestsCount; i++)
+		if (currentQuests[i]->id == id)
+			return currentQuests[i];
+	return NULL;
+}
+
+CurrentSkill* CurrentCharacter::GetSkill(int id)
+{
+	for (int i = 0; i < currentSkillsCount; i++)
+		if (currentSkills[i]->id == id)
+			return currentSkills[i];
+	return NULL;
 }

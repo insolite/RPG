@@ -10,7 +10,9 @@ enum Packet
 	Say,
 	Move,
 	CharacterMoving,
-	ItemSpawned
+	ItemSpawned,
+	SkillUse,
+	CharacterUnspawned
 };
 
 enum SpawnType

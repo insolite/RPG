@@ -1,6 +1,5 @@
 #include "StdAfx.h"
-#include "ForcedDeclaration.h"
-#include "Render.h"
+#include "ForwardDeclaration.h"
 #include "Universe.h"
 #include "MenuEventReceiver.h"
 

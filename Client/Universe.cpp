@@ -1,11 +1,24 @@
 #include "StdAfx.h"
+#include "ForwardDeclaration.h"
+#include "MenuEventReceiver.h"
+#include "EditorEventReceiver.h"
 #include "Universe.h"
 
 Universe* Universe::instance;
 
 Universe::Universe(void)
 {
+	screenWidth = 800;
+	screenHeight = 600;
+	fullscreen = false;
 	instance = this;
+	
+	render = new Render(screenWidth, screenHeight);
+
+	guienv = render->device->getGUIEnvironment();
+
+	gui::IGUIFont* font2 = guienv->getFont("editor/font.bmp");
+	guienv->getSkin()->setFont(font2);
 }
 
 Universe::~Universe(void)
@@ -13,7 +26,29 @@ Universe::~Universe(void)
 	instance = NULL;
 }
 
-void Universe::Run()
+bool Universe::Menu()
+{
+	Universe::instance->gameName = NULL;
+
+	MenuGUIInit();
+	
+	state = Continue;
+	while (render->device->run() && state == Continue)
+	{
+		render->driver->beginScene(true, true, SColor(255, 100, 101, 140));
+			guienv->drawAll();
+		render->driver->endScene();
+	}
+
+	MenuGUIDestroy();
+
+	if (Universe::instance->gameName)
+		return false;
+
+	return true;
+}
+
+bool Universe::Run()
 {
 	bool continueFlag; //Continue game or not
 	char inPacket[256]; //Holds the input packet
@@ -25,10 +60,7 @@ void Universe::Run()
 
 	connectSocket = new ClientSocket("127.0.0.1", "3127");
 	printf("Connected to the server\n");
-	SetPacketLength(outPacket, 1);
-	SetPacketType(outPacket, LogIn);
-	PacketAddString(outPacket, "admin");
-	PacketAddString(outPacket, "1234");
+	CreatePacket(outPacket, LogIn, "%s%s", "admin", "1234");
 	connectSocket->Send(outPacket);
 
 	ping = SDL_GetTicks(); //TEST
@@ -88,15 +120,45 @@ void Universe::Run()
 			else
 			{//Wrong packet from the client
 				printf("Warning! Wrong packet from server. Error code: %d\n", iResult);
-				//continueFlag = false;
 			}
 		}
 
+		system("pause");
+		CreatePacket(outPacket, SkillUse, "%i", 1);
+		connectSocket->Send(outPacket);
 		Sleep(200);
 	}
 
 	delete connectSocket;
 	delete game;
 
-	system("pause"); //TEST
+	if (state == NextLevel)
+		return false;
+	return true;
+}
+
+void Universe::MenuGUIInit()
+{
+	menuEventReceiver = new MenuEventReceiver();
+	render->device->setEventReceiver((IEventReceiver*)menuEventReceiver);
+}
+
+void Universe::EditorGUIInit()
+{
+	editorEventReceiver = new EditorEventReceiver();
+	render->device->setEventReceiver((IEventReceiver*)editorEventReceiver);
+
+
+}
+
+void Universe::MenuGUIDestroy()
+{
+	guienv->clear();
+	delete menuEventReceiver;
+}
+
+void Universe::EditorGUIDestroy()
+{
+	guienv->clear();
+	delete editorEventReceiver;
 }

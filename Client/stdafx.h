@@ -23,6 +23,7 @@
 #include "../Include/SDL/SDL.h"
 #include "../Include/SDL/SDL_image.h"
 #include "../Include/sqlite3.h"
+#include "../Include/Irrlicht/irrlicht.h"
 
 #include "../RPGatorDll/RPGatorDll.h"
 
@@ -39,5 +40,14 @@
 #pragma comment(lib, "../Lib/SDLmain.lib")
 #pragma comment(lib, "../Lib/SDL_image.lib")
 #pragma comment(lib, "../Lib/sqlite3.lib")
+#pragma comment(lib, "../Lib/Irrlicht.lib")
 
 #pragma comment(lib, "../Debug/RPGator.lib")
+
+using namespace irr;
+using namespace core;
+using namespace scene;
+using namespace video;
+using namespace io;
+using namespace gui;
+using namespace std;

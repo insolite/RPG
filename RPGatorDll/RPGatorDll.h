@@ -1,6 +1,8 @@
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "utilities.h"
+#include "../Include/RPGator/ConnectSocket.h"
+#include "Render.h"
 
 #include "MapObject.h"
 #include "MapCell.h"

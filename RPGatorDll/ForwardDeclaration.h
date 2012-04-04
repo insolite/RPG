@@ -1,6 +1,9 @@
 class BrushMask;
 class Sprite;
 class SqliteResult;
+class ConnectSocket;
+
+class Render;
 
 class MapObject;
 class MapCell;

@@ -12,8 +12,12 @@ echo Enter the game name
 set /p gamename=
 mkdir server\%gamename%
 xcopy game\%gamename%\db.sqlite server\%gamename%
+mkdir server\%gamename%\script
+xcopy /e game\%gamename%\script server\%gamename%\script
 mkdir client\%gamename%
-xcopy /e game\%gamename% client\%gamename%
+xcopy game\%gamename%\db.sqlite client\%gamename%
+mkdir client\%gamename%\texture
+xcopy /e game\%gamename%\texture client\%gamename%\texture
 echo.
 echo Done!
 echo.

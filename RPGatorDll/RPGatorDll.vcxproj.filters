@@ -105,6 +105,9 @@
     <ClInclude Include="Skill.h">
       <Filter>Заголовочные файлы\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -175,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="Skill.cpp">
       <Filter>Файлы исходного кода\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Render.cpp">
+      <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

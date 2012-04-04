@@ -35,6 +35,10 @@ public:
 	__declspec(dllexport) void AddItem(CurrentItem* currentItem);
 	__declspec(dllexport) void AddCharacter(CurrentCharacter* currentCharacter);
 
+	__declspec(dllexport) CurrentCharacter* GetCharacter(int id)
+	{
+		return GetCurrentMapObject<CurrentCharacter>(currentCharacters, currentCharactersCount, id);
+	}
 	template<class T>
 	__declspec(dllexport) T* GetCurrentMapObject(T** currentMapObjects, int currentMapObjectsCount, int id);
 

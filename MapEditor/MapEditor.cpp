@@ -1,8 +1,5 @@
 #include "stdafx.h"
-#include "ForcedDeclaration.h"
-#include "EditorEventReceiver.h"
-#include "MenuEventReceiver.h"
-#include "Render.h"
+#include "ForwardDeclaration.h"
 #include "Universe.h"
 
 int main(int argc, char* argv[])
@@ -19,4 +16,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-

@@ -38,6 +38,7 @@ enum EditorGUIElements
 	LocationNameEditBox,
 	LocationWidthEditBox,
 	LocationHeightEditBox,
+	MapObjectMeshViever,
 
 	//Order is critical
 	MapCellSelectWindow,
@@ -98,6 +99,9 @@ public:
 	ProgramState state;
 
 	Render* render;
+	core::vector3df Kt;
+	ICameraSceneNode *camera;
+	ICameraSceneNode *camera2;
 
 	void CreateBrushMask(int r);
 	void DeleteBrushMask();

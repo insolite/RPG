@@ -1,7 +1,5 @@
-// Client.cpp: определяет точку входа для консольного приложения.
-//
-
 #include "stdafx.h"
+#include "ForwardDeclaration.h"
 #include "Universe.h"
 
 int main(int argc, char* argv[])

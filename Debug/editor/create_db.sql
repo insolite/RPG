@@ -111,7 +111,7 @@ CREATE TABLE CurrentSkill (
 	currentCharacterId INTEGER
 );
 
-/*=============Init data=============*/
+/*=============Init resources=============*/
 
 INSERT INTO MapCell VALUES (1, 'Green grass', 'grass|free|something', 0);
 INSERT INTO MapCell VALUES (2, 'Red grass', 'grass', 1);
@@ -122,5 +122,13 @@ INSERT INTO Item VALUES (1, 'Test Item', '');
 
 INSERT INTO `Static` VALUES (1, 'Test Static', '');
 
+INSERT INTO Skill VALUES (1, 'UnSpawn character', '');
+
 INSERT INTO `Character` VALUES (1, 'Dwarf', '');
+
+/*=============Init data=============*/
+
 INSERT INTO CurrentCharacter VALUES (1, 1, 4, 8, 1, 'admin', '1234');
+INSERT INTO CurrentCharacter VALUES (2, 1, 5, 9, 1, 'admin2', '1234');
+
+INSERT INTO CurrentSkill VALUES (1, 1, 1);

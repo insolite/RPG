@@ -1,6 +1,6 @@
 #include "StdAfx.h"
-#include "ForcedDeclaration.h"
-#include "Render.h"
+#include "CGUIMeshViewer.h"
+#include "ForwardDeclaration.h"
 #include "Universe.h"
 #include "EditorEventReceiver.h"
 
@@ -22,6 +22,12 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 
 		switch(event.GUIEvent.EventType)
 		{
+			case EGDT_WINDOW_CLOSE:
+				if (eventCallerId >= MapCellSelectWindow && eventCallerId <= CharacterSelectWindow)
+				{
+					Universe::instance->render->smgr->setActiveCamera(Universe::instance->camera);
+				}
+				break;
 			case EGET_BUTTON_CLICKED:
 				if (eventCallerId >= MapCellSelectWindowToggleButton && eventCallerId <= CharacterSelectWindowToggleButton)
 				{
@@ -105,6 +111,16 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 							delete[] tags;
 						}
 
+						//Preview
+						//CGUIMeshViewer* mv = Universe::instance->guienv->addMeshViewer(rect< s32 >(364, 64, 364 + 160, 64 + 256), wnd1, MapObjectMeshViever, L"preview");
+						CGUIMeshViewer* mv = new CGUIMeshViewer(Universe::instance->guienv, wnd1, MapObjectMeshViever, rect< s32 >(364, 64, 364 + 160, 64 + 256));
+						IAnimatedMesh* mesh = Universe::instance->render->smgr->getMesh("faerie.md2");
+						SMaterial* sm = new SMaterial();
+						sm->setTexture(0, Universe::instance->render->driver->getTexture("Faerie5.BMP"));
+						sm->setFlag(EMF_LIGHTING, false);
+						mv->setMesh(mesh);
+						mv->setMaterial(*sm);
+						
 						Universe::instance->guienv->addButton(rect< s32 >(415, 420, 415 + 96, 420 + 32), wnd1, eventCallerId + 10, L"OK", L"Select current map object");
 					}
 					//Focus just created MapObject selection window (or focus old window)
