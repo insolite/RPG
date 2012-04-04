@@ -20,6 +20,16 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 		switch(event.GUIEvent.EventType)
 		{
 			case EGET_BUTTON_CLICKED:
+				switch (eventCallerId)
+				{
+					case LogInButton:
+						Universe::instance->login = new char[256];
+						Universe::instance->password = new char[256];
+						wcstombs(Universe::instance->login, ((IGUIEditBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(LoginEditBox))->getText(), 255);
+						wcstombs(Universe::instance->password, ((IGUIEditBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(PasswordEditBox))->getText(), 255);
+						Universe::instance->state = NextLevel;
+						break;
+				}
 				break;
 		}
 	}

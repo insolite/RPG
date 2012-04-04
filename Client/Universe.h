@@ -8,6 +8,20 @@ enum ProgramState
 	Exit
 };
 
+enum MenuGUIElements
+{
+	LoginEditBox,
+	PasswordEditBox,
+	LogInButton,
+	RegisterButton,
+	TESTSkillUseButton
+};
+
+enum EditorGUIElements
+{
+
+};
+
 class Universe
 {/*
  Main wrapper. Holds connection socket, game instance, etc.
@@ -24,20 +38,23 @@ public:
 	//GUI, input
 	IGUIEnvironment* guienv;
 	MenuEventReceiver* menuEventReceiver;
-	EditorEventReceiver* editorEventReceiver;
+	ClientEventReceiver* clientEventReceiver;
 
-	char* gameName; //Buffer between menu and editor
+	char* login; //Buffer between menu and editor
+	char* password; //Buffer between menu and editor
 	ProgramState state;
 	Render* render;
+	core::vector3df Kt;
 	ICameraSceneNode *camera;
 	ICameraSceneNode *camera2;
 
 	bool Run(); //Main loop
 	bool Menu();
 	void MenuGUIInit();
-	void EditorGUIInit();
+	void ClientGUIInit();
 	void MenuGUIDestroy();
-	void EditorGUIDestroy();
+	void ClientGUIDestroy();
+	void DrawScene(); //TEST
 
 	Universe(void); //Initializes the instance
 	~Universe(void); //Finalizes the instance

@@ -114,7 +114,7 @@ void Universe::Run()
 								location->SpawnCharacter(newCurrentCharacter);
 								clients[ci]->character = newCurrentCharacter;
 								printf("Character %s logged in\n", newCurrentCharacter->login);
-								CreatePacket(outPacket, LoggedIn, "%s%d", game->name, location->id);
+								CreatePacket(outPacket, LoggedIn, "%s%i", game->name, location->id);
 								clients[ci]->Send(outPacket);
 							}
 							break;
@@ -218,7 +218,6 @@ void Universe::Run()
 			SetPacketLength(outPacket, strlen(outPacket + 2) + 1);
 			//clients[cClient]->Send(outPacket);
 		}
-		Sleep(200);
 	}
 	
 	delete serverSocket;

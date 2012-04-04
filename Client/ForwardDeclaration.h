@@ -1,3 +1,3 @@
-class EditorEventReceiver;
+class ClientEventReceiver;
 class MenuEventReceiver;
 class Universe;

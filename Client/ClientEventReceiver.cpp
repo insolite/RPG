@@ -1,17 +1,19 @@
 #include "StdAfx.h"
 #include "ForwardDeclaration.h"
 #include "Universe.h"
-#include "EditorEventReceiver.h"
+#include "ClientEventReceiver.h"
 
-bool EditorEventReceiver::OnEvent(const SEvent& event)
+bool ClientEventReceiver::OnEvent(const SEvent& event)
 {
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 	{
 		KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
 		if (KeyIsDown[KEY_ESCAPE])
 		{ //Return to the main menu
-			delete Universe::instance->gameName;
-			Universe::instance->gameName = NULL;
+			delete Universe::instance->login;
+			delete Universe::instance->password;
+			Universe::instance->login = NULL;
+			Universe::instance->password = NULL;
 			Universe::instance->state = NextLevel;
 		}
 	}
@@ -24,6 +26,16 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 			case EGDT_WINDOW_CLOSE:
 				break;
 			case EGET_BUTTON_CLICKED:
+				switch (eventCallerId)
+				{
+					case TESTSkillUseButton:
+					{
+						char outPacket[256];
+						CreatePacket(outPacket, SkillUse, "%i", 1);
+						Universe::instance->connectSocket->Send(outPacket);
+						break;
+					}
+				}
 				break;
 			case EGET_COMBO_BOX_CHANGED:
 				break;
@@ -38,13 +50,13 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 }
 
 // метод возвращающий состояние для запрошенной клавиши
-bool EditorEventReceiver::IsKeyDown(EKEY_CODE keyCode) const
+bool ClientEventReceiver::IsKeyDown(EKEY_CODE keyCode) const
 {
 	return KeyIsDown[keyCode];
 }
     
 //конструктор, в цикле сбрасываем статус для всех клавиш
-EditorEventReceiver::EditorEventReceiver()
+ClientEventReceiver::ClientEventReceiver()
 {
 	for (u32 i = 0; i < KEY_KEY_CODES_COUNT; ++i)
 		KeyIsDown[i] = false;

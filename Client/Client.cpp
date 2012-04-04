@@ -8,7 +8,11 @@ int main(int argc, char* argv[])
 
 	universe = new Universe();
 
-	universe->Run();
+	while (!universe->Menu())
+	{
+		if (universe->Run())
+			break;
+	}
 
 	return 0;
 }

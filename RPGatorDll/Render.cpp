@@ -2,13 +2,13 @@
 #include "ForwardDeclaration.h"
 #include "Render.h"
 
-Render::Render(int screenWidth, int screenHeight)
+Render::Render(int screenWidth, int screenHeight, wchar_t* windowTitle)
 {
 	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 16, false, false, false, NULL); //(IEventReceiver*)editorEventReceiver
 	device->setResizable(true);
 	if (!device)
 		return;
-	device->setWindowCaption(L"RPGator");
+	device->setWindowCaption(windowTitle);
 
 	driver = device->getVideoDriver();
 	smgr = device->getSceneManager();

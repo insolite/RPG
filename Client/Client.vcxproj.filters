@@ -36,10 +36,10 @@
     <ClInclude Include="MenuEventReceiver.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="EditorEventReceiver.h">
+    <ClInclude Include="ForwardDeclaration.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="ForwardDeclaration.h">
+    <ClInclude Include="ClientEventReceiver.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,10 +59,10 @@
     <ClCompile Include="..\Include\RPGator\ConnectSocket.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="EditorEventReceiver.cpp">
+    <ClCompile Include="MenuEventReceiver.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="MenuEventReceiver.cpp">
+    <ClCompile Include="ClientEventReceiver.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>

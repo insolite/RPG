@@ -21,6 +21,6 @@ public:
 	__declspec(dllexport) void createMenu();
 	__declspec(dllexport) void drawKub(f32 xPos,f32 yPos,f32 zPos);
 
-	__declspec(dllexport) Render(int screenWidth, int screenHeight);
+	__declspec(dllexport) Render(int screenWidth, int screenHeight, wchar_t* windowTitle);
 	__declspec(dllexport) ~Render(void);
 };

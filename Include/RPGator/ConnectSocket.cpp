@@ -24,6 +24,10 @@ int ConnectSocket::Receive(char *packet)
 		}
 		return 0;
 	}
+	if (iResult < 1)
+	{
+		return -1;
+	}
 	if (iResult < 2)
 	{
 		return -2;

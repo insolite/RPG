@@ -79,7 +79,7 @@
   <ItemGroup>
     <ClInclude Include="..\Include\RPGator\ConnectSocket.h" />
     <ClInclude Include="ClientSocket.h" />
-    <ClInclude Include="EditorEventReceiver.h" />
+    <ClInclude Include="ClientEventReceiver.h" />
     <ClInclude Include="ForwardDeclaration.h" />
     <ClInclude Include="MenuEventReceiver.h" />
     <ClInclude Include="stdafx.h" />
@@ -90,7 +90,7 @@
     <ClCompile Include="..\Include\RPGator\ConnectSocket.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientSocket.cpp" />
-    <ClCompile Include="EditorEventReceiver.cpp" />
+    <ClCompile Include="ClientEventReceiver.cpp" />
     <ClCompile Include="MenuEventReceiver.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
