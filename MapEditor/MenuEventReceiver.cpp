@@ -59,26 +59,26 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						wnd = (IGUIWindow*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(NewGameWindow);
 						gneb = (IGUIEditBox*)wnd->getElementFromId(GameNameEditBox);
 						wcstombs(gameName, gneb->getText(), 255);
-						sprintf(path, "game/%s", gameName);
+						sprintf(path, "editor/%s", gameName);
 						CreateDirectory(path, NULL);
 						/*
-						sprintf(path, "game/%s/data", gameName);
+						sprintf(path, "editor/%s/data", gameName);
 						CreateDirectory(path, NULL);
-						sprintf(path, "game/%s/data/location", gameName);
+						sprintf(path, "editor/%s/data/location", gameName);
 						CreateDirectory(path, NULL);
 						*/
-						sprintf(path, "game/%s/resource", gameName);
+						sprintf(path, "editor/%s/resource", gameName);
 						CreateDirectory(path, NULL);
-						sprintf(path, "game/%s/resource/texture", gameName);
+						sprintf(path, "editor/%s/resource/texture", gameName);
 						CreateDirectory(path, NULL);
-						sprintf(path, "game/%s/resource/script", gameName);
+						sprintf(path, "editor/%s/resource/script", gameName);
 						CreateDirectory(path, NULL);
 
 						//Create subdirs
 
 						//Create game db
 						//TODO: If possible, init SQL file with sqlite library function
-						f = fopen("editor/create_db.sql", "rt");
+						f = fopen("res/create_db.sql", "rt");
 						query = "";
 						while (!feof(f))
 						{
@@ -86,7 +86,7 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 							query += tmp;
 						}
 						fclose(f);
-						sprintf(path, "game/%s/db.sqlite", gameName);
+						sprintf(path, "editor/%s/db.sqlite", gameName);
 						sqlite3* db;
 						sqlite3_open(path, &db);
 						sqlite3_exec(db, query.c_str(), NULL, NULL, NULL);
@@ -117,7 +117,7 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 							char str[256];
 
 							wcstombs(str, lb->getListItem(lb->getSelected()), 255);
-							sprintf(path, "game/%s", str);
+							sprintf(path, "editor/%s", str);
 							ClearDir(path);
 							RemoveDirectory(path);
 							lb->removeItem(lb->getSelected());

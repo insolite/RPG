@@ -27,7 +27,7 @@ Universe::Universe(void)
 
 	guienv = render->device->getGUIEnvironment();
 
-	gui::IGUIFont* font2 = guienv->getFont("editor/font.bmp");
+	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
 	guienv->getSkin()->setFont(font2);
 	//TODO: font delete?
 }
@@ -45,7 +45,7 @@ void Universe::MenuGUIInit()
 	char** games;
 	int gamesCount;
 	wchar_t wstr[512];
-	gamesCount = ReadDir("game", games, true);
+	gamesCount = ReadDir("editor", games, true);
 	IGUIListBox* lb = guienv->addListBox(rect< s32 >(256, 160, 480, 512), NULL, GamesListBox, true);
 	for (int i = 0; i < gamesCount; i++)
 	{
@@ -92,7 +92,8 @@ void Universe::EditorGUIInit()
 	}
 
 	//Locations control buttons
-	guienv->addButton(rect< s32 >(toolbarLeftMargin + 128 + 32, 64, toolbarLeftMargin + 128 + 48, 80), wnd, LocationsEditButton, L"*", L"Edit locations");
+	IGUIButton* b = guienv->addButton(rect< s32 >(toolbarLeftMargin + 128 + 32, 64, toolbarLeftMargin + 128 + 48, 80), wnd, LocationsEditButton, L"*", L"Edit locations");
+	b->setIsPushButton(true);
 
 	//MapObject select windows, tabs, buttons, etc.
 	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 92, toolbarLeftMargin + 176, 92 + 256), wnd, true, true, MapObjectsTabControl);
@@ -210,8 +211,6 @@ bool Universe::Run()
 	
 	CreateBrushMask(1); //TODO: slider get value
 	
-	int lastUpdate = SDL_GetTicks();
-
 	//variables for camera
 	ISceneNode* camPos=render->smgr->addEmptySceneNode();
 	camPos->setPosition(vector3df(50,50,10));

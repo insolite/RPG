@@ -15,7 +15,7 @@ Game::Game(char* _name, InitializationType initializationType)
 	switch (initializationType)
 	{
 		case Editor:
-			sprintf(path, "game/%s/db.sqlite", name);
+			sprintf(path, "editor/%s/db.sqlite", name);
 			break;
 		case Server:
 			sprintf(path, "server/%s/db.sqlite", name);

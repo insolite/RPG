@@ -3,6 +3,7 @@
 #include "utilities.h"
 #include "../Include/RPGator/ConnectSocket.h"
 #include "Render.h"
+#include "IGUIIconTable.h"
 
 #include "MapObject.h"
 #include "MapCell.h"

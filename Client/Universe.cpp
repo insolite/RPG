@@ -17,7 +17,7 @@ Universe::Universe(void)
 
 	guienv = render->device->getGUIEnvironment();
 
-	gui::IGUIFont* font2 = guienv->getFont("editor/font.bmp");
+	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
 	guienv->getSkin()->setFont(font2);
 }
 
@@ -87,7 +87,6 @@ bool Universe::Run()
 	char inPacket[256]; //Holds the input packet
 	char outPacket[256]; //Holds the output packet
 	int iResult; //The result of 'Receive' and 'Send'
-	int ping; //TEST
 
 	continueFlag = true;
 
@@ -95,8 +94,6 @@ bool Universe::Run()
 	printf("Connected to the server\n");
 	CreatePacket(outPacket, LogIn, "%s%s", login, password);
 	connectSocket->Send(outPacket);
-
-	ping = SDL_GetTicks(); //TEST
 
 	game = NULL;
 	currentCharacter = NULL;
@@ -120,8 +117,7 @@ bool Universe::Run()
 		{
 			if (iResult > 0)
 			{ //Packet received
-				printf("Packet received: '%s'; Length: %d; Ping: %d;\n", inPacket + 2, GetPacketLength(inPacket), SDL_GetTicks() - ping);
-				ping = SDL_GetTicks();
+				printf("Packet received: '%s'; Length: %d; Ping: %d;\n", inPacket + 2, GetPacketLength(inPacket), 0);
 				switch (GetPacketType(inPacket))
 				{
 					case LoggedIn:
@@ -143,8 +139,22 @@ bool Universe::Run()
 						}
 						break;
 					case Say:
-						printf("Message: %s\n", PacketGetString(inPacket, 6));
+					{
+						//GOVNOCODE
+						IGUIElement* eb = guienv->getRootGUIElement()->getElementFromId(ChatEditBox);
+						char* str;
+						if (PacketGetByte(inPacket, 1) == Private)
+							str = PacketGetString(inPacket, 6);
+						else
+							str = PacketGetString(inPacket, 2);
+						wchar_t* wstr = new wchar_t[wcslen(eb->getText()) + strlen(str) + 2];
+						wcscpy(wstr, eb->getText());
+						wcscat(wstr, L"\n");
+						mbstowcs(wstr + wcslen(eb->getText()) + 1, str, 2 * strlen(str));
+						eb->setText(wstr);
+						delete wstr;
 						break;
+					}
 					case CharacterMoving:
 						printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
 						render->moveNode(currentLocation->GetCharacter(PacketGetInt(inPacket,1))->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
@@ -238,7 +248,8 @@ void Universe::MenuGUIInit()
 	render->device->setEventReceiver((IEventReceiver*)menuEventReceiver);
 
 	guienv->addEditBox(L"admin", rect< s32 >(screenWidth / 2 - 64, screenHeight / 2 - 100, screenWidth / 2 + 64, screenHeight / 2 - 68), true, NULL, LoginEditBox);
-	guienv->addEditBox(L"1234", rect< s32 >(screenWidth / 2 - 64, screenHeight / 2 - 60, screenWidth / 2 + 64, screenHeight / 2 - 28), true, NULL, PasswordEditBox);
+	IGUIEditBox* eb = guienv->addEditBox(L"1234", rect< s32 >(screenWidth / 2 - 64, screenHeight / 2 - 60, screenWidth / 2 + 64, screenHeight / 2 - 28), true, NULL, PasswordEditBox);
+	eb->setPasswordBox(true);
 	guienv->addButton(rect< s32 >(screenWidth / 2 - 64, screenHeight / 2 - 20, screenWidth / 2 - 4, screenHeight / 2 + 12), NULL, LogInButton, L"Log in", L"Log in");
 	guienv->addButton(rect< s32 >(screenWidth / 2 + 4, screenHeight / 2 - 20, screenWidth / 2 + 64, screenHeight / 2 + 12), NULL, RegisterButton, L"Register", L"Register");
 }
@@ -249,6 +260,29 @@ void Universe::ClientGUIInit()
 	render->device->setEventReceiver((IEventReceiver*)clientEventReceiver);
 
 	guienv->addButton(rect< s32 >(0, 0, 256, 32), NULL, TESTSkillUseButton, L"Use skill SayHello", NULL);
+
+	//Chat
+	//IGUIStaticText* chatStaticText = guienv->addStaticText(NULL, rect< s32 >(0, 128, 256, 128 + 256), true, true, NULL, ChatStaticText, true);
+	//chatStaticText->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
+	IGUIEditBox* chatEditBox = guienv->addEditBox(NULL, rect< s32 >(0, 128, 256, 128 + 256), true, NULL, ChatEditBox);
+	chatEditBox->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
+	chatEditBox->setMultiLine(true);
+	guienv->addEditBox(NULL, rect< s32 >(0, 128 + 256, 256, 128 + 256 + 24), true, NULL, ChatInputEditBox);
+
+	//Inventory
+	IGUIIconTable* tbl1 = new IGUIIconTable(guienv, NULL, -1, rect< s32 >(screenWidth - 32 * 6, 150, screenWidth, 150 + 32 * 6), 6, 6);
+	tbl1->buttonSize = 32;
+	guienv->getRootGUIElement()->addChild(tbl1);
+	for (int i = 0; i < 36; i++)
+		tbl1->addButton();
+
+	//Hotkey
+	IGUIIconTable* tbl2 = new IGUIIconTable(guienv, NULL, -1, rect< s32 >(200, screenHeight - 48, 200 + 12 * 48, screenHeight), 12, 1);
+	guienv->getRootGUIElement()->addChild(tbl2);
+	for (int i = 0; i < 12; i++)
+		tbl2->addButton(Universe::instance->render->driver->getTexture("rpgator.png"));
+	//IGUIButton* btn = guienv->addButton();
+	//btn->setImage();
 }
 
 void Universe::MenuGUIDestroy()

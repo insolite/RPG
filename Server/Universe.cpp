@@ -37,7 +37,7 @@ void Universe::Run(char* gameName)
 	game = new Game(gameName, Server);
 	printf("Game %s initialized\n", game->name);
 	serverSocket = new ServerSocket("3127");
-	//ci = Free;
+	
 	while (continueFlag)
 	{
 		//Accepting connections from clients
@@ -140,20 +140,22 @@ void Universe::Run(char* gameName)
 						case LogOut:
 							break;
 						case Say:
-							switch(PacketGetByte(inPacket, 1))
+							switch (PacketGetByte(inPacket, 1))
 							{
-								case Public:
-									printf("Message: %s\n", PacketGetString(inPacket,2));
+								case Public: //%b%s
 									for (int i = 0; i < clientsCount; i++)
 									{
 										clients[i]->Send(inPacket);
 									}
 									break;
-								case Private:
+								case Private: //%b%i%s
 									for (int i = 0; i < clientsCount; i++)
 									{
 										if (clients[i]->character->id == PacketGetInt(inPacket, 2))
+										{
 											clients[i]->Send(inPacket);
+											break;
+										}
 									}
 									break;
 							}

@@ -17,8 +17,10 @@ enum MenuGUIElements
 	TESTSkillUseButton
 };
 
-enum EditorGUIElements
+enum ClientGUIElements
 {
+	ChatEditBox,
+	ChatInputEditBox
 
 };
 

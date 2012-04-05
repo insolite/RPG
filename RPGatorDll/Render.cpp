@@ -6,7 +6,7 @@ Render* Render::instance = NULL;
 
 Render::Render(int screenWidth, int screenHeight, wchar_t* windowTitle)
 {
-	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 16, false, false, false, NULL); //(IEventReceiver*)editorEventReceiver
+	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 32, false, false, false, NULL); //(IEventReceiver*)editorEventReceiver
 	device->setResizable(true);
 	if (!device)
 		return;
@@ -57,7 +57,7 @@ ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool ligh
 		node->setRotation(rotation);
 		node->setScale(scale);
 		node->setAnimationSpeed(20.f);
-
+		
 		if(isMD2)
 		{
 			//node->setMD2Animation(scene::EMAT_POINT); //or interval of frame for scelet animation
@@ -78,13 +78,42 @@ ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool ligh
 	return node;
 }
 
+#define M_PI 3.14
+
 void Render::moveNode(ISceneNode* node/*dolgno prokotit*/,core::vector3df nextpos)
 {
+	vector3df oldPosition = node->getPosition();
 	scene::ISceneNodeAnimator* anim =
-		smgr->createFlyStraightAnimator(node->getPosition(), nextpos, 10000/*тут швидкість має рахуватись динамічно, взалежності від відстані і т п..*/);
-                if (anim)
-                {
-                        node->addAnimator(anim);
-                        anim->drop();
-                }
+		smgr->createFlyStraightAnimator(node->getPosition(), nextpos, 7000/*тут швидкість має рахуватись динамічно, взалежності від відстані і т п..*/);
+	//vector3df rot(0, 180 * tan(abs(oldPosition.Z - nextpos.Z) / abs(oldPosition.X - nextpos.X)) / M_PI, 0);
+	vector3df rot(0, getAngle(oldPosition.X, oldPosition.Z, nextpos.X, nextpos.Z), 0);
+	node->setRotation(rot);
+	if (anim)
+	{
+		node->addAnimator(anim);
+		anim->drop();
+	}
+}
+
+int Render::getAngle(int x1, int y1, int x2, int y2, bool norm)
+{
+	int dx = abs(x2 - x1);
+	int dy = abs(y2 - y1);
+	double angle = atan((double)dy / (double)dx);
+	
+	if (norm)
+	{
+		if (angle < 0)
+		{
+			angle = angle + M_PI * 2;
+		}
+		else if (angle >= M_PI * 2)
+		{
+			angle = angle - M_PI * 2;
+		}
+	}
+	
+	angle *= 180 / M_PI;
+
+	return angle;
 }

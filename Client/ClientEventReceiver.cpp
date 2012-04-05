@@ -16,6 +16,22 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			Universe::instance->password = NULL;
 			Universe::instance->state = NextLevel;
 		}
+		else if (KeyIsDown[KEY_RETURN])
+		{
+			IGUIElement* eb = Universe::instance->guienv->getRootGUIElement()->getElementFromId(ChatInputEditBox);
+			if (Universe::instance->guienv->getFocus() == eb)
+			{
+				if (wcslen(eb->getText()) > 0)
+				{
+					char outPacket[256];
+					char str[256]; //TODO: %ws
+					wcstombs(str, eb->getText(), 255);
+					CreatePacket(outPacket, Say, "%b%s", Public, str);
+					Universe::instance->connectSocket->Send(outPacket);
+					eb->setText(NULL);
+				}
+			}
+		}
 	}
 	else if (event.EventType == EET_GUI_EVENT)
 	{
@@ -35,6 +51,9 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 						Universe::instance->connectSocket->Send(outPacket);
 						break;
 					}
+					case ChatInputEditBox:
+						Universe::instance->guienv->getRootGUIElement()->getElementFromId(ChatInputEditBox)->setText(L"");
+						break;
 				}
 				break;
 			case EGET_COMBO_BOX_CHANGED:

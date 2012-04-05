@@ -4,6 +4,7 @@ class SqliteResult;
 class ConnectSocket;
 
 class Render;
+class IGUIIconTable;
 
 class MapObject;
 class MapCell;
