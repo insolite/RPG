@@ -36,14 +36,19 @@ void Render::createMenu()
 
 void Render::drawKub(f32 xPos,f32 yPos,f32 zPos)
 {
-	ISceneNode* n = smgr->addCubeSceneNode(); // создаем на сцене куб
+
+	
+
+	IMeshSceneNode* n = smgr->addCubeSceneNode(); // создаем на сцене куб
         if (n)
         {
 				n->setPosition(core::vector3df(xPos,yPos,zPos)); // позиционирем сферу
                 n->setMaterialTexture(0, driver->getTexture("grass.bmp")); // текстурируем куб
                 n->setMaterialFlag(video::EMF_LIGHTING, false); // отключаем обработку освещения
-				//n->scal
+				
         }
+
+
 }
 
 ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
@@ -87,4 +92,16 @@ void Render::moveNode(ISceneNode* node/*dolgno prokotit*/,core::vector3df nextpo
                         node->addAnimator(anim);
                         anim->drop();
                 }
+}
+
+vector3df Render::mouseToUniverse()
+{
+	core::vector3df pos;
+
+	line3df ray2 = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(device->getCursorControl()->getPosition(), smgr->getActiveCamera());
+	core::plane3df plane=plane3df(vector3df(-15,0,0), vector3df(0, -1, 0));
+    if(plane.getIntersectionWithLine(ray2.start, ray2.getVector(), pos))
+		return pos;
+	else
+		printf("ray does not intersect the plane!");
 }
