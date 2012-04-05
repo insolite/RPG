@@ -160,13 +160,6 @@ void Universe::DrawScene()
 				default:
 					glColor4d(1, 1, 1, 1);*/
 			}
-			/*glBindTexture(GL_TEXTURE_2D, texture[0]);
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f); glVertex2d(j * cellSize, i * cellSize);
-			glTexCoord2f(1.0f, 0.0f); glVertex2d(j * cellSize, i * cellSize + cellSize);
-			glTexCoord2f(1.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize + cellSize);
-			glTexCoord2f(0.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize);
-			glEnd();*/
 		}
 	}
 }
@@ -254,6 +247,13 @@ bool Universe::Run()
 		//camera->setPosition(Km)
 		camera->setPosition(Km);
 		camera->setTarget(Kt);
+
+		//TESTESTESTESTESTESTESTES
+		
+		//printf("Mouse X= %d\tY= %d \n",render->device->getCursorControl()->getPosition().X,render->device->getCursorControl()->getPosition().Y);
+		//printf("World X= %f\tY= %f\tZ= %f \n",render->mouseToUniverse().X,render->mouseToUniverse().Y,render->mouseToUniverse().Z);
+		
+		//TESTESTESTESTESTESTESTES
 
 		render->driver->beginScene(true, true, SColor(255,100,101,140));
 			

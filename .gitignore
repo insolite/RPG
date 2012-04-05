@@ -24,19 +24,15 @@ obj/
 _ReSharper*/
 [Tt]est[Rr]esult*
 
-[Rr]elease/*.lib
-[Rr]elease/*.exp
+RPGator.dll
+*.lib
+*.rc
+*.exp
 *.opensdf
 *.sdf
 *.tlog
+*.idb
 *.manifest
 *.embed.manifest.res
 *.lastbuildstate
 ipch/
-
-Release/Client.exp
-Release/Client.lib
-Release/MapEditor.exp
-Release/MapEditor.lib
-Release/Server.exp
-Release/Server.lib
