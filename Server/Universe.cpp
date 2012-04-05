@@ -116,23 +116,31 @@ void Universe::Run(char* gameName)
 								printf("Character %s logged in\n", newCurrentCharacter->login);
 								CreatePacket(outPacket, LoggedIn, "%s%i", game->name, location->id);
 								clients[ci]->Send(outPacket);
-								for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
+								CreatePacket(outPacket, CharacterSpawned, "%i%i%i%i%s",
+									newCurrentCharacter->id,
+									newCurrentCharacter->base->id,
+									newCurrentCharacter->x,
+									newCurrentCharacter->y,
+									newCurrentCharacter->login
+									);
+								//Send to all that character spawned
+								for (int i = 0; i < newCurrentCharacter->currentLocation->currentCharactersCount; i++)
+								{
+									if (newCurrentCharacter != newCurrentCharacter->currentLocation->currentCharacters[i]) //Not current client. We'll do it in the next loop
+										newCurrentCharacter->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
+								}
+
+								//Send to one client that all spawned
+								for (int i = 0; i < newCurrentCharacter->currentLocation->currentCharactersCount; i++)
 								{
 									CreatePacket(outPacket, CharacterSpawned, "%i%i%i%i%s",
-										clients[ci]->character->currentLocation->currentCharacters[i]->id,
-										clients[ci]->character->currentLocation->currentCharacters[i]->base->id,
-										clients[ci]->character->currentLocation->currentCharacters[i]->x,
-										clients[ci]->character->currentLocation->currentCharacters[i]->y,
-										clients[ci]->character->currentLocation->currentCharacters[i]->login
+										newCurrentCharacter->currentLocation->currentCharacters[i]->id,
+										newCurrentCharacter->currentLocation->currentCharacters[i]->base->id,
+										newCurrentCharacter->currentLocation->currentCharacters[i]->x,
+										newCurrentCharacter->currentLocation->currentCharacters[i]->y,
+										newCurrentCharacter->currentLocation->currentCharacters[i]->login
 										);
-									clients[ci]->Send(outPacket);
-									//TEST
-									CreatePacket(outPacket, CharacterMoving, "%i%i%i",
-										clients[ci]->character->currentLocation->currentCharacters[i]->id,
-										clients[ci]->character->currentLocation->currentCharacters[i]->x + 15,
-										clients[ci]->character->currentLocation->currentCharacters[i]->y - 8
-										);
-									clients[ci]->Send(outPacket);
+									newCurrentCharacter->connectSocket->Send(outPacket);
 								}
 							}
 							break;
@@ -161,6 +169,11 @@ void Universe::Run(char* gameName)
 							}
 							break;
 						case Move:
+							//TEST!
+							//TODO: changing x and y in time
+							clients[ci]->character->x = PacketGetInt(inPacket, 1);
+							clients[ci]->character->y = PacketGetInt(inPacket, 5);
+							
 							CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, PacketGetInt(inPacket, 1), PacketGetInt(inPacket, 5));
 							for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
 							{

@@ -40,7 +40,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 		if (Mouse[EMIE_LMOUSE_LEFT_UP])
 		{
 			char outPacket[256];
-			vector3df position = Universe::instance->render->mouseToUniverse();
+			vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
 			int x, y;
 			x = position.X / CELL_SIZE;
 			y = position.Z / CELL_SIZE;

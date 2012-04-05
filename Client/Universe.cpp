@@ -156,7 +156,7 @@ bool Universe::Run()
 						break;
 					}
 					case CharacterMoving:
-						printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
+						//printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
 						render->moveNode(currentLocation->GetCharacter(PacketGetInt(inPacket,1))->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
 						
 						break;
@@ -225,6 +225,18 @@ bool Universe::Run()
 				render->smgr->drawAll();
 				guienv->drawAll();
 			render->driver->endScene();
+
+			if (currentCharacter)
+			{
+				/*
+				Kt.X = currentCharacter->x * CELL_SIZE;
+				Km.X = currentCharacter->x * CELL_SIZE;
+				camPos->setPosition(Km);
+				Kt.Z = currentCharacter->y * CELL_SIZE;
+				Km.Z = currentCharacter->y * CELL_SIZE;
+				camPos->setPosition(Km);
+				*/
+			}
 		}
 	}
 

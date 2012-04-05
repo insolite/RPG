@@ -24,31 +24,15 @@ Render::~Render(void)
 	instance = NULL;
 }
 
-void Render::drawScene()
+void Render::drawKub(f32 xPos, f32 yPos, f32 zPos)
 {
-
-}
-
-void Render::createMenu()
-{
-
-}
-
-void Render::drawKub(f32 xPos,f32 yPos,f32 zPos)
-{
-
-	
-
-	IMeshSceneNode* n = smgr->addCubeSceneNode(); // создаем на сцене куб
-        if (n)
-        {
-				n->setPosition(core::vector3df(xPos,yPos,zPos)); // позиционирем сферу
-                n->setMaterialTexture(0, driver->getTexture("grass.bmp")); // текстурируем куб
-                n->setMaterialFlag(video::EMF_LIGHTING, false); // отключаем обработку освещения
-				
-        }
-
-
+	IMeshSceneNode* n = smgr->addCubeSceneNode();
+	if (n)
+	{
+		n->setPosition(core::vector3df(xPos, yPos, zPos));
+		n->setMaterialTexture(0, driver->getTexture("grass.bmp"));
+		n->setMaterialFlag(video::EMF_LIGHTING, false);
+	}
 }
 
 ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
@@ -83,15 +67,12 @@ ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool ligh
 	return node;
 }
 
-#define M_PI 3.14
-
-void Render::moveNode(ISceneNode* node/*dolgno prokotit*/,core::vector3df nextpos)
+void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 {
 	vector3df oldPosition = node->getPosition();
 	int duration = 50 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2));
-	scene::ISceneNodeAnimator* anim =
-		smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
-	vector3df rot(0, getAngle(oldPosition.X, oldPosition.Z, nextpos.X, nextpos.Z, false), 0);
+	scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
+	vector3df rot(0, GetAngle(oldPosition.X, oldPosition.Z, nextpos.X, nextpos.Z), 0);
 	node->setRotation(rot);
 	if (anim)
 	{
@@ -100,7 +81,7 @@ void Render::moveNode(ISceneNode* node/*dolgno prokotit*/,core::vector3df nextpo
 	}
 }
 
-int Render::getAngle(int x1, int y1, int x2, int y2, bool norm)
+int Render::GetAngle(int x1, int y1, int x2, int y2)
 {
 	int dx = x2 - x1;
 	int dy = y2 - y1;
@@ -114,12 +95,12 @@ int Render::getAngle(int x1, int y1, int x2, int y2, bool norm)
 	return -angle;
 }
 
-vector3df Render::mouseToUniverse()
+vector3df Render::MouseCoordToWorldCoord()
 {
 	core::vector3df pos;
 
 	line3df ray2 = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(device->getCursorControl()->getPosition(), smgr->getActiveCamera());
-	core::plane3df plane=plane3df(vector3df(-15,0,0), vector3df(0, -1, 0));
+	core::plane3df plane = plane3df(vector3df(-15, 0, 0), vector3df(0, -1, 0));
     if(plane.getIntersectionWithLine(ray2.start, ray2.getVector(), pos))
 		return pos;
 	else
