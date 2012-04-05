@@ -33,6 +33,26 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			}
 		}
 	}
+	else if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
+	{
+		for (s32 i = 0; i < EMIE_COUNT; ++i)
+            Mouse[i] = i == event.MouseInput.Event;
+		if (Mouse[EMIE_LMOUSE_LEFT_UP])
+		{
+			char outPacket[256];
+			vector3df position = Universe::instance->render->mouseToUniverse();
+			int x, y;
+			x = position.X / CELL_SIZE;
+			y = position.Z / CELL_SIZE;
+			CreatePacket(outPacket, Move, "%i%i",
+				x,
+				y
+				//Universe::instance->currentCharacter->x,
+				//Universe::instance->currentCharacter->y,
+				);
+			Universe::instance->connectSocket->Send(outPacket);
+		}
+	}
 	else if (event.EventType == EET_GUI_EVENT)
 	{
 		s32 eventCallerId = event.GUIEvent.Caller->getID();
@@ -68,15 +88,20 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 	return false;
 }
 
-// метод возвращающий состояние для запрошенной клавиши
 bool ClientEventReceiver::IsKeyDown(EKEY_CODE keyCode) const
 {
 	return KeyIsDown[keyCode];
 }
-    
-//конструктор, в цикле сбрасываем статус для всех клавиш
+
+bool ClientEventReceiver::isMouseDown(EKEY_CODE mouseCode) const
+{
+	return Mouse[mouseCode];
+}
+
 ClientEventReceiver::ClientEventReceiver()
 {
 	for (u32 i = 0; i < KEY_KEY_CODES_COUNT; ++i)
 		KeyIsDown[i] = false;
+	for (u32 i = 0; i < EMIE_COUNT; ++i)
+		Mouse[i] = false;
 }

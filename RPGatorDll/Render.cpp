@@ -88,10 +88,10 @@ ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool ligh
 void Render::moveNode(ISceneNode* node/*dolgno prokotit*/,core::vector3df nextpos)
 {
 	vector3df oldPosition = node->getPosition();
+	int duration = 50 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2));
 	scene::ISceneNodeAnimator* anim =
-		smgr->createFlyStraightAnimator(node->getPosition(), nextpos, 7000/*тут швидкість має рахуватись динамічно, взалежності від відстані і т п..*/);
-	//vector3df rot(0, 180 * tan(abs(oldPosition.Z - nextpos.Z) / abs(oldPosition.X - nextpos.X)) / M_PI, 0);
-	vector3df rot(0, getAngle(oldPosition.X, oldPosition.Z, nextpos.X, nextpos.Z), 0);
+		smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
+	vector3df rot(0, getAngle(oldPosition.X, oldPosition.Z, nextpos.X, nextpos.Z, false), 0);
 	node->setRotation(rot);
 	if (anim)
 	{
@@ -102,25 +102,16 @@ void Render::moveNode(ISceneNode* node/*dolgno prokotit*/,core::vector3df nextpo
 
 int Render::getAngle(int x1, int y1, int x2, int y2, bool norm)
 {
-	int dx = abs(x2 - x1);
-	int dy = abs(y2 - y1);
+	int dx = x2 - x1;
+	int dy = y2 - y1;
 	double angle = atan((double)dy / (double)dx);
-	
-	if (norm)
-	{
-		if (angle < 0)
-		{
-			angle = angle + M_PI * 2;
-		}
-		else if (angle >= M_PI * 2)
-		{
-			angle = angle - M_PI * 2;
-		}
-	}
 	
 	angle *= 180 / M_PI;
 
-	return angle;
+	if (dx < 0 && dy >= 0 || dx < 0 && dy <= 0)
+		angle += 180.0;
+	
+	return -angle;
 }
 
 vector3df Render::mouseToUniverse()

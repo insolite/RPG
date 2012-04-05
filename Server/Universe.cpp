@@ -161,8 +161,6 @@ void Universe::Run(char* gameName)
 							}
 							break;
 						case Move:
-							printf("Client %d requested moving into %d %d\n", ci,PacketGetInt(inPacket, 1),PacketGetInt(inPacket, 5));
-
 							CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, PacketGetInt(inPacket, 1), PacketGetInt(inPacket, 5));
 							for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
 							{
