@@ -142,7 +142,7 @@ void Universe::CameraMove(int x, int y)
 void Universe::DrawScene()
 {
 	int i, j, drawWidth, drawHeight;
-
+	/*
 	//for (i = 0; i < currentLocation->height; i++)
 	for (i = 0; i < currentLocation->height; i++)
 	{
@@ -154,14 +154,16 @@ void Universe::DrawScene()
 				case Free:
 					render->drawKub(j*CELL_SIZE,-20,i*CELL_SIZE);
 					break;
-				/*case Locked:
+				case Locked:
 					glColor4d(1, 0, 0, 0.5);
 					break;
 				default:
-					glColor4d(1, 1, 1, 1);*/
+					glColor4d(1, 1, 1, 1);
 			}
 		}
-	}
+	}*/
+	render->drawKub(320,-20,320,currentLocation->width,currentLocation->height);
+
 }
 
 void Universe::SetLocation(Location* location)
@@ -204,56 +206,77 @@ bool Universe::Run()
 	
 	CreateBrushMask(1); //TODO: slider get value
 	
+
+	DrawScene();
 	//variables for camera
 	ISceneNode* camPos=render->smgr->addEmptySceneNode();
 	camPos->setPosition(vector3df(50,50,10));
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
 	camera2=render->smgr->addCameraSceneNode(0, vector3df(0,50,-20), vector3df(0,0,0));
 	render->smgr->setActiveCamera(camera);
+	//render->smgr->addCameraSceneNodeFPS()->setPosition(vector3df(0,30,0));
+	//=============================
+	scene::ISceneNode* lnode; 
+	lnode = render->smgr->addLightSceneNode(0,vector3df(0,30,0),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
+	// цепляем билборд к источнику света
+	//scene::ISceneNode* bnode;
+	IMeshSceneNode* bnode = render->smgr->addCubeSceneNode(10,lnode);
+	//bnode = render->smgr->addBillboardSceneNode(0,dimension2df(550,550),vector3df(0,30,0));
+    //bnode->setMaterialFlag(video::EMF_LIGHTING, false);
+    //bnode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+    //bnode->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
 	
 
-	DrawScene();
-	render->drawKub(0,0,0);
+
+	
+//	render->drawKub(0,0,0);
 	state = Continue;
 	while (render->device->run() && state == Continue)
 	{
+		
 		core::vector3df Km = camPos->getPosition();
 		Kt = camera->getTarget();
 		
 		if(editorEventReceiver->IsKeyDown(irr::KEY_LEFT))
 		{
-			Kt.X-=3;
-			Km.X-=3;
+			Kt.X-=1;
+			Km.X-=1;
 			camPos->setPosition(Km);
 		}
 		if(editorEventReceiver->IsKeyDown(irr::KEY_RIGHT))
 		{
-			Kt.X+=3;
-			Km.X+=3;
+			Kt.X+=1;
+			Km.X+=1;
 			camPos->setPosition(Km);
 		}
 		if(editorEventReceiver->IsKeyDown(irr::KEY_UP))
 		{
-			Kt.Z+=3;
-			Km.Z+=3;
+			Kt.Z+=1;
+			Km.Z+=1;
 			camPos->setPosition(Km);
 		}
 		if(editorEventReceiver->IsKeyDown(irr::KEY_DOWN))
 		{
-			Kt.Z-=3;
-			Km.Z-=3;
+			Kt.Z-=1;
+			Km.Z-=1;
 			camPos->setPosition(Km);
 		}
 		//camera->setPosition(Km)
 		camera->setPosition(Km);
 		camera->setTarget(Kt);
-
+		
+		vector3df A=render->MouseCoordToWorldCoord();
+		A.Y+=20;
+		lnode->setPosition(A);
+		
+		
 		//TESTESTESTESTESTESTESTES
 		
 		//printf("Mouse X= %d\tY= %d \n",render->device->getCursorControl()->getPosition().X,render->device->getCursorControl()->getPosition().Y);
-		//printf("World X= %f\tY= %f\tZ= %f \n",render->mouseToUniverse().X,render->mouseToUniverse().Y,render->mouseToUniverse().Z);
+		//printf("World X= %f\tY= %f\tZ= %f \n",render->MouseCoordToWorldCoord().X,render->MouseCoordToWorldCoord().Y,render->MouseCoordToWorldCoord().Z);
 		
 		//TESTESTESTESTESTESTESTES
+
 
 		render->driver->beginScene(true, true, SColor(255,100,101,140));
 			

@@ -45,8 +45,5 @@ MapObject::MapObject(SqliteResult sqliteResult, char* modelPath) :
 
 MapObject::~MapObject(void)
 {
-	delete name;
-	for (int i = 0; i < tagsCount; i++)
-		delete tags[i];
-	delete tags;
+	//TODO: delete mesh, texture?
 }

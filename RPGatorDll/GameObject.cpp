@@ -35,4 +35,8 @@ GameObject::GameObject(SqliteResult sqliteResult)
 
 GameObject::~GameObject(void)
 {
+	delete name;
+	for (int i = 0; i < tagsCount; i++)
+		delete tags[i];
+	delete tags;
 }

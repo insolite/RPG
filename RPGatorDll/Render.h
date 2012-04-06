@@ -16,7 +16,7 @@ public:
 	IVideoDriver* driver ;
     ISceneManager* smgr;
 
-	__declspec(dllexport) void drawKub(f32 xPos,f32 yPos,f32 zPos);
+	__declspec(dllexport) void drawKub(f32 xPos,f32 yPos,f32 zPos,int Wid, int Hei);
 	__declspec(dllexport) ISceneNode* createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* material = NULL, bool light=false, core::vector3df scale=core::vector3df(1, 1, 1), core::vector3df pos=core::vector3df(0, 0, 0), core::vector3df rotation=core::vector3df(0, 0, 0));
 	__declspec(dllexport) void moveNode(ISceneNode* node,core::vector3df nextpos);
 	__declspec(dllexport) vector3df MouseCoordToWorldCoord();

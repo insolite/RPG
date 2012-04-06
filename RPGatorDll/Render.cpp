@@ -23,14 +23,21 @@ Render::~Render(void)
 	instance = NULL;
 }
 
-void Render::drawKub(f32 xPos, f32 yPos, f32 zPos)
+void Render::drawKub(f32 xPos, f32 yPos, f32 zPos,int Wid, int Hei)
 {
+	//int cell= Universe::instanse->
+	//IMeshSceneNode* n = smgr->addCubeSceneNode(10,0,-1,vector3df(xPos, yPos, zPos),vector3df(0,0,0),vector3df(Wid, 1, Hei));
 	IMeshSceneNode* n = smgr->addCubeSceneNode();
+	
+	//n=smgr->addP
 	if (n)
 	{
+		n->setScale(vector3df(Wid, 1, Hei));
 		n->setPosition(core::vector3df(xPos, yPos, zPos));
+		//smgr->getMeshManipulator()->makePlanarTextureMapping(
 		n->setMaterialTexture(0, driver->getTexture("grass.bmp"));
-		n->setMaterialFlag(video::EMF_LIGHTING, false);
+		//n->setMaterialFlag(video::EMF_LIGHTING, true);
+		//n->addShadowVolumeSceneNode();
 	}
 }
 
@@ -104,7 +111,7 @@ vector3df Render::MouseCoordToWorldCoord()
 	core::vector3df pos;
 
 	line3df ray2 = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(device->getCursorControl()->getPosition(), smgr->getActiveCamera());
-	core::plane3df plane = plane3df(vector3df(-15, 0, 0), vector3df(0, -1, 0));
+	core::plane3df plane = plane3df(vector3df(0, -15, 0), vector3df(0, -1, 0));
     if(plane.getIntersectionWithLine(ray2.start, ray2.getVector(), pos))
 		return pos;
 	else
