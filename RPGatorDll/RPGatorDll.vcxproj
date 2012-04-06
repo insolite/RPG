@@ -75,6 +75,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CGUIEditBox.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="IGUIChatBox.h" />
     <ClInclude Include="IGUIIconTable.h" />
     <ClInclude Include="CurrentGameObject.h" />
     <ClInclude Include="CurrentItem.h" />
@@ -96,6 +99,7 @@
     <ClInclude Include="Character.h" />
     <ClInclude Include="Quest.h" />
     <ClInclude Include="Render.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="RPGatorDll.h" />
     <ClInclude Include="Skill.h" />
     <ClInclude Include="SqliteResult.h" />
@@ -105,6 +109,9 @@
     <ClInclude Include="utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CGUIEditBox.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="IGUIChatBox.cpp" />
     <ClCompile Include="IGUIIconTable.cpp" />
     <ClCompile Include="CurrentGameObject.cpp" />
     <ClCompile Include="CurrentItem.cpp" />

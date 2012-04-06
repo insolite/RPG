@@ -19,6 +19,7 @@ enum MenuGUIElements
 
 enum ClientGUIElements
 {
+	ChatBox,
 	ChatEditBox,
 	ChatInputEditBox
 

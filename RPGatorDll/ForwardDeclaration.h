@@ -5,7 +5,10 @@ class ConnectSocket;
 
 class Render;
 class IGUIIconTable;
+class IGUIChatBox;
+class CGUIEditBox;
 
+class GameObject;
 class MapObject;
 class MapCell;
 class NPC;

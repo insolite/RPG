@@ -4,7 +4,10 @@
 #include "../Include/RPGator/ConnectSocket.h"
 #include "Render.h"
 #include "IGUIIconTable.h"
+#include "IGUIChatBox.h"
+#include "CGUIEditBox.h"
 
+#include "GameObject.h"
 #include "MapObject.h"
 #include "MapCell.h"
 #include "NPC.h"

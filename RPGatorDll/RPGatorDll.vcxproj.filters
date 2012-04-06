@@ -25,6 +25,12 @@
     <Filter Include="Файлы исходного кода\Resources">
       <UniqueIdentifier>{ca2eed03-afa0-4d9f-afa7-f4444eb49e2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Заголовочные файлы\GUI">
+      <UniqueIdentifier>{0cb56168-395f-4d73-b27a-fe32d7770fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\GUI">
+      <UniqueIdentifier>{876616fc-f033-48d6-a46f-6772f83078c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -109,7 +115,19 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="IGUIIconTable.h">
+      <Filter>Заголовочные файлы\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="IGUIChatBox.h">
+      <Filter>Заголовочные файлы\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIEditBox.h">
+      <Filter>Заголовочные файлы\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
       <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Заголовочные файлы\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -186,7 +204,16 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="IGUIIconTable.cpp">
-      <Filter>Файлы исходного кода</Filter>
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="IGUIChatBox.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CGUIEditBox.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Файлы исходного кода\Resources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

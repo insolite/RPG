@@ -148,12 +148,17 @@ void Universe::Run(char* gameName)
 						case LogOut:
 							break;
 						case Say:
+							CreatePacket(outPacket, Say, "%b%i%s",
+								PacketGetByte(inPacket, 1),
+								clients[ci]->character->id,
+								PacketGetString(inPacket, PacketGetByte(inPacket, 1) == Private ? 6 : 2)
+								);
 							switch (PacketGetByte(inPacket, 1))
 							{
 								case Public: //%b%s
 									for (int i = 0; i < clientsCount; i++)
 									{
-										clients[i]->Send(inPacket);
+										clients[i]->Send(outPacket);
 									}
 									break;
 								case Private: //%b%i%s
@@ -161,7 +166,7 @@ void Universe::Run(char* gameName)
 									{
 										if (clients[i]->character->id == PacketGetInt(inPacket, 2))
 										{
-											clients[i]->Send(inPacket);
+											clients[i]->Send(outPacket);
 											break;
 										}
 									}
@@ -199,11 +204,10 @@ void Universe::Run(char* gameName)
 				{ //Client disconnected
 					if (clients[ci]->character) //Client logged in
 					{
-						//TODO: pointer to client in character
+						CreatePacket(outPacket, CharacterUnspawned, "%i", clients[ci]->character->id);
 						for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
 							if (clients[ci]->character->currentLocation->currentCharacters[i] != clients[ci]->character)
 							{ //It's not a character, that's unspawning
-								CreatePacket(outPacket, CharacterUnspawned, "%i", clients[ci]->character->id);
 								clients[ci]->character->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
 							}
 						clients[ci]->character->currentLocation->UnSpawnCharacter(clients[ci]->character);

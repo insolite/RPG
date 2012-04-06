@@ -4,9 +4,9 @@
 
 Render* Render::instance = NULL;
 
-Render::Render(int screenWidth, int screenHeight, wchar_t* windowTitle)
+Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* windowTitle)
 {
-	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 32, false, false, false, NULL); //(IEventReceiver*)editorEventReceiver
+	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 32, fullscreen, false, false, NULL);
 	device->setResizable(true);
 	if (!device)
 		return;
@@ -16,7 +16,6 @@ Render::Render(int screenWidth, int screenHeight, wchar_t* windowTitle)
 	smgr = device->getSceneManager();
 	
 	instance = this;
-	
 }
 
 Render::~Render(void)
@@ -35,9 +34,8 @@ void Render::drawKub(f32 xPos, f32 yPos, f32 zPos)
 	}
 }
 
-ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
+ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
 {
-	IAnimatedMesh* mesh = smgr->getMesh(model);
 	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh);
 
 	if(node)
@@ -46,13 +44,18 @@ ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool ligh
 		node->setRotation(rotation);
 		node->setScale(scale);
 		node->setAnimationSpeed(20.f);
-
+		if (texture)
+		{
+			node->setMaterialFlag(EMF_LIGHTING, false);
+			node->setMaterialTexture(0, texture);
+		}
+		/*
 		if(isMD2)
 		{
 			//node->setMD2Animation(scene::EMAT_POINT); //or interval of frame for scelet animation
 			//node->setAnimationSpeed(20.f);
 			video::SMaterial material;
-			material.setTexture(0, driver->getTexture(texture));
+			material.setTexture(0, driver->getTexture(""));
 			material.Lighting = light;
 			//material.NormalizeNormals = true;// on future
 			node->getMaterial(0) = material;
@@ -62,6 +65,7 @@ ISceneNode* Render::createNode(bool isMD2, char* model, char* texture, bool ligh
 			//
 			//...
 		}
+		*/
 	}
 
 	return node;

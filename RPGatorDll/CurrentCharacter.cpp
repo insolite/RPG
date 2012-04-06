@@ -2,6 +2,8 @@
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "utilities.h"
+#include "Render.h"
+#include "GameObject.h"
 #include "MapObject.h"
 #include "Character.h"
 #include "CurrentGameObject.h"

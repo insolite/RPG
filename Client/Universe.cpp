@@ -11,9 +11,14 @@ Universe::Universe(void)
 	screenWidth = 800;
 	screenHeight = 600;
 	fullscreen = false;
+	/*
+	screenWidth = 1366;
+	screenHeight = 768;
+	fullscreen = true;
+	*/
 	instance = this;
 	
-	render = new Render(screenWidth, screenHeight, L"Client");
+	render = new Render(screenWidth, screenHeight, fullscreen, L"Client");
 
 	guienv = render->device->getGUIEnvironment();
 
@@ -138,21 +143,35 @@ bool Universe::Run()
 							currentLocation->SpawnCharacter(new CurrentCharacter(inPacket));
 						}
 						break;
+					case CharacterUnspawned:
+					{
+						CurrentCharacter* unspawningCharacter = currentLocation->GetCharacter(PacketGetInt(inPacket, 1));
+						//if (currentCharacter == unspawningCharacter)
+							//Something's wrong...
+						unspawningCharacter->node->remove();
+						currentLocation->UnSpawnCharacter(unspawningCharacter);
+						break;
+					}
 					case Say:
 					{
 						//GOVNOCODE
-						IGUIElement* eb = guienv->getRootGUIElement()->getElementFromId(ChatEditBox);
+						IGUIElement* eb = guienv->getRootGUIElement()->getElementFromId(ChatBox)->getElementFromId(ChatEditBox);
 						char* str;
 						if (PacketGetByte(inPacket, 1) == Private)
-							str = PacketGetString(inPacket, 6);
+							str = PacketGetString(inPacket, 10);
 						else
-							str = PacketGetString(inPacket, 2);
-						wchar_t* wstr = new wchar_t[wcslen(eb->getText()) + strlen(str) + 2];
+							str = PacketGetString(inPacket, 6);
+						//TODO: daat->GetCharacter;
+						//for (int i = 0; i < game->data->locationsCount; i++)
+						CurrentCharacter* sender = currentLocation->GetCharacter(PacketGetInt(inPacket, 2));
+						wchar_t* wstr = new wchar_t[wcslen(eb->getText()) + strlen(str) + strlen(sender->login) + 4];
 						wcscpy(wstr, eb->getText());
 						wcscat(wstr, L"\n");
-						mbstowcs(wstr + wcslen(eb->getText()) + 1, str, 2 * strlen(str));
+						mbstowcs(wstr + wcslen(wstr), sender->login, 2 * strlen(sender->login));
+						wcscat(wstr, L": ");
+						mbstowcs(wstr + wcslen(wstr), str, 2 * strlen(str));
 						eb->setText(wstr);
-						delete wstr;
+						//delete wstr;
 						break;
 					}
 					case CharacterMoving:
@@ -237,6 +256,7 @@ bool Universe::Run()
 				camPos->setPosition(Km);
 				*/
 			}
+
 		}
 	}
 
@@ -276,10 +296,23 @@ void Universe::ClientGUIInit()
 	//Chat
 	//IGUIStaticText* chatStaticText = guienv->addStaticText(NULL, rect< s32 >(0, 128, 256, 128 + 256), true, true, NULL, ChatStaticText, true);
 	//chatStaticText->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
-	IGUIEditBox* chatEditBox = guienv->addEditBox(NULL, rect< s32 >(0, 128, 256, 128 + 256), true, NULL, ChatEditBox);
-	chatEditBox->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
-	chatEditBox->setMultiLine(true);
-	guienv->addEditBox(NULL, rect< s32 >(0, 128 + 256, 256, 128 + 256 + 24), true, NULL, ChatInputEditBox);
+	//IGUIEditBox* chatEditBox = guienv->addEditBox(NULL, rect< s32 >(0, 128, 256, 128 + 256), true, NULL, ChatEditBox);
+	//chatEditBox->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
+	//chatEditBox->setMultiLine(true);
+	//guienv->addEditBox(NULL, rect< s32 >(0, 128 + 256, 256, 128 + 256 + 24), true, NULL, ChatInputEditBox);
+	//ChatEditBox
+	//ChatInputEditBox
+	IGUIChatBox* cb = new IGUIChatBox(guienv, NULL, ChatBox, ChatEditBox, ChatInputEditBox, rect< s32 >(0, 128, 256, 128 + 256 + 24));
+	guienv->getRootGUIElement()->addChild(cb);
+
+	/*
+	for (u32 i = 0; i < EGDC_COUNT; i++)
+	{
+		SColor color = guienv->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
+		color.setAlpha(48);
+		guienv->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, color);
+	}
+	*/
 
 	//Inventory
 	IGUIIconTable* tbl1 = new IGUIIconTable(guienv, NULL, -1, rect< s32 >(screenWidth - 32 * 6, 150, screenWidth, 150 + 32 * 6), 6, 6);

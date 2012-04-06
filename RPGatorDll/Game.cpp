@@ -34,7 +34,7 @@ Game::Game(char* _name, InitializationType initializationType)
 
 	instance = this;
 
-	resources = new GameResources();
+	resources = new GameResources(initializationType);
 	data = new GameData(initializationType);
 }
 

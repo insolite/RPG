@@ -9,6 +9,6 @@ public:
 	__declspec(dllexport) void Abstr(void) { }; //Abstract class inheritance
 
 	//Static(int _id);
-	__declspec(dllexport) Static(SqliteResult sqliteResult);
+	__declspec(dllexport) Static(SqliteResult sqliteResult, char* modelPath);
 	__declspec(dllexport) ~Static(void);
 };

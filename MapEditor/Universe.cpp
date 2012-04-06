@@ -23,7 +23,7 @@ Universe::Universe(void)
 	brushMaskMaxSize = 10;
 	instance = this;
 
-	render = new Render(screenWidth, screenHeight, L"RPGator");
+	render = new Render(screenWidth, screenHeight, fullscreen, L"RPGator");
 
 	guienv = render->device->getGUIEnvironment();
 

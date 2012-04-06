@@ -64,5 +64,7 @@ extern "C++" __declspec(dllexport) int Pix2Index(int pos);
 extern "C++" __declspec(dllexport) int Index2Pix(int pos);
 extern "C++" __declspec(dllexport) int PixRound(int pos);
 
+extern "C++" __declspec(dllexport) bool FileExists(char* path);
+
 //extern "C" __declspec(dllexport) int Str2Int(char *str);
 //extern "C" __declspec(dllexport) char *Int2Str(int num);

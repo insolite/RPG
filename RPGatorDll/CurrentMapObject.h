@@ -25,8 +25,13 @@ public:
 		x = PacketGetInt(currentMapObjectSpawnedPacket, 9);
 		y = PacketGetInt(currentMapObjectSpawnedPacket, 13);
 		currentLocation = NULL; //Client does not use it. It uses Universe->currentLocation
-		node = Render::instance->createNode(true, "faerie.md2", "Faerie5.BMP", false, vector3df(0.2, 0.2, 0.2), vector3df(x * CELL_SIZE, 0.0f, y * CELL_SIZE));
-		((IAnimatedMeshSceneNode*)node)->setMD2Animation(EMAT_RUN);
+		if (base->mesh)
+		{
+			node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df(x * CELL_SIZE, 0.0f, y * CELL_SIZE));
+			((IAnimatedMeshSceneNode*)node)->setMD2Animation(EMAT_RUN);
+		}
+		else
+			node = NULL;
 	}
 
 	__declspec(dllexport) ~CurrentMapObject(void)

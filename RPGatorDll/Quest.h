@@ -1,7 +1,7 @@
 #pragma once
 
 class Quest :
-	public MapObject
+	public GameObject
 {
 public:
 	__declspec(dllexport) void Abstr(void) { }; //Abstract class inheritance

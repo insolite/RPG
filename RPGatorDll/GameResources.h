@@ -41,10 +41,12 @@ public:
 																											Return value: The found tags count
 																											Warning! You're only to delete the top pointer on array, but not each pointer on char array, because they points to the real tags in MapObjects and is not duplicated
 																											*/
-	__declspec(dllexport) GameResources(void);
+	__declspec(dllexport) GameResources(InitializationType initializationType);
 	__declspec(dllexport) ~GameResources(void);
 
 private:
 	template<class T>
-	__declspec(dllexport) void MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName);
+	__declspec(dllexport) void MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName, InitializationType initializationType);
+	template<class T>
+	__declspec(dllexport) void GameObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName, InitializationType initializationType);
 };

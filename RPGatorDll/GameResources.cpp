@@ -2,6 +2,8 @@
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "utilities.h"
+#include "Render.h"
+#include "GameObject.h"
 #include "MapObject.h"
 #include "MapCell.h"
 #include "NPC.h"
@@ -48,15 +50,15 @@ T** GameResources::FilterByTag(T** mapObjects, int mapObjectsCounter, char** tag
 	return result;
 }
 
-GameResources::GameResources(void)
+GameResources::GameResources(InitializationType initializationType)
 {
-	MapObjectsInit<MapCell>(mapCells, mapCellsCount, "MapCell");
-	MapObjectsInit<NPC>(npcs, npcsCount, "NPC");
-	MapObjectsInit<Item>(items, itemsCount, "Item");
-	MapObjectsInit<Static>(statics, staticsCount, "`Static`");
-	MapObjectsInit<Character>(characters, charactersCount, "Character");
-	MapObjectsInit<Quest>(quests, questsCount, "Quest");
-	MapObjectsInit<Skill>(skills, skillsCount, "Skill");
+	MapObjectsInit<MapCell>(mapCells, mapCellsCount, "MapCell", initializationType);
+	MapObjectsInit<NPC>(npcs, npcsCount, "NPC", initializationType);
+	MapObjectsInit<Item>(items, itemsCount, "Item", initializationType);
+	MapObjectsInit<Static>(statics, staticsCount, "Static", initializationType);
+	MapObjectsInit<Character>(characters, charactersCount, "Character", initializationType);
+	GameObjectsInit<Quest>(quests, questsCount, "Quest", initializationType);
+	GameObjectsInit<Skill>(skills, skillsCount, "Skill", initializationType);
 }
 
 GameResources::~GameResources(void)
@@ -87,7 +89,47 @@ GameResources::~GameResources(void)
 }
 
 template<class T> //T inherits MapObject
-void GameResources::MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName)
+void GameResources::MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName, InitializationType initializationType)
+{
+	char query[64];
+	char* path;
+	std::vector<SqliteResult> sqliteResults;
+	
+	sprintf(query, "SELECT * FROM `%s`;", tableName); //TODO: Get class T name
+	sqliteResults = SqliteGetRows(Game::instance->db, query);
+	
+	mapObjectsCount = 0;
+	mapObjects = NULL;
+
+	switch (initializationType)
+	{
+		case Editor:
+			path = new char[256];
+			sprintf(path, "editor/%s/model/%s", Game::instance->name, tableName);
+			break;
+		case Client:
+			path = new char[256];
+			sprintf(path, "client/%s/model/%s", Game::instance->name, tableName);
+			break;
+		case Server:
+			path = NULL;
+			break;
+	}
+	
+	int rowsCount = sqliteResults.size();
+	while (mapObjectsCount < rowsCount)
+	{
+		mapObjectsCount++;
+		mapObjects = (T**)realloc(mapObjects, mapObjectsCount * sizeof(T*));
+		mapObjects[mapObjectsCount - 1] = new T(sqliteResults[mapObjectsCount - 1], path);
+	}
+
+	if (path)
+		delete path;
+}
+
+template<class T> //T inherits MapObject
+void GameResources::GameObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName, InitializationType initializationType)
 {
 	char query[64];
 	std::vector<SqliteResult> sqliteResults;
@@ -97,7 +139,7 @@ void GameResources::MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* 
 	
 	mapObjectsCount = 0;
 	mapObjects = NULL;
-	
+
 	int rowsCount = sqliteResults.size();
 	while (mapObjectsCount < rowsCount)
 	{

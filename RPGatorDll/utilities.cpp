@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "utilities.h"
@@ -242,4 +242,13 @@ int Index2Pix(int pos)
 int PixRound(int pos)
 {
 	return Index2Pix(Pix2Index(pos));
+}
+
+bool FileExists(char* path)
+{
+	FILE* f = fopen(path, "rb");
+	if (!f)
+		return false;
+	fclose(f);
+	return true;
 }
