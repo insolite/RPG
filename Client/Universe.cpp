@@ -50,9 +50,9 @@ bool Universe::Menu()
 }
 
 void Universe::DrawScene()
-{//TEST
+{
 	int i, j, drawWidth, drawHeight;
-
+	/*
 	//for (i = 0; i < currentLocation->height; i++)
 	for (i = 0; i < currentLocation->height; i++)
 	{
@@ -64,21 +64,15 @@ void Universe::DrawScene()
 				case Free:
 					render->drawKub(j*CELL_SIZE,-20,i*CELL_SIZE);
 					break;
-				/*case Locked:
+				case Locked:
 					glColor4d(1, 0, 0, 0.5);
 					break;
 				default:
-					glColor4d(1, 1, 1, 1);*/
+					glColor4d(1, 1, 1, 1);
 			}
-			/*glBindTexture(GL_TEXTURE_2D, texture[0]);
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f); glVertex2d(j * cellSize, i * cellSize);
-			glTexCoord2f(1.0f, 0.0f); glVertex2d(j * cellSize, i * cellSize + cellSize);
-			glTexCoord2f(1.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize + cellSize);
-			glTexCoord2f(0.0f, 1.0f); glVertex2d(j * cellSize + cellSize, i * cellSize);
-			glEnd();*/
 		}
-	}
+	}*/
+	render->drawKub(320,-20,320,currentLocation->width,currentLocation->height);
 }
 
 bool Universe::Run()
@@ -106,6 +100,17 @@ bool Universe::Run()
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
 	camera2=render->smgr->addCameraSceneNode(0, vector3df(0,50,-20), vector3df(0,0,0));
 	render->smgr->setActiveCamera(camera);
+
+	//=============================
+	scene::ISceneNode* lnode; 
+	lnode = render->smgr->addLightSceneNode(0,vector3df(0,30,0),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
+	// цепляем билборд к источнику света
+	//scene::ISceneNode* bnode;
+	IMeshSceneNode* bnode = render->smgr->addCubeSceneNode(10,lnode);
+	//bnode = render->smgr->addBillboardSceneNode(0,dimension2df(550,550),vector3df(0,30,0));
+    //bnode->setMaterialFlag(video::EMF_LIGHTING, false);
+    //bnode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+    //bnode->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
 	
 	state = Continue;
 
@@ -125,7 +130,7 @@ bool Universe::Run()
 						printf("Game %s initialized\n", game->name);
 						currentLocation = game->data->GetLocation(PacketGetInt(inPacket, 1 + strlen(inPacket + 3) + 1));
 						DrawScene();
-						render->drawKub(0,0,0);
+						//render->drawKub(0,0,0);
 						break;
 					case CharacterSpawned:
 						if (!currentCharacter)
@@ -195,31 +200,36 @@ bool Universe::Run()
 		
 			if(clientEventReceiver->IsKeyDown(irr::KEY_LEFT))
 			{
-				Kt.X-=3;
-				Km.X-=3;
+				Kt.X-=1;
+				Km.X-=1;
 				camPos->setPosition(Km);
 			}
 			if(clientEventReceiver->IsKeyDown(irr::KEY_RIGHT))
 			{
-				Kt.X+=3;
-				Km.X+=3;
+				Kt.X+=1;
+				Km.X+=1;
 				camPos->setPosition(Km);
 			}
 			if(clientEventReceiver->IsKeyDown(irr::KEY_UP))
 			{
-				Kt.Z+=3;
-				Km.Z+=3;
+				Kt.Z+=1;
+				Km.Z+=1;
 				camPos->setPosition(Km);
 			}
 			if(clientEventReceiver->IsKeyDown(irr::KEY_DOWN))
 			{
-				Kt.Z-=3;
-				Km.Z-=3;
+				Kt.Z-=1;
+				Km.Z-=1;
 				camPos->setPosition(Km);
 			}
 			//camera->setPosition(Km)
 			camera->setPosition(Km);
 			camera->setTarget(Kt);
+
+			
+		vector3df A=render->MouseCoordToWorldCoord();
+		A.Y=20;
+		lnode->setPosition(A);
 
 			render->driver->beginScene(true, true, SColor(255,100,101,140));
 				render->smgr->drawAll();
