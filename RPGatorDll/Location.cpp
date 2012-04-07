@@ -166,40 +166,68 @@ void Location::DeleteCharacter(CurrentCharacter* currentCharacter)
 	DeleteCurrentMapObject<CurrentCharacter>(currentCharacters, currentCharactersCount, "CurrentCharacter", currentCharacter);
 }
 
-void Location::AddNPC(CurrentNPC* currentNPC)
+CurrentNPC* Location::GetNPCAt(int x, int y)
 {
-	char query[256];
-
-	sprintf(query, "INSERT INTO CurrentNPC(baseId, x, y, locationId) VALUES(%d, %d, %d, %d)", currentNPC->base->id, currentNPC->x, currentNPC->y, currentNPC->currentLocation->id);
-	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
-	SpawnNPC(currentNPC);
+	return GetCurrentMapObjectAt<CurrentNPC>(currentNPCs, currentNPCsCount, x, y);
 }
 
-void Location::AddStatic(CurrentStatic* currentStatic)
+CurrentStatic* Location::GetStaticAt(int x, int y)
 {
-	char query[256];
-
-	sprintf(query, "INSERT INTO CurrentStatic(baseId, x, y, locationId) VALUES(%d, %d, %d, %d)", currentStatic->base->id, currentStatic->x, currentStatic->y, currentStatic->currentLocation->id);
-	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
-	SpawnStatic(currentStatic);
+	return GetCurrentMapObjectAt<CurrentStatic>(currentStatics, currentStaticsCount, x, y);
 }
 
-void Location::AddItem(CurrentItem* currentItem)
+CurrentItem* Location::GetItemAt(int x, int y)
 {
-	char query[256];
-
-	sprintf(query, "INSERT INTO CurrentItem(baseId, x, y, locationId) VALUES(%d, %d, %d, %d)", currentItem->base->id, currentItem->x, currentItem->y, currentItem->currentLocation->id);
-	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
-	SpawnItem(currentItem);
+	return GetCurrentMapObjectAt<CurrentItem>(currentItems, currentItemsCount, x, y);
 }
 
-void Location::AddCharacter(CurrentCharacter* currentCharacter)
+CurrentCharacter* Location::GetCharacterAt(int x, int y)
+{
+	return GetCurrentMapObjectAt<CurrentCharacter>(currentCharacters, currentCharactersCount, x, y);
+}
+
+void Location::AddNPC(NPC* base, int x, int y)
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO CurrentCharacter(baseId, x, y, locationId) VALUES(%d, %d, %d, %d)", currentCharacter->base->id, currentCharacter->x, currentCharacter->y, currentCharacter->currentLocation->id);
+	sprintf(query, "INSERT INTO CurrentNPC(baseId, x, y, locationId) VALUES(%d, %d, %d, %d)", base->id, x, y, this->id);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
-	SpawnCharacter(currentCharacter);
+	sprintf(query, "SELECT * FROM CurrentNPC WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
+	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
+	SpawnNPC(new CurrentNPC(sqliteResult, this));
+}
+
+void Location::AddStatic(Static* base, int x, int y)
+{
+	char query[256];
+
+	sprintf(query, "INSERT INTO CurrentStatic(baseId, x, y, locationId) VALUES(%d, %d, %d, %d)", base->id, x, y, this->id);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+	sprintf(query, "SELECT * FROM CurrentStatic WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
+	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
+	SpawnStatic(new CurrentStatic(sqliteResult, this));
+}
+
+void Location::AddItem(Item* base, int x, int y)
+{
+	char query[256];
+
+	sprintf(query, "INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId) VALUES(%d, %d, %d, %d, NULL)", base->id, x, y, this->id);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+	sprintf(query, "SELECT * FROM CurrentItem WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
+	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
+	SpawnItem(new CurrentItem(sqliteResult, this));
+}
+
+void Location::AddCharacter(Character* base, int x, int y, char* login, char* password)
+{
+	char query[256];
+
+	sprintf(query, "INSERT INTO CurrentCharacter(baseId, x, y, locationId, login, password) VALUES(%d, %d, %d, %d, '%s', '%s')", base->id, x, y, this->id, login, password);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+	sprintf(query, "SELECT * FROM CurrentCharacter WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
+	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
+	SpawnCharacter(new CurrentCharacter(sqliteResult, this));
 }
 
 template<class T>
@@ -240,8 +268,17 @@ void Location::DeleteCurrentMapObject(T** &currentMapObjects, int &currentMapObj
 template<class T>
 T* Location::GetCurrentMapObject(T** currentMapObjects, int currentMapObjectsCount, int id)
 {
-	for (int i = 0; i < currentCharactersCount; i++)
+	for (int i = 0; i < currentMapObjectsCount; i++)
 		if (currentMapObjects[i]->id == id)
+			return currentMapObjects[i];
+	return NULL;
+}
+
+template<class T>
+T* Location::GetCurrentMapObjectAt(T** currentMapObjects, int currentMapObjectsCount, int x, int y)
+{
+	for (int i = 0; i < currentMapObjectsCount; i++)
+		if (currentMapObjects[i]->x == x && currentMapObjects[i]->y == y)
 			return currentMapObjects[i];
 	return NULL;
 }

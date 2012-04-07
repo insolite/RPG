@@ -6,44 +6,44 @@ CREATE TABLE Config (
 	);
 
 CREATE TABLE MapCell (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
 	tags VARCHAR(1024),
 	cellProperty INTEGER
 	);
 
 CREATE TABLE NPC (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
 	tags VARCHAR(1024)
 	);
 
 CREATE TABLE Item (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
 	tags VARCHAR(1024)
 	);
 
 CREATE TABLE `Static` (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
 	tags VARCHAR(1024)
 	);
 
 CREATE TABLE `Character` (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
 	tags VARCHAR(1024)
 );
 
 CREATE TABLE Quest (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
 	tags VARCHAR(1024)
 );
 
 CREATE TABLE Skill (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
 	tags VARCHAR(1024)
 );
@@ -63,7 +63,7 @@ CREATE TABLE CurrentMapCell (
 	);
 */
 CREATE TABLE CurrentNPC (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
 	x INTEGER,
 	y INTEGER,
@@ -71,7 +71,7 @@ CREATE TABLE CurrentNPC (
 	);
 
 CREATE TABLE CurrentItem (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
 	x INTEGER,
 	y INTEGER,
@@ -80,7 +80,7 @@ CREATE TABLE CurrentItem (
 	);
 
 CREATE TABLE CurrentStatic (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
 	x INTEGER,
 	y INTEGER,
@@ -88,7 +88,7 @@ CREATE TABLE CurrentStatic (
 	);
 
 CREATE TABLE `CurrentCharacter` (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
 	x INTEGER,
 	y INTEGER,
@@ -99,36 +99,42 @@ CREATE TABLE `CurrentCharacter` (
 );
 
 CREATE TABLE CurrentQuest (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
 	currentCharacterId INTEGER,
 	`state` INTEGER
 );
 
 CREATE TABLE CurrentSkill (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
 	currentCharacterId INTEGER
 );
 
 /*=============Init resources=============*/
 
-INSERT INTO MapCell VALUES (1, 'Green grass', 'grass|free|something', 0);
-INSERT INTO MapCell VALUES (2, 'Red grass', 'grass', 1);
+INSERT INTO MapCell(name, tags, cellProperty) VALUES ('Green grass', 'grass|free|something', 0);
+INSERT INTO MapCell(name, tags, cellProperty) VALUES ('Red grass', 'grass', 1);
 
-INSERT INTO NPC VALUES (1, 'Test NPC', '');
+INSERT INTO NPC(name, tags) VALUES ('Test NPC', '');
 
-INSERT INTO Item VALUES (1, 'Test Item', '');
+INSERT INTO Item(name, tags) VALUES ('Test Item', '');
 
-INSERT INTO `Static` VALUES (1, 'Test Static', '');
+INSERT INTO `Static`(name, tags) VALUES ('Test Static', '');
 
-INSERT INTO Skill VALUES (1, 'UnSpawn character', '');
+INSERT INTO Skill(name, tags) VALUES ('SayHello', '');
 
-INSERT INTO `Character` VALUES (1, 'Dwarf', '');
+INSERT INTO `Character`(name, tags) VALUES ('Dwarf', '');
 
 /*=============Init data=============*/
 
-INSERT INTO CurrentCharacter VALUES (1, 1, 4, 8, 1, 'admin', '1234');
-INSERT INTO CurrentCharacter VALUES (2, 1, 5, 9, 1, 'admin2', '1234');
+INSERT INTO CurrentCharacter(baseId, x, y, locationId, login, password) VALUES (1, 4, 8, 1, 'admin', '1234');
+INSERT INTO CurrentCharacter(baseId, x, y, locationId, login, password) VALUES (1, 5, 9, 1, 'admin2', '1234');
+INSERT INTO CurrentCharacter(baseId, x, y, locationId, login, password) VALUES (1, 2, 5, 1, 'admin3', '1234');
+INSERT INTO CurrentCharacter(baseId, x, y, locationId, login, password) VALUES (1, 7, 4, 1, 'admin4', '1234');
 
-INSERT INTO CurrentSkill VALUES (1, 1, 1);
+/*May occur relation error (currentCharacterId is not actually known)*/
+INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, 1);
+INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, 2);
+INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, 3);
+INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, 4);

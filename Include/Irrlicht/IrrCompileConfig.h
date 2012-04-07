@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2010 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -8,11 +8,11 @@
 //! Irrlicht SDK Version
 #define IRRLICHT_VERSION_MAJOR 1
 #define IRRLICHT_VERSION_MINOR 7
-#define IRRLICHT_VERSION_REVISION 2
+#define IRRLICHT_VERSION_REVISION 3
 // This flag will be defined only in SVN, the official release code will have
 // it undefined
-#define IRRLICHT_VERSION_SVN -beta
-#define IRRLICHT_SDK_VERSION "1.7.2"
+//#define IRRLICHT_VERSION_SVN -beta
+#define IRRLICHT_SDK_VERSION "1.7.3"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
@@ -117,7 +117,7 @@ headers, e.g. Summer 2004.  This is a Microsoft issue, not an Irrlicht one.
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
 //! Only define _IRR_COMPILE_WITH_DIRECT3D_8_ if you have an appropriate DXSDK, e.g. Summer 2004
-//#define _IRR_COMPILE_WITH_DIRECT3D_8_
+#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #endif

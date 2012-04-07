@@ -30,10 +30,14 @@ public:
 	__declspec(dllexport) void DeleteStatic(CurrentStatic* currentStatic);
 	__declspec(dllexport) void DeleteItem(CurrentItem* currentItem);
 	__declspec(dllexport) void DeleteCharacter(CurrentCharacter* currentCharacter);
-	__declspec(dllexport) void AddNPC(CurrentNPC* currentNPC);
-	__declspec(dllexport) void AddStatic(CurrentStatic* currentStatic);
-	__declspec(dllexport) void AddItem(CurrentItem* currentItem);
-	__declspec(dllexport) void AddCharacter(CurrentCharacter* currentCharacter);
+	__declspec(dllexport) void AddNPC(NPC* base, int x, int y);
+	__declspec(dllexport) void AddStatic(Static* base, int x, int y);
+	__declspec(dllexport) void AddItem(Item* base, int x, int y);
+	__declspec(dllexport) void AddCharacter(Character* base, int x, int y, char* login, char* password);
+	__declspec(dllexport) CurrentNPC* GetNPCAt(int x, int y);
+	__declspec(dllexport) CurrentStatic* GetStaticAt(int x, int y);
+	__declspec(dllexport) CurrentItem* GetItemAt(int x, int y);
+	__declspec(dllexport) CurrentCharacter* GetCharacterAt(int x, int y);
 
 	__declspec(dllexport) CurrentCharacter* GetCharacter(int id)
 	{
@@ -41,6 +45,8 @@ public:
 	}
 	template<class T>
 	__declspec(dllexport) T* GetCurrentMapObject(T** currentMapObjects, int currentMapObjectsCount, int id);
+	template<class T>
+	__declspec(dllexport) T* GetCurrentMapObjectAt(T** currentMapObjects, int currentMapObjectsCount, int x, int y);
 
 	__declspec(dllexport) Location(SqliteResult sqliteResult, InitializationType initializationType);
 	__declspec(dllexport) ~Location(void);

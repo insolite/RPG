@@ -17,6 +17,13 @@ public:
 		x = sqliteResult.integers["x"];
 		y = sqliteResult.integers["y"];
 		currentLocation = location;
+		if (base->mesh)
+		{
+			node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df(x * CELL_SIZE, 0.0f, y * CELL_SIZE));
+			((IAnimatedMeshSceneNode*)node)->setMD2Animation(EMAT_RUN);
+		}
+		else
+			node = NULL;
 	}
 
 	__declspec(dllexport) CurrentMapObject(char* currentMapObjectSpawnedPacket, T** mapObjects, int mapObjectsCount) :
@@ -36,5 +43,7 @@ public:
 
 	__declspec(dllexport) ~CurrentMapObject(void)
 	{
+		if (node)
+			node->remove();
 	}
 };

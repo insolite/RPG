@@ -16,6 +16,59 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 			Universe::instance->state = NextLevel;
 		}
 	}
+	else if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
+	{
+		for (s32 i = 0; i < EMIE_COUNT; ++i)
+            Mouse[i] = i == event.MouseInput.Event;
+		IGUIElement* guiElement = Universe::instance->guienv->getRootGUIElement()->getElementFromPoint(vector2di(event.MouseInput.X, event.MouseInput.Y));
+		if (guiElement != NULL)
+		{ //Mouse is in a window area
+			if (guiElement->getID() != 0) //Mouse is on GUI element
+				return false;
+		}
+		else //Mouse is not in a window area
+			return false;
+		vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
+		int x, y;
+		x = position.X / CELL_SIZE;
+		y = position.Z / CELL_SIZE;
+		if (Mouse[EMIE_LMOUSE_PRESSED_DOWN])
+		{ //Add CurrentMapObject
+			//Add from brush
+			switch (Universe::instance->brushIndex)
+			{
+				case 0: //MapCell
+					Universe::instance->currentLocation->mask[y][x] = (MapCell*)Universe::instance->brush[0];
+					//TODO: Save location before exit
+					break;
+				case 1: //NPC
+					Universe::instance->currentLocation->AddNPC((NPC*)Universe::instance->brush[1], x, y);
+					break;
+				case 2: //Static
+					Universe::instance->currentLocation->AddStatic((Static*)Universe::instance->brush[2], x, y);
+					break;
+				case 3: //Item
+					Universe::instance->currentLocation->AddItem((Item*)Universe::instance->brush[3], x, y);
+					break;
+				case 4: //Character
+					Universe::instance->currentLocation->AddCharacter((Character*)Universe::instance->brush[4], x, y, "default_login", "default_password");
+					break;
+			}
+			//Universe::instance->currentLocation->AddCharacter
+		}
+		else if (Mouse[EMIE_RMOUSE_PRESSED_DOWN])
+		{ //Delete CurrentMapObject
+			CurrentMapObject<MapObject>* deletingCurrentMapObject;
+			if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetNPCAt(x, y))
+				Universe::instance->currentLocation->DeleteNPC((CurrentNPC*)deletingCurrentMapObject);
+			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetStaticAt(x, y))
+				Universe::instance->currentLocation->DeleteStatic((CurrentStatic*)deletingCurrentMapObject);
+			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetItemAt(x, y))
+				Universe::instance->currentLocation->DeleteItem((CurrentItem*)deletingCurrentMapObject);
+			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetCharacterAt(x, y))
+				Universe::instance->currentLocation->DeleteCharacter((CurrentCharacter*)deletingCurrentMapObject);
+		}
+	}
 	else if (event.EventType == EET_GUI_EVENT)
 	{
 		s32 eventCallerId = event.GUIEvent.Caller->getID();
@@ -36,6 +89,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						wchar_t wstr[512]; //Buffer
 						MapObject** mapObjects; //General pointer to any MapObjects in GameResources. Is defined in the switch below
 						int mapObjectsCount; //'mapObjects' count
+						MapObject* selectedMapObject;
 						int brushIndex; //Current brush (0: MapCell, 1:NPC, 2:Item, 3:Static, 4:Character)
 
 						brushIndex = eventCallerId - MapCellSelectWindowToggleButton;
@@ -56,19 +110,19 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								mapObjects = (MapObject**)Universe::instance->game->resources->npcs;
 								mapObjectsCount = Universe::instance->game->resources->npcsCount;
 								break;
-							case ItemSelectWindowToggleButton:
-								//Define specific title
-								wcscpy(wstr, L"Item selection");
-								//Define that we would use Items as MapObjects
-								mapObjects = (MapObject**)Universe::instance->game->resources->items;
-								mapObjectsCount = Universe::instance->game->resources->itemsCount;
-								break;
 							case StaticSelectWindowToggleButton:
 								//Define specific title
 								wcscpy(wstr, L"Static selection");
 								//Define that we would use Statics as MapObjects
 								mapObjects = (MapObject**)Universe::instance->game->resources->statics;
 								mapObjectsCount = Universe::instance->game->resources->staticsCount;
+								break;
+							case ItemSelectWindowToggleButton:
+								//Define specific title
+								wcscpy(wstr, L"Item selection");
+								//Define that we would use Items as MapObjects
+								mapObjects = (MapObject**)Universe::instance->game->resources->items;
+								mapObjectsCount = Universe::instance->game->resources->itemsCount;
 								break;
 							case CharacterSelectWindowToggleButton:
 								//Define specific title
@@ -96,6 +150,16 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 							if (Universe::instance->brush[brushIndex] == mapObjects[i])
 								molb->setSelected(i); //Select item in list that was used last time in this MapObject list
 						}
+						if (molb->getSelected() >= 0)
+						{
+							int selectedMapObjectId;
+							swscanf(molb->getListItem(molb->getSelected()), L"[%d]", &selectedMapObjectId);
+							selectedMapObject = Universe::instance->game->resources->GetMapObject(mapObjects, mapObjectsCount, selectedMapObjectId);
+						}
+						else
+						{
+							selectedMapObject = NULL;
+						}
 
 						tagsCount = Universe::instance->game->resources->GetMapObjectsTags(mapObjects, mapObjectsCount, tags);
 						if (tagsCount > 0)
@@ -114,12 +178,15 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						//Preview
 						//CGUIMeshViewer* mv = Universe::instance->guienv->addMeshViewer(rect< s32 >(364, 64, 364 + 160, 64 + 256), wnd1, MapObjectMeshViever, L"preview");
 						CGUIMeshViewer* mv = new CGUIMeshViewer(Universe::instance->guienv, wnd1, MapObjectMeshViever, rect< s32 >(364, 64, 364 + 160, 64 + 256));
-						IAnimatedMesh* mesh = Universe::instance->render->smgr->getMesh("faerie.md2");
-						SMaterial* sm = new SMaterial();
-						sm->setTexture(0, Universe::instance->render->driver->getTexture("Faerie5.BMP"));
-						sm->setFlag(EMF_LIGHTING, false);
-						mv->setMesh(mesh);
-						mv->setMaterial(*sm);
+						if (selectedMapObject)
+						{
+							IAnimatedMesh* mesh = selectedMapObject->mesh;
+							SMaterial* sm = new SMaterial();
+							sm->setTexture(0, selectedMapObject->texture);
+							sm->setFlag(EMF_LIGHTING, false);
+							mv->setMesh(mesh);
+							mv->setMaterial(*sm);
+						}
 						
 						Universe::instance->guienv->addButton(rect< s32 >(415, 420, 415 + 96, 420 + 32), wnd1, eventCallerId + 10, L"OK", L"Select current map object");
 					}
@@ -281,15 +348,20 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 	return false;
 }
 
-// метод возвращающий состояние для запрошенной клавиши
 bool EditorEventReceiver::IsKeyDown(EKEY_CODE keyCode) const
 {
 	return KeyIsDown[keyCode];
 }
-    
-//конструктор, в цикле сбрасываем статус для всех клавиш
+
+bool EditorEventReceiver::isMouseDown(EKEY_CODE mouseCode) const
+{
+	return Mouse[mouseCode];
+}
+
 EditorEventReceiver::EditorEventReceiver()
 {
 	for (u32 i = 0; i < KEY_KEY_CODES_COUNT; ++i)
 		KeyIsDown[i] = false;
+	for (u32 i = 0; i < EMIE_COUNT; ++i)
+		Mouse[i] = false;
 }

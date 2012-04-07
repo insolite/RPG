@@ -7,7 +7,7 @@ int main(int argc, char* argv[])
 	Universe* universe;
 
 	universe = new Universe();
-
+	
 	while (!universe->Menu())
 	{
 		if (universe->Run())

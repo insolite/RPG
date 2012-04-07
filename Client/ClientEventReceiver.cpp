@@ -28,12 +28,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			int x, y;
 			x = position.X / CELL_SIZE;
 			y = position.Z / CELL_SIZE;
-			CreatePacket(outPacket, Move, "%i%i",
-				x,
-				y
-				//Universe::instance->currentCharacter->x,
-				//Universe::instance->currentCharacter->y,
-				);
+			CreatePacket(outPacket, Move, "%i%i", x, y);
 			Universe::instance->connectSocket->Send(outPacket);
 		}
 	}

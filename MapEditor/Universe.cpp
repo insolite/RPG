@@ -34,7 +34,10 @@ Universe::Universe(void)
 
 Universe::~Universe(void)
 {
+	delete menuEventReceiver;
+	delete editorEventReceiver;
 	delete render;
+	instance = NULL;
 }
 
 void Universe::MenuGUIInit()
@@ -119,12 +122,14 @@ void Universe::EditorGUIInit()
 void Universe::MenuGUIDestroy()
 {
 	guienv->clear();
+	render->device->setEventReceiver(NULL);
 	delete menuEventReceiver;
 }
 
 void Universe::EditorGUIDestroy()
 {
 	guienv->clear();
+	render->device->setEventReceiver(NULL);
 	delete editorEventReceiver;
 }
 
@@ -176,7 +181,7 @@ void Universe::SetLocation(Location* location)
 bool Universe::Menu()
 {
 	Universe::instance->gameName = NULL;
-
+	
 	MenuGUIInit();
 	
 	state = Continue;
@@ -186,7 +191,7 @@ bool Universe::Menu()
 			guienv->drawAll();
 		render->driver->endScene();
 	}
-
+	
 	MenuGUIDestroy();
 
 	if (Universe::instance->gameName)

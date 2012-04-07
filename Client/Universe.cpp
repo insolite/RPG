@@ -21,6 +21,8 @@ Universe::Universe(void)
 	render = new Render(screenWidth, screenHeight, fullscreen, L"Client");
 
 	guienv = render->device->getGUIEnvironment();
+	menuEventReceiver = new MenuEventReceiver();
+	clientEventReceiver = new ClientEventReceiver();
 
 	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
 	guienv->getSkin()->setFont(font2);
@@ -28,6 +30,9 @@ Universe::Universe(void)
 
 Universe::~Universe(void)
 {
+	delete menuEventReceiver;
+	delete clientEventReceiver;
+	delete render;
 	instance = NULL;
 }
 
@@ -286,7 +291,6 @@ bool Universe::Run()
 
 void Universe::MenuGUIInit()
 {
-	menuEventReceiver = new MenuEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)menuEventReceiver);
 
 	guienv->addEditBox(L"admin", rect< s32 >(screenWidth / 2 - 64, screenHeight / 2 - 100, screenWidth / 2 + 64, screenHeight / 2 - 68), true, NULL, LoginEditBox);
@@ -298,7 +302,6 @@ void Universe::MenuGUIInit()
 
 void Universe::ClientGUIInit()
 {
-	clientEventReceiver = new ClientEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)clientEventReceiver);
 
 	guienv->addButton(rect< s32 >(0, 0, 256, 32), NULL, TESTSkillUseButton, L"Use skill SayHello", NULL);
@@ -343,11 +346,9 @@ void Universe::ClientGUIInit()
 void Universe::MenuGUIDestroy()
 {
 	guienv->clear();
-	delete menuEventReceiver;
 }
 
 void Universe::ClientGUIDestroy()
 {
 	guienv->clear();
-	delete clientEventReceiver;
 }
