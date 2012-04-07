@@ -159,7 +159,6 @@ bool Universe::Run()
 						CurrentCharacter* unspawningCharacter = currentLocation->GetCharacter(PacketGetInt(inPacket, 1));
 						//if (currentCharacter == unspawningCharacter)
 							//Something's wrong...
-						unspawningCharacter->node->remove();
 						currentLocation->UnSpawnCharacter(unspawningCharacter);
 						break;
 					}

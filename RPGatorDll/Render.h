@@ -7,20 +7,48 @@ using namespace io;
 using namespace gui;
 using namespace std;
 
+enum
+{
+	ID_IsNotPickable = 0,
+	IDFlag_IsPickable = 1 << 0
+};
+
 class Render
 {
 public:
 	static Render* instance;
-	//irrlicht
 	IrrlichtDevice *device;
-	IVideoDriver* driver ;
+	IVideoDriver* driver;
     ISceneManager* smgr;
 
 	__declspec(dllexport) void drawKub(f32 xPos,f32 yPos,f32 zPos,int Wid, int Hei);
 	__declspec(dllexport) ISceneNode* createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* material = NULL, bool light=false, core::vector3df scale=core::vector3df(1, 1, 1), core::vector3df pos=core::vector3df(0, 0, 0), core::vector3df rotation=core::vector3df(0, 0, 0));
 	__declspec(dllexport) void moveNode(ISceneNode* node,core::vector3df nextpos);
 	__declspec(dllexport) vector3df MouseCoordToWorldCoord();
-	__declspec(dllexport) ISceneNode* Render::getNodeUnderCursor(int id);
+ 	template<class T>
+	__declspec(dllexport) T* getNodeUnderCursor(T** currentMapObjects, int currentMapObjectsCount)
+	{
+		vector3df mousePosition3D;
+		line3df ray2 = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(device->getCursorControl()->getPosition(), smgr->getActiveCamera());
+		plane3df plane(vector3df(0, 0, 0), vector3df(0, -1, 0));
+		plane.getIntersectionWithLine(ray2.start, ray2.getVector(), mousePosition3D);
+
+		ISceneCollisionManager* collMan = smgr->getSceneCollisionManager();
+		
+		line3d<f32> ray;
+		ray.start = smgr->getActiveCamera()->getAbsolutePosition();
+		ray.end = ray.start + (mousePosition3D - ray.start).normalize() * 1000.0f;
+		
+		vector3df intersection;
+		triangle3df hitTriangle;
+
+		ISceneNode* selectedSceneNode = collMan->getSceneNodeAndCollisionPointFromRay(ray, intersection, hitTriangle, IDFlag_IsPickable, 0);
+		if (selectedSceneNode)
+			for (int i = 0; i < currentMapObjectsCount; i++)
+				if (selectedSceneNode == currentMapObjects[i]->node)
+					return currentMapObjects[i];
+		return NULL;
+	}
 
 	__declspec(dllexport) int GetAngle(int x1, int y1, int x2, int y2);
 

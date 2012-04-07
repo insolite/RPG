@@ -1,5 +1,16 @@
 #include "StdAfx.h"
 #include "ForwardDeclaration.h"
+#include "SqliteResult.h"
+#include "utilities.h"
+#include "CurrentGameObject.h"
+#include "CurrentMapObject.h"
+#include "CurrentNPC.h"
+#include "CurrentStatic.h"
+#include "CurrentItem.h"
+#include "CurrentCharacter.h"
+#include "Location.h"
+#include "GameData.h"
+#include "Game.h"
 #include "Render.h"
 
 Render* Render::instance = NULL;
@@ -38,12 +49,13 @@ void Render::drawKub(f32 xPos, f32 yPos, f32 zPos,int Wid, int Hei)
 		n->setMaterialTexture(0, driver->getTexture("grass.bmp"));
 		//n->setMaterialFlag(video::EMF_LIGHTING, true);
 		//n->addShadowVolumeSceneNode();
+		n->setID(ID_IsNotPickable);
 	}
 }
 
 ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
 {
-	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh);
+	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh, NULL, IDFlag_IsPickable);
 
 	if(node)
 	{
@@ -51,6 +63,11 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 		node->setRotation(rotation);
 		node->setScale(scale);
 		node->setAnimationSpeed(20.f);
+		scene::ITriangleSelector* selector = 0;
+		selector = smgr->createTriangleSelector(node);
+		node->setTriangleSelector(selector);
+		selector->drop();
+
 		if (texture)
 		{
 			node->setMaterialFlag(EMF_LIGHTING, false);
@@ -117,22 +134,3 @@ vector3df Render::MouseCoordToWorldCoord()
 	else
 		printf("ray does not intersect the plane!");
 }
-
-ISceneNode* Render::getNodeUnderCursor(int id)
-    {
-        vector3df mousePosition3D;
-        line3df ray2 = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(device->getCursorControl()->getPosition(), smgr->getActiveCamera());
-        plane3df plane(vector3df(0,0,0), vector3df(0, -1, 0));
-        plane.getIntersectionWithLine(ray2.start, ray2.getVector(), mousePosition3D);
-
-        ISceneCollisionManager* collMan = smgr->getSceneCollisionManager();
-
-        line3d<f32> ray;
-        ray.start = smgr->getActiveCamera()->getAbsolutePosition();
-        ray.end = ray.start + (mousePosition3D - ray.start).normalize() * 1000.0f;
-
-        vector3df intersection;
-        triangle3df hitTriangle;
-        ISceneNode* selectedSceneNode = collMan->getSceneNodeAndCollisionPointFromRay(ray,intersection,hitTriangle,id);//id заменить на ID ноды
-		return selectedSceneNode;
-	}

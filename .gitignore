@@ -25,6 +25,7 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 
 RPGator.dll
+*.enc
 *.lib
 *.rc
 *.exp

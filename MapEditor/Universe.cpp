@@ -234,13 +234,16 @@ bool Universe::Run()
 	// цепляем билборд к источнику света
 		
     IBillboardSceneNode* bill = render->smgr->addBillboardSceneNode(light, core::dimension2d<f32>(50, 50));
-        bill->setMaterialFlag(video::EMF_LIGHTING, false);
-        bill->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
+    bill->setMaterialFlag(video::EMF_LIGHTING, false);
+    bill->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
 
-        bill->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
+    bill->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
 	
-
-
+	camPos->setID(ID_IsNotPickable);
+	camera->setID(ID_IsNotPickable);
+	camera2->setID(ID_IsNotPickable);
+	light->setID(ID_IsNotPickable);
+	bill->setID(ID_IsNotPickable);
 	
 //	render->drawKub(0,0,0);
 	state = Continue;
@@ -292,27 +295,8 @@ bool Universe::Run()
 
 		//render->driver->setTransform(video::ETS_WORLD, core::matrix4());
 		render->driver->beginScene(true, true, SColor(255,100,101,140));
-			
-			//render->driver->setViewPort(rect<s32>(0,0,screenWidth,screenHeight));
 			render->smgr->drawAll();
-			
-
-			IGUIWindow* wnd;
-			for (int i = 0; i < 5; i++)
-				if (wnd = (IGUIWindow*)guienv->getRootGUIElement()->getElementFromId(MapCellSelectWindow))
-					break;
-			if (wnd)
-			{
-				//rect< s32 > mvRect = wnd->getElementFromId(MapObjectMeshViever)->getAbsolutePosition();
-				//render->smgr->setActiveCamera(camera2);
-				guienv->drawAll();
-				
-				//render->driver->setViewPort(mvRect);
-				//render->smgr->setActiveCamera(camera);
-			}
-			else
-				guienv->drawAll();
-			
+			guienv->drawAll();
 		render->driver->endScene();
 	}
 	render->smgr->clear();

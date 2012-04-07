@@ -54,10 +54,19 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 					Universe::instance->currentLocation->AddCharacter((Character*)Universe::instance->brush[4], x, y, "default_login", "default_password");
 					break;
 			}
-			//Universe::instance->currentLocation->AddCharacter
 		}
 		else if (Mouse[EMIE_RMOUSE_PRESSED_DOWN])
 		{ //Delete CurrentMapObject
+			CurrentMapObject<MapObject>* deletingCurrentMapObject;
+			if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->getNodeUnderCursor<CurrentNPC>(Universe::instance->currentLocation->currentNPCs, Universe::instance->currentLocation->currentNPCsCount))
+				Universe::instance->currentLocation->DeleteNPC((CurrentNPC*)deletingCurrentMapObject);
+			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->getNodeUnderCursor<CurrentStatic>(Universe::instance->currentLocation->currentStatics, Universe::instance->currentLocation->currentStaticsCount))
+				Universe::instance->currentLocation->DeleteStatic((CurrentStatic*)deletingCurrentMapObject);
+			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->getNodeUnderCursor<CurrentItem>(Universe::instance->currentLocation->currentItems, Universe::instance->currentLocation->currentItemsCount))
+				Universe::instance->currentLocation->DeleteItem((CurrentItem*)deletingCurrentMapObject);
+			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->getNodeUnderCursor<CurrentCharacter>(Universe::instance->currentLocation->currentCharacters, Universe::instance->currentLocation->currentCharactersCount))
+				Universe::instance->currentLocation->DeleteCharacter((CurrentCharacter*)deletingCurrentMapObject);
+			/* //Selection by cell
 			CurrentMapObject<MapObject>* deletingCurrentMapObject;
 			if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetNPCAt(x, y))
 				Universe::instance->currentLocation->DeleteNPC((CurrentNPC*)deletingCurrentMapObject);
@@ -67,6 +76,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 				Universe::instance->currentLocation->DeleteItem((CurrentItem*)deletingCurrentMapObject);
 			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetCharacterAt(x, y))
 				Universe::instance->currentLocation->DeleteCharacter((CurrentCharacter*)deletingCurrentMapObject);
+			*/
 		}
 	}
 	else if (event.EventType == EET_GUI_EVENT)
