@@ -20,6 +20,7 @@ public:
 	__declspec(dllexport) ISceneNode* createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* material = NULL, bool light=false, core::vector3df scale=core::vector3df(1, 1, 1), core::vector3df pos=core::vector3df(0, 0, 0), core::vector3df rotation=core::vector3df(0, 0, 0));
 	__declspec(dllexport) void moveNode(ISceneNode* node,core::vector3df nextpos);
 	__declspec(dllexport) vector3df MouseCoordToWorldCoord();
+	__declspec(dllexport) ISceneNode* Render::getNodeUnderCursor(int id);
 
 	__declspec(dllexport) int GetAngle(int x1, int y1, int x2, int y2);
 

@@ -157,16 +157,16 @@ void Universe::DrawScene()
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
 				case Free:
-					render->drawKub(j*CELL_SIZE,-20,i*CELL_SIZE);
+					render->drawKub(j*CELL_SIZE*4,-20,i*CELL_SIZE*4,1,1);
 					break;
-				case Locked:
-					glColor4d(1, 0, 0, 0.5);
-					break;
-				default:
-					glColor4d(1, 1, 1, 1);
+				//case Locked:
+					//glColor4d(1, 0, 0, 0.5);
+					//break;
+				//default:
+				//	glColor4d(1, 1, 1, 1);
 			}
 		}
-	}*/
+	}//*/
 	render->drawKub(320,-20,320,currentLocation->width,currentLocation->height);
 
 }
@@ -221,15 +221,23 @@ bool Universe::Run()
 	render->smgr->setActiveCamera(camera);
 	//render->smgr->addCameraSceneNodeFPS()->setPosition(vector3df(0,30,0));
 	//=============================
-	scene::ISceneNode* lnode; 
-	lnode = render->smgr->addLightSceneNode(0,vector3df(0,30,0),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
+	
+	scene::ILightSceneNode* light; 
+	light = render->smgr->addLightSceneNode(0,vector3df(0,40,0),video::SColorf(1.0f, 0.6f, 0.7f, 1.0f),150.0F);
+	render->smgr->setAmbientLight(video::SColor(0,60,60,60));
+	//light->setLightType(video::ELT_POINT);
+	//light->setDebugDataVisible
+	//light->setDebugDataVisible(EDS_BBOX);
+	//light->setLightType(video::ELT_SPOT);
+	//light->setLightType(ELT_DIRECTIONAL);
+
 	// цепляем билборд к источнику света
-	//scene::ISceneNode* bnode;
-	IMeshSceneNode* bnode = render->smgr->addCubeSceneNode(10,lnode);
-	//bnode = render->smgr->addBillboardSceneNode(0,dimension2df(550,550),vector3df(0,30,0));
-    //bnode->setMaterialFlag(video::EMF_LIGHTING, false);
-    //bnode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-    //bnode->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
+		
+    IBillboardSceneNode* bill = render->smgr->addBillboardSceneNode(light, core::dimension2d<f32>(50, 50));
+        bill->setMaterialFlag(video::EMF_LIGHTING, false);
+        bill->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
+
+        bill->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
 	
 
 
@@ -271,8 +279,8 @@ bool Universe::Run()
 		camera->setTarget(Kt);
 		
 		vector3df A=render->MouseCoordToWorldCoord();
-		A.Y+=20;
-		lnode->setPosition(A);
+		A.Y+=30;
+		light->setPosition(A);
 		
 		
 		//TESTESTESTESTESTESTESTES
@@ -282,7 +290,7 @@ bool Universe::Run()
 		
 		//TESTESTESTESTESTESTESTES
 
-
+		//render->driver->setTransform(video::ETS_WORLD, core::matrix4());
 		render->driver->beginScene(true, true, SColor(255,100,101,140));
 			
 			//render->driver->setViewPort(rect<s32>(0,0,screenWidth,screenHeight));

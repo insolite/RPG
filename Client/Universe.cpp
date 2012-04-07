@@ -115,6 +115,7 @@ bool Universe::Run()
 	scene::ISceneNode* lnode; 
 	lnode = render->smgr->addLightSceneNode(0,vector3df(0,30,0),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
 	// цепляем билборд к источнику света
+	render->smgr->setAmbientLight(video::SColor(0,60,60,60));
 	//scene::ISceneNode* bnode;
 	IMeshSceneNode* bnode = render->smgr->addCubeSceneNode(10,lnode);
 	//bnode = render->smgr->addBillboardSceneNode(0,dimension2df(550,550),vector3df(0,30,0));
