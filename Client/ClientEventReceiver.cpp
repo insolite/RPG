@@ -21,6 +21,14 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 	{
 		for (s32 i = 0; i < EMIE_COUNT; ++i)
             Mouse[i] = i == event.MouseInput.Event;
+		IGUIElement* guiElement = Universe::instance->guienv->getRootGUIElement()->getElementFromPoint(vector2di(event.MouseInput.X, event.MouseInput.Y));
+		if (guiElement != NULL)
+		{ //Mouse is in a window area
+			if (guiElement->getID() != 0) //Mouse is on GUI element
+				return false;
+		}
+		else //Mouse is not in a window area
+			return false;
 		if (Mouse[EMIE_LMOUSE_LEFT_UP])
 		{
 			char outPacket[256];
@@ -31,6 +39,10 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			CreatePacket(outPacket, Move, "%i%i", x, y);
 			Universe::instance->connectSocket->Send(outPacket);
 		}
+		else if (Mouse[EMIE_MOUSE_WHEEL])
+		{
+			Universe::instance->cameraY += event.MouseInput.Wheel * 5;
+		}
 	}
 	else if (event.EventType == EET_GUI_EVENT)
 	{
@@ -38,6 +50,27 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 
 		switch(event.GUIEvent.EventType)
 		{
+			case RPGATOR_EET_ELEMENT_DRAGGED:
+				if (event.GUIEvent.Element)
+				{ //Element dragged to an GUI element
+					if (event.GUIEvent.Element->getParent())
+					{ //Element dragged to an GUI element that has parent (IGUIIconTableContainer)
+						if (event.GUIEvent.Element->getParent()->getID() == HotkeyBar)
+						{ //Empty cell
+							CGUIButton* hotkeyButton = new CGUIButton(*((CGUIButton*)event.GUIEvent.Caller));
+							((IGUIIconTable::IGUIIconTableContainer*)event.GUIEvent.Element)->setButton(hotkeyButton);
+						}
+						else if (event.GUIEvent.Element->getParent()->getParent())
+						{ //Element dragged to an GUI element that has parent (IGUIIconTable)
+							if (event.GUIEvent.Element->getParent()->getParent()->getID() == HotkeyBar)
+							{ //Existing cell
+								CGUIButton* hotkeyButton = new CGUIButton(*((CGUIButton*)event.GUIEvent.Caller));
+								((IGUIIconTable::IGUIIconTableContainer*)event.GUIEvent.Element->getParent())->setButton(hotkeyButton);
+							}
+						}
+					}
+				}
+				break;
 			case EGET_EDITBOX_ENTER:
 				switch (eventCallerId)
 				{

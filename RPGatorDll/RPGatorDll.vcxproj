@@ -77,6 +77,7 @@
   <ItemGroup>
     <ClInclude Include="CGUIEditBox.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="CGUIButton.h" />
     <ClInclude Include="IGUIChatBox.h" />
     <ClInclude Include="IGUIIconTable.h" />
     <ClInclude Include="CurrentGameObject.h" />
@@ -111,6 +112,7 @@
   <ItemGroup>
     <ClCompile Include="CGUIEditBox.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="CGUIButton.cpp" />
     <ClCompile Include="IGUIChatBox.cpp" />
     <ClCompile Include="IGUIIconTable.cpp" />
     <ClCompile Include="CurrentGameObject.cpp" />

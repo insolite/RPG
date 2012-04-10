@@ -21,8 +21,10 @@ enum ClientGUIElements
 {
 	ChatBox,
 	ChatEditBox,
-	ChatInputEditBox
-
+	ChatInputEditBox,
+	InventoryWindow,
+	InventoryItemsIconTable,
+	HotkeyBar
 };
 
 class Universe
@@ -50,6 +52,7 @@ public:
 	core::vector3df Kt;
 	ICameraSceneNode *camera;
 	ICameraSceneNode *camera2;
+	int cameraY;
 
 	bool Run(); //Main loop
 	bool Menu();

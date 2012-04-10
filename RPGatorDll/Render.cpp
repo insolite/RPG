@@ -70,7 +70,7 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 
 		if (texture)
 		{
-			node->setMaterialFlag(EMF_LIGHTING, false);
+			//node->setMaterialFlag(EMF_LIGHTING, false);
 			node->setMaterialTexture(0, texture);
 		}
 		/*
@@ -98,7 +98,7 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 {
 	vector3df oldPosition = node->getPosition();
-	int duration = 50 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2));
+	int duration = 30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2));
 	scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
 	vector3df rot(0, GetAngle(oldPosition.X, oldPosition.Z, nextpos.X, nextpos.Z), 0);
 	node->setRotation(rot);

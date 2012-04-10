@@ -11,11 +11,11 @@ Universe::Universe(void)
 	screenWidth = 800;
 	screenHeight = 600;
 	fullscreen = false;
-	/*
+	
 	screenWidth = 1366;
 	screenHeight = 768;
 	fullscreen = true;
-	*/
+	
 	instance = this;
 	
 	render = new Render(screenWidth, screenHeight, fullscreen, L"Client");
@@ -105,8 +105,9 @@ bool Universe::Run()
 	ClientGUIInit();
 
 	//variables for camera
+	cameraY = 50;
 	ISceneNode* camPos=render->smgr->addEmptySceneNode();
-	camPos->setPosition(vector3df(50,50,10));
+	camPos->setPosition(vector3df(50,cameraY,10));
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
 	camera2=render->smgr->addCameraSceneNode(0, vector3df(0,50,-20), vector3df(0,0,0));
 	render->smgr->setActiveCamera(camera);
@@ -187,7 +188,9 @@ bool Universe::Run()
 					case CharacterMoving:
 						//printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
 						render->moveNode(currentLocation->GetCharacter(PacketGetInt(inPacket,1))->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
-						
+						//TEST
+						currentCharacter->x = PacketGetInt(inPacket, 5);
+						currentCharacter->y = PacketGetInt(inPacket, 9);
 						break;
 					case ItemSpawned:
 						printf ("Type: %d\n", (PacketGetByte(inPacket, 1)));
@@ -219,59 +222,31 @@ bool Universe::Run()
 
 		if (game)
 		{
-			core::vector3df Km = camPos->getPosition();
-			Kt = camera->getTarget();
-		
-			if(clientEventReceiver->IsKeyDown(irr::KEY_LEFT))
+			if (currentCharacter)
 			{
-				Kt.X-=1;
-				Km.X-=1;
-				camPos->setPosition(Km);
-			}
-			if(clientEventReceiver->IsKeyDown(irr::KEY_RIGHT))
-			{
-				Kt.X+=1;
-				Km.X+=1;
-				camPos->setPosition(Km);
-			}
-			if(clientEventReceiver->IsKeyDown(irr::KEY_UP))
-			{
-				Kt.Z+=1;
-				Km.Z+=1;
-				camPos->setPosition(Km);
-			}
-			if(clientEventReceiver->IsKeyDown(irr::KEY_DOWN))
-			{
-				Kt.Z-=1;
-				Km.Z-=1;
-				camPos->setPosition(Km);
-			}
-			//camera->setPosition(Km)
-			camera->setPosition(Km);
-			camera->setTarget(Kt);
+				core::vector3df Km = camPos->getPosition();
+				Kt = camera->getTarget();
+				//Kt.X = currentCharacter->x * CELL_SIZE;
+				//Kt.Z = currentCharacter->y * CELL_SIZE;
+				vector3df pos = currentCharacter->node->getPosition();
+				Kt.X = pos.X;
+				Kt.Z = pos.Z;
+				Km.X = Kt.X;
+				Km.Z = Kt.Z - 30;
+				Km.Y = cameraY;
 
+				camera->setPosition(Km);
+				camera->setTarget(Kt);
+			}
 			
-		vector3df A=render->MouseCoordToWorldCoord();
-		A.Y=20;
-		lnode->setPosition(A);
+			vector3df A=render->MouseCoordToWorldCoord();
+			A.Y=20;
+			lnode->setPosition(A);
 
 			render->driver->beginScene(true, true, SColor(255,100,101,140));
 				render->smgr->drawAll();
 				guienv->drawAll();
 			render->driver->endScene();
-
-			if (currentCharacter)
-			{
-				/*
-				Kt.X = currentCharacter->x * CELL_SIZE;
-				Km.X = currentCharacter->x * CELL_SIZE;
-				camPos->setPosition(Km);
-				Kt.Z = currentCharacter->y * CELL_SIZE;
-				Km.Z = currentCharacter->y * CELL_SIZE;
-				camPos->setPosition(Km);
-				*/
-			}
-
 		}
 	}
 
@@ -307,40 +282,35 @@ void Universe::ClientGUIInit()
 	guienv->addButton(rect< s32 >(0, 0, 256, 32), NULL, TESTSkillUseButton, L"Use skill SayHello", NULL);
 
 	//Chat
-	//IGUIStaticText* chatStaticText = guienv->addStaticText(NULL, rect< s32 >(0, 128, 256, 128 + 256), true, true, NULL, ChatStaticText, true);
-	//chatStaticText->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
-	//IGUIEditBox* chatEditBox = guienv->addEditBox(NULL, rect< s32 >(0, 128, 256, 128 + 256), true, NULL, ChatEditBox);
-	//chatEditBox->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
-	//chatEditBox->setMultiLine(true);
-	//guienv->addEditBox(NULL, rect< s32 >(0, 128 + 256, 256, 128 + 256 + 24), true, NULL, ChatInputEditBox);
-	//ChatEditBox
-	//ChatInputEditBox
 	IGUIChatBox* cb = new IGUIChatBox(guienv, NULL, ChatBox, ChatEditBox, ChatInputEditBox, rect< s32 >(0, 128, 256, 128 + 256 + 24));
 	guienv->getRootGUIElement()->addChild(cb);
 
-	/*
-	for (u32 i = 0; i < EGDC_COUNT; i++)
-	{
-		SColor color = guienv->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
-		color.setAlpha(48);
-		guienv->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, color);
-	}
-	*/
+	int btnsSize = 48;
 
 	//Inventory
-	IGUIIconTable* tbl1 = new IGUIIconTable(guienv, NULL, -1, rect< s32 >(screenWidth - 32 * 6, 150, screenWidth, 150 + 32 * 6), 6, 6);
-	tbl1->buttonSize = 32;
-	guienv->getRootGUIElement()->addChild(tbl1);
-	for (int i = 0; i < 36; i++)
-		tbl1->addButton();
+
+	IGUIWindow* iwnd = guienv->addWindow(rect< s32 >(screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20, 150, screenWidth, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Inventory", NULL, InventoryWindow);
+
+	IGUIIconTable* tbl1 = new IGUIIconTable(guienv, iwnd, InventoryItemsIconTable, rect< s32 >(10, 100, 10 + btnsSize * 6 + (6 - 1) * 2, 100 + btnsSize * 6 + (6 - 1) * 2), 6, 6);
+	tbl1->buttonSize = btnsSize;
+	iwnd->addChild(tbl1);
+	//TEST
+	for (int i = 0; i < 27; i++)
+	{
+		tbl1->addButton(Universe::instance->render->driver->getTexture("rpgator.png"));
+	}
+
+	//Skills
+
+	IGUIWindow* swnd = guienv->addWindow(rect< s32 >(screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20 - 400, 150, screenWidth - 400, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Skills", NULL, InventoryWindow);
+
+	IGUIIconTable* tbl2 = new IGUIIconTable(guienv, swnd, InventoryItemsIconTable, rect< s32 >(10, 100, 10 + btnsSize * 6 + (6 - 1) * 2, 100 + btnsSize * 6 + (6 - 1) * 2), 6, 6);
+	tbl2->buttonSize = btnsSize;
+	swnd->addChild(tbl2);
 
 	//Hotkey
-	IGUIIconTable* tbl2 = new IGUIIconTable(guienv, NULL, -1, rect< s32 >(200, screenHeight - 48, 200 + 12 * 48, screenHeight), 12, 1);
-	guienv->getRootGUIElement()->addChild(tbl2);
-	for (int i = 0; i < 12; i++)
-		tbl2->addButton(Universe::instance->render->driver->getTexture("rpgator.png"));
-	//IGUIButton* btn = guienv->addButton();
-	//btn->setImage();
+	IGUIIconTable* tbl3 = new IGUIIconTable(guienv, NULL, HotkeyBar, rect< s32 >(320, screenHeight - btnsSize, 320 + 12 * btnsSize + (12 - 1) * 2, screenHeight), 12, 1);
+	guienv->getRootGUIElement()->addChild(tbl3);
 }
 
 void Universe::MenuGUIDestroy()

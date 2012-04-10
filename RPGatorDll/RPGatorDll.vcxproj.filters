@@ -129,6 +129,9 @@
     <ClInclude Include="GameObject.h">
       <Filter>Заголовочные файлы\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="CGUIButton.h">
+      <Filter>Заголовочные файлы\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -214,6 +217,9 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Файлы исходного кода\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="CGUIButton.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -11,11 +11,11 @@ Universe::Universe(void)
 	screenWidth = 800;
 	screenHeight = 600;
 	fullscreen = false;
-	/*
+	
 	screenWidth = 1366;
 	screenHeight = 768;
 	fullscreen = true;
-	*/
+	
 	cameraMoveZoneWidth = 24;
 	toolbarWidth = 192;
 	toolbarLeftMargin = 8;

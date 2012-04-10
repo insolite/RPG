@@ -7,6 +7,7 @@ class Render;
 class IGUIIconTable;
 class IGUIChatBox;
 class CGUIEditBox;
+class CGUIButton;
 
 class GameObject;
 class MapObject;
