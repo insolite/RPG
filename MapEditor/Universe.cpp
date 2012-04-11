@@ -21,7 +21,16 @@ Universe::Universe(void)
 
 	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
 	guienv->getSkin()->setFont(font2);
-	//TODO: font delete?
+	
+	SColor color;
+
+	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE);
+	color.setAlpha(192);
+	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE, color);
+	
+	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW);
+	color.setAlpha(192);
+	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW, color);
 }
 
 Universe::~Universe(void)
@@ -56,13 +65,6 @@ void Universe::MenuGUIInit()
 	guienv->addButton(rect< s32 >(488, 192, 544, 216), NULL, LoadGameButton, L"Load", L"Loads selected game");
 	guienv->addButton(rect< s32 >(488, 224, 544, 248), NULL, DeleteGameButton, L"Delete", L"Deletes selected game");
 	guienv->addButton(rect< s32 >(488, 256, 544, 280), NULL, QuitMenuButton, L"Quit", L"Exits editor");
-
-	for (u32 i = 0; i < EGDC_COUNT; i++)
-	{
-		SColor color = guienv->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
-		color.setAlpha(255);
-		guienv->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, color);
-	}
 }
 
 void Universe::EditorGUIInit()
@@ -244,35 +246,35 @@ bool Universe::Run()
 	while (render->device->run() && state == Continue)
 	{
 		core::vector3df Km = camPos->getPosition();
-		Kt = camera->getTarget();
+		render->Kt = camera->getTarget();
 		
 		if(editorEventReceiver->IsKeyDown(irr::KEY_LEFT))
 		{
-			Kt.X-=1;
+			render->Kt.X-=1;
 			Km.X-=1;
 			camPos->setPosition(Km);
 		}
 		if(editorEventReceiver->IsKeyDown(irr::KEY_RIGHT))
 		{
-			Kt.X+=1;
+			render->Kt.X+=1;
 			Km.X+=1;
 			camPos->setPosition(Km);
 		}
 		if(editorEventReceiver->IsKeyDown(irr::KEY_UP))
 		{
-			Kt.Z+=1;
+			render->Kt.Z+=1;
 			Km.Z+=1;
 			camPos->setPosition(Km);
 		}
 		if(editorEventReceiver->IsKeyDown(irr::KEY_DOWN))
 		{
-			Kt.Z-=1;
+			render->Kt.Z-=1;
 			Km.Z-=1;
 			camPos->setPosition(Km);
 		}
 		//camera->setPosition(Km)
 		camera->setPosition(Km);
-		camera->setTarget(Kt);
+		camera->setTarget(render->Kt);
 		
 		vector3df A=render->MouseCoordToWorldCoord();
 		A.Y+=30;

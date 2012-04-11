@@ -8,6 +8,7 @@ class IGUIIconTable;
 class IGUIChatBox;
 class CGUIEditBox;
 class CGUIButton;
+class CGUIMeshViewer;
 
 class GameObject;
 class MapObject;

@@ -18,6 +18,16 @@ Universe::Universe(void)
 
 	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
 	guienv->getSkin()->setFont(font2);
+
+	SColor color;
+
+	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE);
+	color.setAlpha(192);
+	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE, color);
+	
+	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW);
+	color.setAlpha(192);
+	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW, color);
 }
 
 Universe::~Universe(void)
@@ -39,6 +49,7 @@ bool Universe::Menu()
 	while (render->device->run() && state == Continue)
 	{
 		render->driver->beginScene(true, true, SColor(255, 100, 101, 140));
+			render->smgr->drawAll();
 			guienv->drawAll();
 		render->driver->endScene();
 	}
@@ -221,18 +232,18 @@ bool Universe::Run()
 				if (currentCharacter)
 				{
 					core::vector3df Km = camPos->getPosition();
-					Kt = camera->getTarget();
+					render->Kt = camera->getTarget();
 					//Kt.X = currentCharacter->x * CELL_SIZE;
 					//Kt.Z = currentCharacter->y * CELL_SIZE;
 					vector3df pos = currentCharacter->node->getPosition();
-					Kt.X = pos.X;
-					Kt.Z = pos.Z;
-					Km.X = Kt.X;
-					Km.Z = Kt.Z - 30;
+					render->Kt.X = pos.X;
+					render->Kt.Z = pos.Z;
+					Km.X = render->Kt.X;
+					Km.Z = render->Kt.Z - 30;
 					Km.Y = cameraY;
 
 					camera->setPosition(Km);
-					camera->setTarget(Kt);
+					camera->setTarget(render->Kt);
 				}
 			
 				vector3df A=render->MouseCoordToWorldCoord();
@@ -263,6 +274,7 @@ bool Universe::Run()
 
 void Universe::MenuGUIInit()
 {
+	menuEventReceiver = new MenuEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)menuEventReceiver);
 
 	guienv->addEditBox(L"admin", rect< s32 >(render->screenWidth / 2 - 64, render->screenHeight / 2 - 100, render->screenWidth / 2 + 64, render->screenHeight / 2 - 68), true, NULL, LoginEditBox);
@@ -274,6 +286,7 @@ void Universe::MenuGUIInit()
 
 void Universe::ClientGUIInit()
 {
+	clientEventReceiver = new ClientEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)clientEventReceiver);
 
 	guienv->addButton(rect< s32 >(0, 0, 256, 32), NULL, TESTSkillUseButton, L"Use skill SayHello", NULL);
@@ -313,9 +326,13 @@ void Universe::ClientGUIInit()
 void Universe::MenuGUIDestroy()
 {
 	guienv->clear();
+	render->device->setEventReceiver(NULL);
+	delete menuEventReceiver;
 }
 
 void Universe::ClientGUIDestroy()
 {
 	guienv->clear();
+	render->device->setEventReceiver(NULL);
+	delete clientEventReceiver;
 }

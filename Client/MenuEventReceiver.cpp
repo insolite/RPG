@@ -10,7 +10,13 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 		KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
 		if (KeyIsDown[KEY_ESCAPE])
 		{
-			Universe::instance->render->device->closeDevice();
+			if (Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow))
+			{
+				delete game;
+				Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->remove();
+			}
+			else
+				Universe::instance->render->device->closeDevice();
 		}
 	}
 	else if (event.EventType == EET_GUI_EVENT)
@@ -19,6 +25,10 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 
 		switch(event.GUIEvent.EventType)
 		{
+			case EGET_ELEMENT_CLOSED:
+				if (eventCallerId == RegisterWindow)
+					delete game;
+				break;
 			case EGET_BUTTON_CLICKED:
 				switch (eventCallerId)
 				{
@@ -35,13 +45,14 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 					case RegisterButton:
 					{
 						IGUIWindow* wnd = Universe::instance->guienv->addWindow(rect<s32>(Universe::instance->render->screenWidth / 2 - 256, Universe::instance->render->screenHeight / 2 - 256, Universe::instance->render->screenWidth / 2 + 256, Universe::instance->render->screenHeight / 2 + 256), false, L"Registration", NULL, RegisterWindow);
-						
-						Universe::instance->guienv->addEditBox(NULL, rect<s32>(32, 32, 32 + 128, 32 + 32), true, wnd, RegisterWindowLoginEditBox);
-						
+
+						IGUIEditBox* lbtn = Universe::instance->guienv->addEditBox(NULL, rect<s32>(32, 32, 32 + 128, 32 + 32), true, wnd, RegisterWindowLoginEditBox);
+						Universe::instance->guienv->setFocus(lbtn);
+
 						IGUIEditBox* pbtn = Universe::instance->guienv->addEditBox(NULL, rect<s32>(32, 72, 32 + 128, 72 + 32), true, wnd, RegisterWindowPasswordEditBox);
 						pbtn->setPasswordBox(true);
 						
-						IGUIComboBox* cb = Universe::instance->guienv->addComboBox(rect<s32>(32, 112, 32 + 128, 112 + 32), wnd, RegisterWindowCharacterRadioButton);
+						IGUIComboBox* cb = Universe::instance->guienv->addComboBox(rect<s32>(32, 112, 32 + 128, 112 + 32), wnd, RegisterWindowCharacterComboBox);
 						//TEST
 						game = new Game("testgame", Client);
 						wchar_t wstr[512];
@@ -51,7 +62,31 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 							cb->addItem(wstr);
 						}
 
-						Universe::instance->guienv->addButton(rect<s32>(512 - 20 - 92, 512 - 20 - 32, 512 - 20, 512 - 20), wnd, RegisterWindowOKButton, L"OK", NULL);
+						ISceneNode* camPos = Universe::instance->render->smgr->addEmptySceneNode();
+						camPos->setPosition(vector3df(50,30,10));
+						ICameraSceneNode* camera = Universe::instance->render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
+						Universe::instance->render->smgr->setActiveCamera(camera);
+						
+						core::vector3df Km = camPos->getPosition();
+						Universe::instance->render->Kt = camera->getTarget();
+						//vector3df pos = currentCharacter->node->getPosition();
+						Universe::instance->render->Kt.X = 0;
+						Universe::instance->render->Kt.Z = 0;
+						Km.X = Universe::instance->render->Kt.X;
+						Km.Z = Universe::instance->render->Kt.Z - 30;
+						Km.Y = 50;
+
+						camera->setPosition(Km);
+						camera->setTarget(Universe::instance->render->Kt);
+
+						CGUIMeshViewer* mv = new CGUIMeshViewer(Universe::instance->guienv, wnd, CharacterPreviewMeshViewer, rect<s32>(32 + 128 + 16, 32, 512 - 32, 152 + 256));
+						SMaterial* sm = new SMaterial();
+						sm->setTexture(0, game->resources->characters[0]->texture);
+						sm->setFlag(EMF_LIGHTING, false);
+						mv->setMesh(game->resources->characters[0]->mesh);
+						mv->setMaterial(*sm);
+
+						Universe::instance->guienv->addButton(rect<s32>(512 - 20 - 92, 512 - 20 - 32, 512 - 32, 512 - 20), wnd, RegisterWindowOKButton, L"OK", NULL);
 						break;
 					}
 					case RegisterWindowOKButton:
@@ -63,7 +98,7 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						bool continueFlag;
 
 						CreatePacket(outPacket, Register, "%i%ws%ws",
-													game->resources->characters[((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->getElementFromId(RegisterWindowCharacterRadioButton))->getSelected()]->id,
+													game->resources->characters[((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->getElementFromId(RegisterWindowCharacterComboBox))->getSelected()]->id,
 													Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->getElementFromId(RegisterWindowLoginEditBox)->getText(),
 													Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->getElementFromId(RegisterWindowPasswordEditBox)->getText()
 													);
@@ -115,6 +150,9 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						break;
 					}
 				}
+				break;
+			case EGET_COMBO_BOX_CHANGED:
+				((CGUIMeshViewer*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->getElementFromId(CharacterPreviewMeshViewer))->setMesh(game->resources->characters[((IGUIComboBox*)event.GUIEvent.Caller)->getSelected()]->mesh);
 				break;
 		}
 	}

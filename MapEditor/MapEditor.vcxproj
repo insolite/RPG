@@ -80,7 +80,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CGUIMeshViewer.h" />
     <ClInclude Include="EditorEventReceiver.h" />
     <ClInclude Include="ForwardDeclaration.h" />
     <ClInclude Include="MenuEventReceiver.h" />
@@ -89,7 +88,6 @@
     <ClInclude Include="Universe.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CGUIMeshViewer.cpp" />
     <ClCompile Include="EditorEventReceiver.cpp" />
     <ClCompile Include="MapEditor.cpp" />
     <ClCompile Include="MenuEventReceiver.cpp" />

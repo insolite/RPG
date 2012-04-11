@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "ForwardDeclaration.h"
-#include "Universe.h"
+#include "Render.h"
 #include "CGUIMeshViewer.h"
 
 // Copyright (C) 2002-2010 Nikolaus Gebhardt
@@ -8,12 +8,6 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 //Following code was changed a little bit by RPGator developers. Now MeshViewer draws mesh considering camera position. Also it does not draw mesh if it is outside of screen
-
-namespace irr
-{
-
-namespace gui
-{
 
 //! constructor
 CGUIMeshViewer::CGUIMeshViewer(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
@@ -138,7 +132,7 @@ void CGUIMeshViewer::draw()
 
 		mat.makeIdentity();
 		//mat.setTranslation(core::vector3df(0,0,0));
-		mat.setTranslation(core::vector3df(Universe::instance->Kt.X,Universe::instance->Kt.Y,Universe::instance->Kt.Z)); //Changes by CGUIMeshViewer
+		mat.setTranslation(core::vector3df(Render::instance->Kt.X,Render::instance->Kt.Y,Render::instance->Kt.Z)); //Changes by CGUIMeshViewer
 		driver->setTransform(video::ETS_WORLD, mat);
 
 		//CameraControl->calculateViewMatrix(mat);
@@ -149,7 +143,7 @@ void CGUIMeshViewer::draw()
 		u32 frame = 0;
 		if(Mesh->getFrameCount())
 			//frame = (os::Timer::getTime()/20)%Mesh->getFrameCount();
-			frame = (Universe::instance->render->device->getTimer()->getTime()/20)%Mesh->getFrameCount(); //Changes by CGUIMeshViewer
+			frame = (Render::instance->device->getTimer()->getTime()/20)%Mesh->getFrameCount(); //Changes by CGUIMeshViewer
 		const scene::IMesh* const m = Mesh->getMesh(frame);
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
@@ -165,7 +159,3 @@ void CGUIMeshViewer::draw()
 
 	IGUIElement::draw();
 }
-
-
-} // end namespace gui
-} // end namespace irr

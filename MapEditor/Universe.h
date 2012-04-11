@@ -98,7 +98,6 @@ public:
 	ProgramState state;
 
 	Render* render;
-	core::vector3df Kt;
 	ICameraSceneNode *camera;
 	ICameraSceneNode *camera2;
 

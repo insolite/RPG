@@ -16,6 +16,10 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			Universe::instance->password = NULL;
 			Universe::instance->state = NextLevel;
 		}
+		else if (KeyIsDown[KEY_RETURN])
+		{
+			Universe::instance->guienv->setFocus(Universe::instance->guienv->getRootGUIElement()->getElementFromId(ChatBox)->getElementFromId(ChatInputEditBox));
+		}
 	}
 	else if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
 	{

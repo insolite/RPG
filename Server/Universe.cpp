@@ -157,7 +157,8 @@ void Universe::Run(char* gameName)
 							login = PacketGetString(inPacket, 5);
 							password = PacketGetString(inPacket, 5 + strlen(login) + 1);
 							//TODO: default location, coordinates
-							game->data->locations[0]->AddCharacter(game->resources->GetCharacter(PacketGetInt(inPacket, 1)), 0, 0, login, password);
+							//TODO: without UnSpawnCharacter
+							game->data->locations[0]->UnSpawnCharacter(game->data->locations[0]->AddCharacter(game->resources->GetCharacter(PacketGetInt(inPacket, 1)), 0, 0, login, password));
 							CreatePacket(outPacket, RegisterOK, "");
 							clients[ci]->Send(outPacket);
 							break;

@@ -18,7 +18,8 @@ enum MenuGUIElements
 	RegisterWindow,
 	RegisterWindowLoginEditBox,
 	RegisterWindowPasswordEditBox,
-	RegisterWindowCharacterRadioButton,
+	RegisterWindowCharacterComboBox,
+	CharacterPreviewMeshViewer,
 	RegisterWindowOKButton
 };
 
@@ -54,7 +55,6 @@ public:
 	char* password; //Buffer between menu and editor
 	ProgramState state;
 	Render* render;
-	core::vector3df Kt;
 	ICameraSceneNode *camera;
 	ICameraSceneNode *camera2;
 	int cameraY;

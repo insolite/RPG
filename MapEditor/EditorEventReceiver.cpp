@@ -1,5 +1,4 @@
 #include "StdAfx.h"
-#include "CGUIMeshViewer.h"
 #include "ForwardDeclaration.h"
 #include "Universe.h"
 #include "EditorEventReceiver.h"
@@ -250,6 +249,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								wnd = Universe::instance->guienv->addWindow(rect< s32 >(Universe::instance->toolbarWidth, 0, Universe::instance->toolbarWidth + 242, 184), false, L"Locations edit", 0, LocationsEditWindow);
 								wnd->getCloseButton()->setEnabled(false);
 								wnd->getCloseButton()->setVisible(false);
+								wnd->setDraggable(false);
 								Universe::instance->guienv->addEditBox(Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(LocationsComboBox)->getText(), rect< s32 >(32, 32, 208, 56), true, wnd, LocationNameEditBox);
 								Universe::instance->guienv->addEditBox(L"64", rect< s32 >(32, 80, 112, 104), true, wnd, LocationWidthEditBox);
 								Universe::instance->guienv->addEditBox(L"64", rect< s32 >(128, 80, 208, 104), true, wnd, LocationHeightEditBox);

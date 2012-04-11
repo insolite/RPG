@@ -10,7 +10,10 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 		KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
 		if (KeyIsDown[KEY_ESCAPE])
 		{
-			Universe::instance->render->device->closeDevice();
+			if (Universe::instance->guienv->getRootGUIElement()->getElementFromId(NewGameWindow))
+				Universe::instance->guienv->getRootGUIElement()->getElementFromId(NewGameWindow)->remove();
+			else
+				Universe::instance->render->device->closeDevice();
 		}
 	}
 	else if (event.EventType == EET_GUI_EVENT)

@@ -7,6 +7,7 @@
 #include "IGUIChatBox.h"
 #include "CGUIEditBox.h"
 #include "CGUIButton.h"
+#include "CGUIMeshViewer.h"
 
 #include "GameObject.h"
 #include "MapObject.h"

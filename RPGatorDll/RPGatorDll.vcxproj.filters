@@ -132,6 +132,9 @@
     <ClInclude Include="CGUIButton.h">
       <Filter>Заголовочные файлы\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="CGUIMeshViewer.h">
+      <Filter>Заголовочные файлы\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -219,6 +222,9 @@
       <Filter>Файлы исходного кода\Resources</Filter>
     </ClCompile>
     <ClCompile Include="CGUIButton.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CGUIMeshViewer.cpp">
       <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
   </ItemGroup>
