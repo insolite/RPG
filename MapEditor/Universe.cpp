@@ -8,14 +8,6 @@ Universe* Universe::instance;
 
 Universe::Universe(void)
 {
-	screenWidth = 800;
-	screenHeight = 600;
-	fullscreen = false;
-	
-	screenWidth = 1366;
-	screenHeight = 768;
-	fullscreen = true;
-	
 	cameraMoveZoneWidth = 24;
 	toolbarWidth = 192;
 	toolbarLeftMargin = 8;
@@ -23,7 +15,7 @@ Universe::Universe(void)
 	brushMaskMaxSize = 10;
 	instance = this;
 
-	render = new Render(screenWidth, screenHeight, fullscreen, L"RPGator");
+	render = new Render(1366, 768, fullscreen, L"RPGator");
 
 	guienv = render->device->getGUIEnvironment();
 
@@ -78,7 +70,7 @@ void Universe::EditorGUIInit()
 	editorEventReceiver = new EditorEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)editorEventReceiver);
 
-	IGUIWindow* wnd = guienv->addWindow(rect< s32 >(0, 0, toolbarWidth, screenHeight), false, L"Toolbar", 0, ToolBarWindow);
+	IGUIWindow* wnd = guienv->addWindow(rect< s32 >(0, 0, toolbarWidth, render->screenHeight), false, L"Toolbar", 0, ToolBarWindow);
 	
 	//Floors ComboBox
 	IGUIComboBox* floorsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 32, toolbarLeftMargin + 176, 48), wnd, FloorsComboBox);
@@ -135,9 +127,9 @@ void Universe::EditorGUIDestroy()
 
 void Universe::CameraMove(int x, int y)
 {
-	if ((cameraX + x) < 0 || ((cameraX + x) + screenWidth - toolbarWidth) >= currentLocation->width * CELL_SIZE)
+	if ((cameraX + x) < 0 || ((cameraX + x) + render->screenWidth - toolbarWidth) >= currentLocation->width * CELL_SIZE)
 		x = 0;
-	if ((cameraY + y) < 0 || ((cameraY + y) + screenHeight) >= currentLocation->height * CELL_SIZE)
+	if ((cameraY + y) < 0 || ((cameraY + y) + render->screenHeight) >= currentLocation->height * CELL_SIZE)
 		y = 0;
 	cameraX += x;
 	cameraY += y;
@@ -245,11 +237,12 @@ bool Universe::Run()
 	light->setID(ID_IsNotPickable);
 	bill->setID(ID_IsNotPickable);
 	
-//	render->drawKub(0,0,0);
 	state = Continue;
+
+	int lastUpdate = render->device->getTimer()->getTime();
+
 	while (render->device->run() && state == Continue)
 	{
-		
 		core::vector3df Km = camPos->getPosition();
 		Kt = camera->getTarget();
 		
@@ -293,11 +286,17 @@ bool Universe::Run()
 		
 		//TESTESTESTESTESTESTESTES
 
-		//render->driver->setTransform(video::ETS_WORLD, core::matrix4());
-		render->driver->beginScene(true, true, SColor(255,100,101,140));
-			render->smgr->drawAll();
-			guienv->drawAll();
-		render->driver->endScene();
+		if ((render->device->getTimer()->getTime() - lastUpdate) > 30)
+		{
+			//OMG, performance is too high :)
+			//lastUpdate = render->device->getTimer()->getTime();
+
+			//render->driver->setTransform(video::ETS_WORLD, core::matrix4());
+			render->driver->beginScene(true, true, SColor(255,100,101,140));
+				render->smgr->drawAll();
+				guienv->drawAll();
+			render->driver->endScene();
+		}
 	}
 	render->smgr->clear();
 

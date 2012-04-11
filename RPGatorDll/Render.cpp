@@ -17,7 +17,10 @@ Render* Render::instance = NULL;
 
 Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* windowTitle)
 {
-	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 32, fullscreen, false, false, NULL);
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
+	//device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 32, fullscreen, false, false, NULL);
+	device = createDevice(video::EDT_OPENGL, GetDesktopRes(), 32, fullscreen, false, false, NULL);
 	device->setResizable(true);
 	if (!device)
 		return;
@@ -31,6 +34,7 @@ Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* wind
 
 Render::~Render(void)
 {
+	device->drop();
 	instance = NULL;
 }
 
@@ -133,4 +137,15 @@ vector3df Render::MouseCoordToWorldCoord()
 		return pos;
 	else
 		printf("ray does not intersect the plane!");
+}
+
+dimension2d<u32> Render::GetDesktopRes()
+{
+	IrrlichtDevice * device0 = 0;
+	dimension2d<u32> DesktopResolution;
+	device0 = createDevice(EDT_NULL, dimension2d<u32>(100, 100), false, false);
+	video::IVideoModeList * list = device0->getVideoModeList();
+	DesktopResolution = list->getDesktopResolution();
+	device0->drop();
+	return DesktopResolution;
 }

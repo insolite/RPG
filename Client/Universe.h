@@ -10,11 +10,16 @@ enum ProgramState
 
 enum MenuGUIElements
 {
+	WindowCloseButton,
 	LoginEditBox,
 	PasswordEditBox,
 	LogInButton,
 	RegisterButton,
-	TESTSkillUseButton
+	RegisterWindow,
+	RegisterWindowLoginEditBox,
+	RegisterWindowPasswordEditBox,
+	RegisterWindowCharacterRadioButton,
+	RegisterWindowOKButton
 };
 
 enum ClientGUIElements
@@ -24,7 +29,8 @@ enum ClientGUIElements
 	ChatInputEditBox,
 	InventoryWindow,
 	InventoryItemsIconTable,
-	HotkeyBar
+	HotkeyBar,
+	TESTSkillUseButton
 };
 
 class Universe
@@ -37,7 +43,6 @@ public:
 	Game* game; //Current game, that server is running
 	CurrentCharacter* currentCharacter; //Current character, attached to the current client
 	Location* currentLocation; //Current location of the current character
-	int screenWidth, screenHeight; //pixels
 	bool fullscreen;
 	
 	//GUI, input

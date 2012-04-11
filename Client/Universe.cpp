@@ -8,17 +8,9 @@ Universe* Universe::instance;
 
 Universe::Universe(void)
 {
-	screenWidth = 800;
-	screenHeight = 600;
-	fullscreen = false;
-	
-	screenWidth = 1366;
-	screenHeight = 768;
-	fullscreen = true;
-	
 	instance = this;
 	
-	render = new Render(screenWidth, screenHeight, fullscreen, L"Client");
+	render = new Render(1366, 768, fullscreen, L"Client");
 
 	guienv = render->device->getGUIEnvironment();
 	menuEventReceiver = new MenuEventReceiver();
@@ -126,6 +118,8 @@ bool Universe::Run()
 	
 	state = Continue;
 
+	int lastUpdate = render->device->getTimer()->getTime();
+
 	while (render->device->run() && state == Continue)
 	{
 		//Receving packet from the server
@@ -142,7 +136,6 @@ bool Universe::Run()
 						printf("Game %s initialized\n", game->name);
 						currentLocation = game->data->GetLocation(PacketGetInt(inPacket, 1 + strlen(inPacket + 3) + 1));
 						DrawScene();
-						//render->drawKub(0,0,0);
 						break;
 					case CharacterSpawned:
 						if (!currentCharacter)
@@ -220,33 +213,37 @@ bool Universe::Run()
 
 		//Drawing
 
-		if (game)
+		if ((render->device->getTimer()->getTime() - lastUpdate) > 30)
 		{
-			if (currentCharacter)
+			lastUpdate = render->device->getTimer()->getTime();
+			if (game)
 			{
-				core::vector3df Km = camPos->getPosition();
-				Kt = camera->getTarget();
-				//Kt.X = currentCharacter->x * CELL_SIZE;
-				//Kt.Z = currentCharacter->y * CELL_SIZE;
-				vector3df pos = currentCharacter->node->getPosition();
-				Kt.X = pos.X;
-				Kt.Z = pos.Z;
-				Km.X = Kt.X;
-				Km.Z = Kt.Z - 30;
-				Km.Y = cameraY;
+				if (currentCharacter)
+				{
+					core::vector3df Km = camPos->getPosition();
+					Kt = camera->getTarget();
+					//Kt.X = currentCharacter->x * CELL_SIZE;
+					//Kt.Z = currentCharacter->y * CELL_SIZE;
+					vector3df pos = currentCharacter->node->getPosition();
+					Kt.X = pos.X;
+					Kt.Z = pos.Z;
+					Km.X = Kt.X;
+					Km.Z = Kt.Z - 30;
+					Km.Y = cameraY;
 
-				camera->setPosition(Km);
-				camera->setTarget(Kt);
-			}
+					camera->setPosition(Km);
+					camera->setTarget(Kt);
+				}
 			
-			vector3df A=render->MouseCoordToWorldCoord();
-			A.Y=20;
-			lnode->setPosition(A);
+				vector3df A=render->MouseCoordToWorldCoord();
+				A.Y=20;
+				lnode->setPosition(A);
 
-			render->driver->beginScene(true, true, SColor(255,100,101,140));
-				render->smgr->drawAll();
-				guienv->drawAll();
-			render->driver->endScene();
+				render->driver->beginScene(true, true, SColor(255,100,101,140));
+					render->smgr->drawAll();
+					guienv->drawAll();
+				render->driver->endScene();
+			}
 		}
 	}
 
@@ -268,11 +265,11 @@ void Universe::MenuGUIInit()
 {
 	render->device->setEventReceiver((IEventReceiver*)menuEventReceiver);
 
-	guienv->addEditBox(L"admin", rect< s32 >(screenWidth / 2 - 64, screenHeight / 2 - 100, screenWidth / 2 + 64, screenHeight / 2 - 68), true, NULL, LoginEditBox);
-	IGUIEditBox* eb = guienv->addEditBox(L"1234", rect< s32 >(screenWidth / 2 - 64, screenHeight / 2 - 60, screenWidth / 2 + 64, screenHeight / 2 - 28), true, NULL, PasswordEditBox);
+	guienv->addEditBox(L"admin", rect< s32 >(render->screenWidth / 2 - 64, render->screenHeight / 2 - 100, render->screenWidth / 2 + 64, render->screenHeight / 2 - 68), true, NULL, LoginEditBox);
+	IGUIEditBox* eb = guienv->addEditBox(L"1234", rect< s32 >(render->screenWidth / 2 - 64, render->screenHeight / 2 - 60, render->screenWidth / 2 + 64, render->screenHeight / 2 - 28), true, NULL, PasswordEditBox);
 	eb->setPasswordBox(true);
-	guienv->addButton(rect< s32 >(screenWidth / 2 - 64, screenHeight / 2 - 20, screenWidth / 2 - 4, screenHeight / 2 + 12), NULL, LogInButton, L"Log in", L"Log in");
-	guienv->addButton(rect< s32 >(screenWidth / 2 + 4, screenHeight / 2 - 20, screenWidth / 2 + 64, screenHeight / 2 + 12), NULL, RegisterButton, L"Register", L"Register");
+	guienv->addButton(rect< s32 >(render->screenWidth / 2 - 64, render->screenHeight / 2 - 20, render->screenWidth / 2 - 4, render->screenHeight / 2 + 12), NULL, LogInButton, L"Log in", L"Log in");
+	guienv->addButton(rect< s32 >(render->screenWidth / 2 + 4, render->screenHeight / 2 - 20, render->screenWidth / 2 + 64, render->screenHeight / 2 + 12), NULL, RegisterButton, L"Register", L"Register");
 }
 
 void Universe::ClientGUIInit()
@@ -289,7 +286,7 @@ void Universe::ClientGUIInit()
 
 	//Inventory
 
-	IGUIWindow* iwnd = guienv->addWindow(rect< s32 >(screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20, 150, screenWidth, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Inventory", NULL, InventoryWindow);
+	IGUIWindow* iwnd = guienv->addWindow(rect< s32 >(render->screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20, 150, render->screenWidth, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Inventory", NULL, InventoryWindow);
 
 	IGUIIconTable* tbl1 = new IGUIIconTable(guienv, iwnd, InventoryItemsIconTable, rect< s32 >(10, 100, 10 + btnsSize * 6 + (6 - 1) * 2, 100 + btnsSize * 6 + (6 - 1) * 2), 6, 6);
 	tbl1->buttonSize = btnsSize;
@@ -302,14 +299,14 @@ void Universe::ClientGUIInit()
 
 	//Skills
 
-	IGUIWindow* swnd = guienv->addWindow(rect< s32 >(screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20 - 400, 150, screenWidth - 400, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Skills", NULL, InventoryWindow);
+	IGUIWindow* swnd = guienv->addWindow(rect< s32 >(render->screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20 - 400, 150, render->screenWidth - 400, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Skills", NULL, InventoryWindow);
 
 	IGUIIconTable* tbl2 = new IGUIIconTable(guienv, swnd, InventoryItemsIconTable, rect< s32 >(10, 100, 10 + btnsSize * 6 + (6 - 1) * 2, 100 + btnsSize * 6 + (6 - 1) * 2), 6, 6);
 	tbl2->buttonSize = btnsSize;
 	swnd->addChild(tbl2);
 
 	//Hotkey
-	IGUIIconTable* tbl3 = new IGUIIconTable(guienv, NULL, HotkeyBar, rect< s32 >(320, screenHeight - btnsSize, 320 + 12 * btnsSize + (12 - 1) * 2, screenHeight), 12, 1);
+	IGUIIconTable* tbl3 = new IGUIIconTable(guienv, NULL, HotkeyBar, rect< s32 >(320, render->screenHeight - btnsSize, 320 + 12 * btnsSize + (12 - 1) * 2, render->screenHeight), 12, 1);
 	guienv->getRootGUIElement()->addChild(tbl3);
 }
 

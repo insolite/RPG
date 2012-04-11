@@ -124,29 +124,44 @@ void Universe::Run(char* gameName)
 									newCurrentCharacter->login
 									);
 								//Send to all that character spawned
+								//For the newCurrentCharacter is will be the first CharacterSpawned packet (his character)
 								for (int i = 0; i < newCurrentCharacter->currentLocation->currentCharactersCount; i++)
 								{
-									if (newCurrentCharacter != newCurrentCharacter->currentLocation->currentCharacters[i]) //Not current client. We'll do it in the next loop
-										newCurrentCharacter->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
+									newCurrentCharacter->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
 								}
 
 								//Send to one client that all spawned
 								for (int i = 0; i < newCurrentCharacter->currentLocation->currentCharactersCount; i++)
 								{
-									CreatePacket(outPacket, CharacterSpawned, "%i%i%i%i%s",
-										newCurrentCharacter->currentLocation->currentCharacters[i]->id,
-										newCurrentCharacter->currentLocation->currentCharacters[i]->base->id,
-										newCurrentCharacter->currentLocation->currentCharacters[i]->x,
-										newCurrentCharacter->currentLocation->currentCharacters[i]->y,
-										newCurrentCharacter->currentLocation->currentCharacters[i]->login
-										);
-									newCurrentCharacter->connectSocket->Send(outPacket);
+									if (newCurrentCharacter != newCurrentCharacter->currentLocation->currentCharacters[i])
+									{ //Not current client. We did it in the previous loop
+										CreatePacket(outPacket, CharacterSpawned, "%i%i%i%i%s",
+											newCurrentCharacter->currentLocation->currentCharacters[i]->id,
+											newCurrentCharacter->currentLocation->currentCharacters[i]->base->id,
+											newCurrentCharacter->currentLocation->currentCharacters[i]->x,
+											newCurrentCharacter->currentLocation->currentCharacters[i]->y,
+											newCurrentCharacter->currentLocation->currentCharacters[i]->login
+											);
+										newCurrentCharacter->connectSocket->Send(outPacket);
+									}
 								}
 							}
 							break;
 						}
 						case LogOut:
 							break;
+						case Register:
+						{
+							char* login;
+							char* password;
+							login = PacketGetString(inPacket, 5);
+							password = PacketGetString(inPacket, 5 + strlen(login) + 1);
+							//TODO: default location, coordinates
+							game->data->locations[0]->AddCharacter(game->resources->GetCharacter(PacketGetInt(inPacket, 1)), 0, 0, login, password);
+							CreatePacket(outPacket, RegisterOK, "");
+							clients[ci]->Send(outPacket);
+							break;
+						}
 						case Say:
 							CreatePacket(outPacket, Say, "%b%i%s",
 								PacketGetByte(inPacket, 1),

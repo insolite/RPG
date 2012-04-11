@@ -173,6 +173,16 @@ void CreatePacket( char* packet, Packet packetType, char* formatStr, ... )
 			PacketAddString(packet, va_arg(params, char*));
 		else if (!strcmp(token,"si")) 
 			PacketAddShortInt(packet, va_arg(params, short));
+		else if (!strcmp(token,"ws")) 
+		{
+			//Warning! It only converts wchar_t* to char*. Does not insert wide string.
+			wchar_t* wstr = va_arg(params, wchar_t*);
+			int length = wcslen(wstr);
+			char* str = new char[length + 1];
+			wcstombs(str, wstr, length + 1);
+			PacketAddString(packet, str);
+			delete str;
+		}
 		token = strtok_s(NULL, "% ", &nextToken);
 	}
 

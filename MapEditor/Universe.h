@@ -76,7 +76,6 @@ public:
 	Game* game;
 	int cameraX, cameraY; //pixels
 	int cursorX, cursorY; //points
-	int screenWidth, screenHeight; //pixels
 	bool fullscreen;
 	int toolbarWidth; //pixels
 	int cameraMoveZoneWidth; //pixels
