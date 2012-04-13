@@ -34,6 +34,12 @@ public:
 	__declspec(dllexport) Static* GetStatic(int id);
 	__declspec(dllexport) Item* GetItem(int id);
 	__declspec(dllexport) Character* GetCharacter(int id);
+	//We are using add methods only for editor, so we don't need to implement spawn methods as it did in GameData. We can do it in add method as well
+	__declspec(dllexport) NPC* AddNPC(char* name, char* tags, char* modelPath, char* texturePath);
+	__declspec(dllexport) Static* AddStatic(char* name, char* tags, char* modelPath, char* texturePath);
+	__declspec(dllexport) Item* AddItem(char* name, char* tags, char* modelPath, char* texturePath);
+	__declspec(dllexport) Character* AddCharacter(char* name, char* tags, char* modelPath, char* texturePath);
+
 	template<class T>
 	__declspec(dllexport) T** FilterByTag(T** mapObjects, int mapObjectsCounter, char** tag, int numberOfTags);
 	__declspec(dllexport) int GetMapObjectsTags(MapObject** mapObjects, int mapObjectsCount, char** &tags); /*
@@ -49,4 +55,8 @@ private:
 	__declspec(dllexport) void MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName, InitializationType initializationType);
 	template<class T>
 	__declspec(dllexport) void GameObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName, InitializationType initializationType);
+	template<class T>
+	__declspec(dllexport) void SpawnMapObject(T** &mapObjects, int &mapObjectsCount, T* mapObject);
+	template<class T>
+	__declspec(dllexport) T* AddMapObject(T** &mapObjects, int &mapObjectsCount, char* tableName, char* modelPath);
 };

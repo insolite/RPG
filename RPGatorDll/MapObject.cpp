@@ -11,30 +11,7 @@ MapObject::MapObject(SqliteResult sqliteResult, char* modelPath) :
 {
 	if (modelPath) //if (Render::instance) //The same
 	{ //Client or Editor
-		char path[256];
-		sprintf(path, "%s/%d.3ds", modelPath, id);
-		if (FileExists(path))
-			mesh = Render::instance->smgr->getMesh(path);
-		else
-		{
-			sprintf(path, "%s/%d.md2", modelPath, id);
-			if (FileExists(path))
-				mesh = Render::instance->smgr->getMesh(path);
-			else
-			{/*
-				sprintf(path, "%s/%d.x", modelPath, id);
-				if (FileExists(path))
-					mesh = Render::instance->smgr->getMesh(path);
-				else*/
-					mesh = NULL;
-			}
-		}
-		
-		sprintf(path, "%s/%d.jpg", modelPath, id);
-		if (FileExists(path))
-			texture = Render::instance->driver->getTexture(path);
-		else
-			texture = NULL;
+		ModelInit(modelPath);
 	}
 	else
 	{ //Server
@@ -46,4 +23,32 @@ MapObject::MapObject(SqliteResult sqliteResult, char* modelPath) :
 MapObject::~MapObject(void)
 {
 	//TODO: delete mesh, texture?
+}
+
+void MapObject::ModelInit(char* modelPath)
+{
+	char path[256];
+	sprintf(path, "%s/%d.3ds", modelPath, id);
+	if (FileExists(path))
+		mesh = Render::instance->smgr->getMesh(path);
+	else
+	{
+		sprintf(path, "%s/%d.md2", modelPath, id);
+		if (FileExists(path))
+			mesh = Render::instance->smgr->getMesh(path);
+		else
+		{/*
+			sprintf(path, "%s/%d.x", modelPath, id);
+			if (FileExists(path))
+				mesh = Render::instance->smgr->getMesh(path);
+			else*/
+				mesh = NULL;
+		}
+	}
+		
+	sprintf(path, "%s/%d.jpg", modelPath, id);
+	if (FileExists(path))
+		texture = Render::instance->driver->getTexture(path);
+	else
+		texture = NULL;
 }

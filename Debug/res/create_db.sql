@@ -113,7 +113,7 @@ CREATE TABLE CurrentSkill (
 
 /*=============Init resources=============*/
 
-INSERT INTO MapCell(name, tags, cellProperty) VALUES ('Green grass', 'grass|free|something', 0);
+INSERT INTO MapCell(name, tags, cellProperty) VALUES ('Green grass', 'grass,free,something', 0);
 INSERT INTO MapCell(name, tags, cellProperty) VALUES ('Red grass', 'grass', 1);
 
 INSERT INTO NPC(name, tags) VALUES ('Test NPC', '');

@@ -195,3 +195,70 @@ Character* GameResources::GetCharacter(int id)
 {
 	return GetMapObject<Character>(characters, charactersCount, id);
 }
+
+NPC* GameResources::AddNPC(char* name, char* tags, char* modelPath, char* texturePath)
+{
+	char query[256];
+
+	sprintf(query, "INSERT INTO NPC(name, tags) VALUES('%s', '%s')", name, tags);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+
+	return AddMapObject<NPC>(npcs, npcsCount, "NPC", modelPath);
+}
+
+Static* GameResources::AddStatic(char* name, char* tags, char* modelPath, char* texturePath)
+{
+	char query[256];
+
+	sprintf(query, "INSERT INTO Static(name, tags) VALUES('%s', '%s')", name, tags);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+
+	return AddMapObject<Static>(statics, staticsCount, "Static", modelPath);
+}
+
+Item* GameResources::AddItem(char* name, char* tags, char* modelPath, char* texturePath)
+{
+	char query[256];
+
+	sprintf(query, "INSERT INTO Item(name, tags) VALUES('%s', '%s')", name, tags);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+
+	return AddMapObject<Item>(items, itemsCount, "Item", modelPath);
+}
+
+Character* GameResources::AddCharacter(char* name, char* tags, char* modelPath, char* texturePath)
+{
+	char query[256];
+
+	sprintf(query, "INSERT INTO Character(name, tags) VALUES('%s', '%s')", name, tags);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+
+	return AddMapObject<Character>(characters, charactersCount, "Character", modelPath);
+}
+
+template<class T>
+void GameResources::SpawnMapObject(T** &mapObjects, int &mapObjectsCount, T* mapObject)
+{
+	mapObjectsCount++;
+	mapObjects = (T**)realloc(mapObjects, mapObjectsCount * sizeof(T*));
+	mapObjects[mapObjectsCount - 1] = mapObject;
+}
+
+template<class T>
+T* GameResources::AddMapObject(T** &mapObjects, int &mapObjectsCount, char* tableName, char* modelPath)
+{
+	char path[256];
+	char query[256];
+
+	sprintf(query, "SELECT * FROM `%s` WHERE id=%d", tableName, sqlite3_last_insert_rowid(Game::instance->db));
+	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
+	
+	//Warning! 'Double' model files in 'path' (e. g. if we put *.3ds after *.md2 that loaded with an editor) can cause 'any model loading' (e. g. *.3ds instead of *.md2, that we loaded earlier in editor)
+	sprintf(path, "editor/%s/model/%s", Game::instance->name, tableName);
+	ImportModel(modelPath, path, sqliteResult.integers["id"]);
+
+	T* mapObject = new T(sqliteResult, path);
+	SpawnMapObject<T>(mapObjects, mapObjectsCount, mapObject);
+	return mapObject;
+}
+

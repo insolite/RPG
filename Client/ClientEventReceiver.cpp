@@ -92,8 +92,6 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 						break;
 				}
 				break;
-			case EGDT_WINDOW_CLOSE:
-				break;
 			case EGET_BUTTON_CLICKED:
 				switch (eventCallerId)
 				{

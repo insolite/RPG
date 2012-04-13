@@ -25,7 +25,8 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 
 		switch(event.GUIEvent.EventType)
 		{
-			case EGET_ELEMENT_CLOSED:
+			//case EGET_ELEMENT_CLOSED:
+			case EGDT_WINDOW_CLOSE:
 				if (eventCallerId == RegisterWindow)
 					delete game;
 				break;

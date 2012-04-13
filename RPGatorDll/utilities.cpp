@@ -262,3 +262,43 @@ bool FileExists(char* path)
 	fclose(f);
 	return true;
 }
+
+void ImportModel(char* source, char* destination, int id) //TODO: move this function into editor
+{
+	char path[256];
+	char tPath[256];
+	char extension[8];
+	
+	//Delete old model
+	sprintf(path, "%s/%d.3ds", destination, id);
+	if (FileExists(path))
+		DeleteFile(path);
+	else
+	{
+		sprintf(path, "%s/%d.md2", destination, id);
+		if (FileExists(path))
+			DeleteFile(path);
+		else
+		{/*
+			sprintf(path, "%s/%d.x", destination, id);
+			if (FileExists(path))
+				DeleteFile(path);*/
+		}
+	}
+
+	int i = strlen(source) - 1;
+	while (source[i] != '.' && i >= 0)
+		i--;
+	strcpy(extension, source + i + 1);
+	
+	//Model
+	sprintf(path, "%s/%d.%s", destination, id, extension);
+	CopyFile(source, path, false);
+
+	//Texture
+	strcpy(tPath, source);
+	tPath[i] = '\0';
+	strcat(tPath, ".jpg");
+	sprintf(path, "%s/%d.jpg", destination, id);
+	CopyFile(tPath, path, false);
+}

@@ -1,5 +1,7 @@
 #pragma once
 
+#define CAMERA_STEP 0.002 //LOL
+
 class EditorEventReceiver :
 	public IEventReceiver
 {

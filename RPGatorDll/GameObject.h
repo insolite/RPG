@@ -4,7 +4,7 @@ class GameObject
 {
 public:
 	int id;
-	char* name;
+	char name[256];
 	char** tags;
 	int tagsCount;
 

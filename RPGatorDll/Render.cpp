@@ -60,7 +60,7 @@ void Render::drawKub(f32 xPos, f32 yPos, f32 zPos,int Wid, int Hei)
 ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
 {
 	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh, NULL, IDFlag_IsPickable);
-
+	
 	if(node)
 	{
 		node->setPosition(pos);

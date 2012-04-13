@@ -9,6 +9,8 @@ public:
 
 	virtual __declspec(dllexport) void Abstr (void) = 0; //Abstract class
 
+	__declspec(dllexport) void ModelInit(char* modelPath);
+	
 	__declspec(dllexport) MapObject(SqliteResult sqliteResult, char* modelPath);
 	__declspec(dllexport) ~MapObject(void);
 };

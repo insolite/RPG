@@ -5,7 +5,6 @@
 GameObject::GameObject(SqliteResult sqliteResult)
 {
 	id = sqliteResult.integers["id"];
-	name = new char[sqliteResult.strings["name"].length() + 1];
 	strcpy(name, sqliteResult.strings["name"].c_str());
 
 	int i, j, length;
@@ -22,7 +21,7 @@ GameObject::GameObject(SqliteResult sqliteResult)
 		tags = (char**)realloc(tags, tagsCount * sizeof(char*));
 		tags[tagsCount - 1] = new char[64];
 		j = 0;
-		while ((i + j) < length && sqliteResult.strings["tags"][i + j] != '|')
+		while ((i + j) < length && sqliteResult.strings["tags"][i + j] != ',')
 		{
 			tags[tagsCount - 1][j] = sqliteResult.strings["tags"][i + j];
 			j++;
@@ -35,7 +34,6 @@ GameObject::GameObject(SqliteResult sqliteResult)
 
 GameObject::~GameObject(void)
 {
-	delete name;
 	for (int i = 0; i < tagsCount; i++)
 		delete tags[i];
 	delete tags;

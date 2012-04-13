@@ -38,34 +38,41 @@ enum EditorGUIElements
 	LocationNameEditBox,
 	LocationWidthEditBox,
 	LocationHeightEditBox,
-	MapObjectMeshViever,
 
-	//Order is critical
+	//Select
+
+	MapObjectSelectWindowToggleButton,
+
 	MapCellSelectWindow,
 	NPCSelectWindow,
 	StaticSelectWindow,
 	ItemSelectWindow,
 	CharacterSelectWindow,
-	MapCellSelectWindowTab,
-	NPCSelectWindowTab,
-	StaticSelectWindowTab,
-	ItemSelectWindowTab,
-	CharacterSelectWindowTab,
-	MapCellSelectWindowToggleButton,
-	NPCSelectWindowToggleButton,
-	StaticSelectWindowToggleButton,
-	ItemSelectWindowToggleButton,
-	CharacterSelectWindowToggleButton,
-	MapCellSelectWindowListBox,
-	NPCSelectWindowListBox,
-	StaticSelectWindowListBox,
-	ItemSelectWindowListBox,
-	CharacterSelectWindowListBox,
-	MapCellSelectWindowOKButton,
-	NPCSelectWindowOKButton,
-	StaticSelectWindowOKButton,
-	ItemSelectWindowOKButton,
-	CharacterSelectWindowOKButton,
+
+	MapObjectSelectWindowListBox,
+	MapObjectMeshViever,
+	MapObjectSelectWindowOKButton,
+	MapObjectEditButton, //It will be in this window. //TODO: delete this comment
+	MapObjectAddButton, //It will be in this window. //TODO: delete this comment
+
+	//Edit
+
+	MapCellEditWindow,
+	NPCEditWindow,
+	StaticEditWindow,
+	ItemEditWindow,
+	CharacterEditWindow,
+
+	MapObjectEditWindowName,
+	MapObjectEditWindowTags,
+	MapObjectEditWindowPreview,
+	MapObjectEditWindowImportModelButton,
+	MapObjectEditWindowFileOpenDialog,
+	MapObjectEditWindowOKButton,
+
+	//Add
+
+	MapObjectAddWindowFileOpenDialog
 };
 
 class Universe
@@ -100,6 +107,7 @@ public:
 	Render* render;
 	ICameraSceneNode *camera;
 	ICameraSceneNode *camera2;
+	ISceneNode* camPos;
 
 	void CreateBrushMask(int r);
 	void DeleteBrushMask();

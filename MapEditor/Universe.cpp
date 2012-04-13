@@ -97,8 +97,9 @@ void Universe::EditorGUIInit()
 	IGUITab* tab;
 	for (int i = 0; i < 5; i++)
 	{
-		tab = tabc->addTab(L"MO", i + MapCellSelectWindowTab);
-		guienv->addButton(rect< s32 >(16, 16, 64, 32), tab, i + MapCellSelectWindowToggleButton, L"Select", L"Select MapObject from list");
+		tab = tabc->addTab(L"MO", -1);
+		guienv->addButton(rect< s32 >(8, 8, 8 + 70, 8 + 32), tab, MapObjectSelectWindowToggleButton, L"Select", L"Select MapObject from list");
+		guienv->addButton(rect< s32 >(8 + 70 + 8, 8, 8 + 70 + 8 + 70, 8 + 32), tab, MapObjectAddButton, L"Add", L"Add MapObject to list");
 	}
 	
 	//Brush mask ScrollBar and StaticText
@@ -208,7 +209,7 @@ bool Universe::Run()
 
 	DrawScene();
 	//variables for camera
-	ISceneNode* camPos=render->smgr->addEmptySceneNode();
+	camPos=render->smgr->addEmptySceneNode();
 	camPos->setPosition(vector3df(50,50,10));
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
 	camera2=render->smgr->addCameraSceneNode(0, vector3df(0,50,-20), vector3df(0,0,0));
@@ -247,53 +248,43 @@ bool Universe::Run()
 	{
 		core::vector3df Km = camPos->getPosition();
 		render->Kt = camera->getTarget();
-		
-		if(editorEventReceiver->IsKeyDown(irr::KEY_LEFT))
+			
+		if (editorEventReceiver->IsKeyDown(KEY_LEFT))
 		{
-			render->Kt.X-=1;
-			Km.X-=1;
+			render->Kt.X -= CAMERA_STEP;
+			Km.X -= CAMERA_STEP;
 			camPos->setPosition(Km);
 		}
-		if(editorEventReceiver->IsKeyDown(irr::KEY_RIGHT))
+		if (editorEventReceiver->IsKeyDown(KEY_RIGHT))
 		{
-			render->Kt.X+=1;
-			Km.X+=1;
+			render->Kt.X += CAMERA_STEP;
+			Km.X += CAMERA_STEP;
 			camPos->setPosition(Km);
 		}
-		if(editorEventReceiver->IsKeyDown(irr::KEY_UP))
+		if (editorEventReceiver->IsKeyDown(KEY_UP))
 		{
-			render->Kt.Z+=1;
-			Km.Z+=1;
+			render->Kt.Z += CAMERA_STEP;
+			Km.Z += CAMERA_STEP;
 			camPos->setPosition(Km);
 		}
-		if(editorEventReceiver->IsKeyDown(irr::KEY_DOWN))
+		if (editorEventReceiver->IsKeyDown(KEY_DOWN))
 		{
-			render->Kt.Z-=1;
-			Km.Z-=1;
+			render->Kt.Z -= CAMERA_STEP;
+			Km.Z -= CAMERA_STEP;
 			camPos->setPosition(Km);
 		}
-		//camera->setPosition(Km)
 		camera->setPosition(Km);
 		camera->setTarget(render->Kt);
-		
+
 		vector3df A=render->MouseCoordToWorldCoord();
 		A.Y+=30;
 		light->setPosition(A);
 		
-		
-		//TESTESTESTESTESTESTESTES
-		
-		//printf("Mouse X= %d\tY= %d \n",render->device->getCursorControl()->getPosition().X,render->device->getCursorControl()->getPosition().Y);
-		//printf("World X= %f\tY= %f\tZ= %f \n",render->MouseCoordToWorldCoord().X,render->MouseCoordToWorldCoord().Y,render->MouseCoordToWorldCoord().Z);
-		
-		//TESTESTESTESTESTESTESTES
-
 		if ((render->device->getTimer()->getTime() - lastUpdate) > 30)
 		{
 			//OMG, performance is too high :)
-			//lastUpdate = render->device->getTimer()->getTime();
+			lastUpdate = render->device->getTimer()->getTime();
 
-			//render->driver->setTransform(video::ETS_WORLD, core::matrix4());
 			render->driver->beginScene(true, true, SColor(255,100,101,140));
 				render->smgr->drawAll();
 				guienv->drawAll();
