@@ -19,7 +19,7 @@ public:
 		currentLocation = location;
 		if (base->mesh)
 		{
-			node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df(x * CELL_SIZE, 0.0f, y * CELL_SIZE));
+			node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df((f32)x * CELL_SIZE, 0.0f, (f32)y * CELL_SIZE));
 			((IAnimatedMeshSceneNode*)node)->setMD2Animation(EMAT_RUN);
 		}
 		else
@@ -34,7 +34,7 @@ public:
 		currentLocation = NULL; //Client does not use it. It uses Universe->currentLocation
 		if (base->mesh)
 		{
-			node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df(x * CELL_SIZE, 0.0f, y * CELL_SIZE));
+			node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df((f32)x * CELL_SIZE, 0.0f, (f32)y * CELL_SIZE));
 			((IAnimatedMeshSceneNode*)node)->setMD2Animation(EMAT_RUN);
 		}
 		else

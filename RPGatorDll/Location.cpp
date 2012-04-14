@@ -290,3 +290,23 @@ T* Location::GetCurrentMapObjectAt(T** currentMapObjects, int currentMapObjectsC
 			return currentMapObjects[i];
 	return NULL;
 }
+
+CurrentCharacter* Location::GetCharacter(int id)
+{
+	return GetCurrentMapObject<CurrentCharacter>(currentCharacters, currentCharactersCount, id);
+}
+
+CurrentNPC* Location::GetNPC(int id)
+{
+	return GetCurrentMapObject<CurrentNPC>(currentNPCs, currentNPCsCount, id);
+}
+
+CurrentStatic* Location::GetStatic(int id)
+{
+	return GetCurrentMapObject<CurrentStatic>(currentStatics, currentStaticsCount, id);
+}
+
+CurrentItem* Location::GetItem(int id)
+{
+	return GetCurrentMapObject<CurrentItem>(currentItems, currentItemsCount, id);
+}

@@ -4,7 +4,7 @@
 #include "IGUIIconTable.h"
 
 IGUIIconTable::IGUIIconTable(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, int width, int height) :
-	IGUIElement(EGUI_ELEMENT_TYPE::EGUIET_ELEMENT, environment, parent, id, rectangle),
+	IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
 	Dragging(false)
 {
 	#ifdef _DEBUG

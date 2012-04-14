@@ -156,24 +156,19 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 				}
 				break;
 			case EGDT_WINDOW_CLOSE:
+				switch (eventCallerId)
+				{
+					case LocationsEditWindow:
+						((IGUIButton*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditButton, true))->setPressed(false);
+						break;
+				}
+				/*
 				if (eventCallerId >= MapCellSelectWindow && eventCallerId <= CharacterSelectWindow)
 				{
 					Universe::instance->render->smgr->setActiveCamera(Universe::instance->camera);
 				}
+				*/
 				break;
-			/*
-			case EGET_FILE_CHOOSE_DIALOG_CANCELLED:
-			{
-				switch (eventCallerId)
-				{
-					case MapObjectAddWindowFileOpenDialog:
-						int index = Universe::instance->brushIndex;
-						Universe::instance->guienv->getRootGUIElement()->getElementFromId(MapObjectAddWindow + index)->remove();
-						break;
-				}
-				break;
-			}
-			*/
 			case EGET_FILE_SELECTED:
 			{
 				char filename[256];

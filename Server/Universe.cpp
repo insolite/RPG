@@ -8,7 +8,7 @@ Universe::Universe(void)
 {
 	instance = this;
 	luaState = luaL_newstate();
-	lua_register(luaState, "SayHello", LuaFunctions::SayHello);
+	LuaFunctions::RegisterFunctions(luaState);
 	log = fopen("server.log", "wt");
 }
 
@@ -145,6 +145,41 @@ void Universe::Run(char* gameName)
 										newCurrentCharacter->connectSocket->Send(outPacket);
 									}
 								}
+								//NPCs
+								for (int i = 0; i < newCurrentCharacter->currentLocation->currentNPCsCount; i++)
+								{
+									CreatePacket(outPacket, NPCSpawned, "%i%i%i%i%i",
+										newCurrentCharacter->currentLocation->currentNPCs[i]->id,
+										newCurrentCharacter->currentLocation->currentNPCs[i]->base->id,
+										newCurrentCharacter->currentLocation->currentNPCs[i]->x,
+										newCurrentCharacter->currentLocation->currentNPCs[i]->y
+										);
+									newCurrentCharacter->connectSocket->Send(outPacket);
+								}
+								//Statics
+								for (int i = 0; i < newCurrentCharacter->currentLocation->currentStaticsCount; i++)
+								{
+									CreatePacket(outPacket, StaticSpawned, "%i%i%i%i%i",
+										newCurrentCharacter->currentLocation->currentStatics[i]->id,
+										newCurrentCharacter->currentLocation->currentStatics[i]->base->id,
+										newCurrentCharacter->currentLocation->currentStatics[i]->x,
+										newCurrentCharacter->currentLocation->currentStatics[i]->y
+										);
+									newCurrentCharacter->connectSocket->Send(outPacket);
+								}
+								//Items
+								for (int i = 0; i < newCurrentCharacter->currentLocation->currentItemsCount; i++)
+								{
+									CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
+										newCurrentCharacter->currentLocation->currentItems[i]->id,
+										newCurrentCharacter->currentLocation->currentItems[i]->base->id,
+										newCurrentCharacter->currentLocation->currentItems[i]->x,
+										newCurrentCharacter->currentLocation->currentItems[i]->y,
+										Ground,
+										1/*newCurrentCharacter->currentLocation->currentItems[i]->count*/
+										);
+									newCurrentCharacter->connectSocket->Send(outPacket);
+								}
 							}
 							break;
 						}
@@ -206,7 +241,23 @@ void Universe::Run(char* gameName)
 							CurrentSkill* currentSkill = clients[ci]->character->GetSkill(PacketGetInt(inPacket, 1));
 							if (currentSkill)
 							{
-								luaL_dofile(luaState, currentSkill->path);
+								char str[512]; //For inint script variables
+
+								sprintf(str, "\
+									CHARACTER_ID=%d;\
+									CHARACTER_BID=%d;\
+									CHARACTER_X=%d;\
+									CHARACTER_Y=%d;\
+									CHARACTER_LOCATION_ID=%d;\
+									",
+									clients[ci]->character->id,
+									clients[ci]->character->base->id,
+									clients[ci]->character->x,
+									clients[ci]->character->y,
+									clients[ci]->character->currentLocation->id
+									);
+								luaL_dostring(luaState, str);
+								luaL_dofile(luaState, currentSkill->base->path);
 							}
 							else
 							{

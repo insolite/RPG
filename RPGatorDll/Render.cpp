@@ -38,7 +38,7 @@ Render::~Render(void)
 	instance = NULL;
 }
 
-void Render::drawKub(f32 xPos, f32 yPos, f32 zPos,int Wid, int Hei)
+void Render::drawKub(f32 xPos, f32 yPos, f32 zPos, int width, int height)
 {
 	//int cell= Universe::instanse->
 	//IMeshSceneNode* n = smgr->addCubeSceneNode(10,0,-1,vector3df(xPos, yPos, zPos),vector3df(0,0,0),vector3df(Wid, 1, Hei));
@@ -47,7 +47,7 @@ void Render::drawKub(f32 xPos, f32 yPos, f32 zPos,int Wid, int Hei)
 	//n=smgr->addP
 	if (n)
 	{
-		n->setScale(vector3df(Wid, 1, Hei));
+		n->setScale(vector3df((f32)width, 1.0f, (f32)height));
 		n->setPosition(core::vector3df(xPos, yPos, zPos));
 		//smgr->getMeshManipulator()->makePlanarTextureMapping(
 		n->setMaterialTexture(0, driver->getTexture("grass.bmp"));
@@ -102,9 +102,9 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 {
 	vector3df oldPosition = node->getPosition();
-	int duration = 30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2));
+	int duration = (int)(30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2)));
 	scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
-	vector3df rot(0, GetAngle(oldPosition.X, oldPosition.Z, nextpos.X, nextpos.Z), 0);
+	vector3df rot(0.0f, (f32)GetAngle(oldPosition.X, oldPosition.Z, nextpos.X, nextpos.Z), 0.0f);
 	node->setRotation(rot);
 	if (anim)
 	{
@@ -124,7 +124,7 @@ int Render::GetAngle(int x1, int y1, int x2, int y2)
 	if (dx < 0 && dy >= 0 || dx < 0 && dy <= 0)
 		angle += 180.0;
 	
-	return -angle;
+	return -(int)angle;
 }
 
 vector3df Render::MouseCoordToWorldCoord()
@@ -133,10 +133,9 @@ vector3df Render::MouseCoordToWorldCoord()
 
 	line3df ray2 = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(device->getCursorControl()->getPosition(), smgr->getActiveCamera());
 	core::plane3df plane = plane3df(vector3df(0, -15, 0), vector3df(0, -1, 0));
-    if(plane.getIntersectionWithLine(ray2.start, ray2.getVector(), pos))
-		return pos;
-	else
+    if (!plane.getIntersectionWithLine(ray2.start, ray2.getVector(), pos))
 		printf("ray does not intersect the plane!");
+	return pos;
 }
 
 dimension2d<u32> Render::GetDesktopRes()

@@ -9,12 +9,17 @@ enum Packet
 	Register,
 	RegisterOK,
 	RegisterFail,
-	CharacterSpawned,
 	Say,
 	Move,
 	CharacterMoving,
+	NPCSpawned,
+	StaticSpawned,
 	ItemSpawned,
+	CharacterSpawned,
 	SkillUse,
+	NPCUnspawned,
+	StaticUnspawned,
+	ItemUnspawned,
 	CharacterUnspawned
 };
 
@@ -37,7 +42,7 @@ enum MessageType
 	Public
 };
 
-#define CELL_SIZE 10
+#define CELL_SIZE 10.0
 
 extern "C" __declspec(dllexport) int ReadDir(const char* path, char** &elements, bool directoriesOnly);
 extern "C" __declspec(dllexport) void ClearDir(const char* path);

@@ -39,6 +39,9 @@ enum EditorGUIElements
 	LocationWidthEditBox,
 	LocationHeightEditBox,
 
+	MapObjectEditButton,
+	MapObjectAddButton,
+
 	//Select
 
 	MapObjectSelectWindowToggleButton,
@@ -52,8 +55,6 @@ enum EditorGUIElements
 	MapObjectSelectWindowListBox,
 	MapObjectMeshViever,
 	MapObjectSelectWindowOKButton,
-	MapObjectEditButton, //It will be in this window. //TODO: delete this comment
-	MapObjectAddButton, //It will be in this window. //TODO: delete this comment
 
 	//Edit
 

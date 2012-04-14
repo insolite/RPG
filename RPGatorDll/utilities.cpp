@@ -241,12 +241,12 @@ extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlit
 
 int Pix2Index(int pos)
 {
-	return pos / CELL_SIZE;
+	return (int)(pos / CELL_SIZE);
 }
 
 int Index2Pix(int pos)
 {
-	return pos * CELL_SIZE;
+	return (int)(pos * CELL_SIZE);
 }
 
 int PixRound(int pos)

@@ -31,7 +31,8 @@ enum ClientGUIElements
 	InventoryWindow,
 	InventoryItemsIconTable,
 	HotkeyBar,
-	TESTSkillUseButton
+	TESTSkillUseButton1,
+	TESTSkillUseButton2
 };
 
 class Universe

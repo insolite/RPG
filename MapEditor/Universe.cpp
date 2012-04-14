@@ -95,20 +95,22 @@ void Universe::EditorGUIInit()
 	//MapObject select windows, tabs, buttons, etc.
 	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 92, toolbarLeftMargin + 176, 92 + 256), wnd, true, true, MapObjectsTabControl);
 	IGUITab* tab;
+	wchar_t* wstrs[5] = { L"C", L"N", L"S", L"I", L"C" };
 	for (int i = 0; i < 5; i++)
 	{
-		tab = tabc->addTab(L"MO", -1);
+		tab = tabc->addTab(wstrs[i], -1);
 		guienv->addButton(rect< s32 >(8, 8, 8 + 70, 8 + 32), tab, MapObjectSelectWindowToggleButton, L"Select", L"Select MapObject from list");
 		guienv->addButton(rect< s32 >(8 + 70 + 8, 8, 8 + 70 + 8 + 70, 8 + 32), tab, MapObjectAddButton, L"Add", L"Add MapObject to list");
 	}
-	
+	tabc->setActiveTab(1);
+	/*
 	//Brush mask ScrollBar and StaticText
 	IGUIScrollBar* sb = guienv->addScrollBar(true, rect< s32 >(8, 64, 168, 80), tabc->getTab(0), BrushMaskSizeScroll);
 	sb->setMax(10);
 	sb->setMin(1);
 	sb->setPos(3);
 	guienv->addStaticText(L"3x", rect< s32 >(8, 88, 168, 104), false, false, tabc->getTab(0), BrushMaskSizeStaticText, true);
-
+	*/
 	wnd->setDraggable(false); //TEST
 	wnd->getCloseButton()->setEnabled(false); //TEST
 	wnd->getCloseButton()->setVisible(false); //TEST

@@ -38,11 +38,10 @@ public:
 	__declspec(dllexport) CurrentStatic* GetStaticAt(int x, int y);
 	__declspec(dllexport) CurrentItem* GetItemAt(int x, int y);
 	__declspec(dllexport) CurrentCharacter* GetCharacterAt(int x, int y);
-
-	__declspec(dllexport) CurrentCharacter* GetCharacter(int id)
-	{
-		return GetCurrentMapObject<CurrentCharacter>(currentCharacters, currentCharactersCount, id);
-	}
+	__declspec(dllexport) CurrentNPC* GetNPC(int id);
+	__declspec(dllexport) CurrentStatic* GetStatic(int id);
+	__declspec(dllexport) CurrentItem* GetItem(int id);
+	__declspec(dllexport) CurrentCharacter* GetCharacter(int id);
 	template<class T>
 	__declspec(dllexport) T* GetCurrentMapObject(T** currentMapObjects, int currentMapObjectsCount, int id);
 	template<class T>

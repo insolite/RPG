@@ -16,7 +16,6 @@ CurrentSkill::CurrentSkill(SqliteResult sqliteResult, CurrentCharacter* currentC
 	CurrentGameObject<Skill>::CurrentGameObject(sqliteResult, Game::instance->resources->skills, Game::instance->resources->skillsCount)
 {
 	owner = currentCharacter;
-	sprintf(path, "server/%s/script/skill/%d.lua", Game::instance->name, base->id);
 }
 
 //Initialization from incoming packet (Client)

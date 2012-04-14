@@ -38,14 +38,14 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			char outPacket[256];
 			vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
 			int x, y;
-			x = position.X / CELL_SIZE;
-			y = position.Z / CELL_SIZE;
+			x = (int)(position.X / CELL_SIZE);
+			y = (int)(position.Z / CELL_SIZE);
 			CreatePacket(outPacket, Move, "%i%i", x, y);
 			Universe::instance->connectSocket->Send(outPacket);
 		}
 		else if (Mouse[EMIE_MOUSE_WHEEL])
 		{
-			Universe::instance->cameraY += event.MouseInput.Wheel * 5;
+			Universe::instance->cameraY += (int)event.MouseInput.Wheel * 5;
 		}
 	}
 	else if (event.EventType == EET_GUI_EVENT)
@@ -95,10 +95,17 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			case EGET_BUTTON_CLICKED:
 				switch (eventCallerId)
 				{
-					case TESTSkillUseButton:
+					case TESTSkillUseButton1:
 					{
 						char outPacket[256];
 						CreatePacket(outPacket, SkillUse, "%i", 1);
+						Universe::instance->connectSocket->Send(outPacket);
+						break;
+					}
+					case TESTSkillUseButton2:
+					{
+						char outPacket[256];
+						CreatePacket(outPacket, SkillUse, "%i", 6);
 						Universe::instance->connectSocket->Send(outPacket);
 						break;
 					}

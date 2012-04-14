@@ -148,6 +148,23 @@ bool Universe::Run()
 						currentLocation = game->data->GetLocation(PacketGetInt(inPacket, 1 + strlen(inPacket + 3) + 1));
 						DrawScene();
 						break;
+					case NPCSpawned:
+						currentLocation->SpawnNPC(new CurrentNPC(inPacket));
+						break;
+					case StaticSpawned:
+						currentLocation->SpawnStatic(new CurrentStatic(inPacket));
+						break;
+					case ItemSpawned:
+						switch(PacketGetByte(inPacket, 1))
+						{
+							case Ground:
+								currentLocation->SpawnItem(new CurrentItem(inPacket));
+								break;
+							case Inventory:
+								//currentCharacter->SpawnItem(new CurrentItem(inPacket));
+								break;
+						}
+						break;
 					case CharacterSpawned:
 						if (!currentCharacter)
 						{
@@ -159,14 +176,18 @@ bool Universe::Run()
 							currentLocation->SpawnCharacter(new CurrentCharacter(inPacket));
 						}
 						break;
-					case CharacterUnspawned:
-					{
-						CurrentCharacter* unspawningCharacter = currentLocation->GetCharacter(PacketGetInt(inPacket, 1));
-						//if (currentCharacter == unspawningCharacter)
-							//Something's wrong...
-						currentLocation->UnSpawnCharacter(unspawningCharacter);
+					case NPCUnspawned:
+						currentLocation->UnSpawnNPC(currentLocation->GetNPC(PacketGetInt(inPacket, 1)));
 						break;
-					}
+					case StaticUnspawned:
+						currentLocation->UnSpawnStatic(currentLocation->GetStatic(PacketGetInt(inPacket, 1)));
+						break;
+					case ItemUnspawned:
+						currentLocation->UnSpawnItem(currentLocation->GetItem(PacketGetInt(inPacket, 1)));
+						break;
+					case CharacterUnspawned:
+						currentLocation->UnSpawnCharacter(currentLocation->GetCharacter(PacketGetInt(inPacket, 1)));
+						break;
 					case Say:
 					{
 						//GOVNOCODE
@@ -196,15 +217,6 @@ bool Universe::Run()
 						currentCharacter->x = PacketGetInt(inPacket, 5);
 						currentCharacter->y = PacketGetInt(inPacket, 9);
 						break;
-					case ItemSpawned:
-						printf ("Type: %d\n", (PacketGetByte(inPacket, 1)));
-						switch(PacketGetByte(inPacket, 1))
-						{
-							case Ground:
-								//Adding item to currentItems of the location
-								break;
-								
-						}
 				}
 			}
 			else if (iResult == -1)
@@ -289,7 +301,9 @@ void Universe::ClientGUIInit()
 	clientEventReceiver = new ClientEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)clientEventReceiver);
 
-	guienv->addButton(rect< s32 >(0, 0, 256, 32), NULL, TESTSkillUseButton, L"Use skill SayHello", NULL);
+	//TEST
+	guienv->addButton(rect< s32 >(0, 0, 128, 32), NULL, TESTSkillUseButton1, L"SayHello", NULL);
+	guienv->addButton(rect< s32 >(128, 0, 128 + 128, 32), NULL, TESTSkillUseButton2, L"AddNPC", NULL);
 
 	//Chat
 	IGUIChatBox* cb = new IGUIChatBox(guienv, NULL, ChatBox, ChatEditBox, ChatInputEditBox, rect< s32 >(0, 128, 256, 128 + 256 + 24));
