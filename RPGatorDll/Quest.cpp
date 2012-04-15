@@ -7,8 +7,8 @@
 #include "MapObject.h"
 #include "Quest.h"
 
-Quest::Quest(SqliteResult sqliteResult) :
-	GameObject(sqliteResult)
+Quest::Quest(SqliteResult sqliteResult, char* iconPath) : //iconPath is not used for quests
+	GameObject(sqliteResult, NULL)
 {
 }
 

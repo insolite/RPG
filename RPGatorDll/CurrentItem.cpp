@@ -17,12 +17,15 @@ CurrentItem::CurrentItem(SqliteResult sqliteResult, Location* location, CurrentC
 	CurrentMapObject<Item>::CurrentMapObject(sqliteResult, Game::instance->resources->items, Game::instance->resources->itemsCount, location)
 {
 	owner = currentCharacter;
+	count = sqliteResult.integers["count"];
 }
 
 //Initialization from incoming packet (Client)
 CurrentItem::CurrentItem(char* currentMapObjectSpawnedPacket) :
 	CurrentMapObject<Item>::CurrentMapObject(currentMapObjectSpawnedPacket, Game::instance->resources->items, Game::instance->resources->itemsCount)
 {
+	owner = NULL;
+	count = PacketGetInt(currentMapObjectSpawnedPacket, 18);
 }
 
 CurrentItem::~CurrentItem(void)

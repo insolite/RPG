@@ -1,5 +1,4 @@
 #pragma once
-#include "../Include/RPGator/ConnectSocket.h"
 
 class ServerClientSocket :
 	public ConnectSocket

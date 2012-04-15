@@ -12,8 +12,8 @@ public:
 
 	__declspec(dllexport) void draw();
 	__declspec(dllexport) void addButton(CGUIButton* button);
-	__declspec(dllexport) void addButton(ITexture* image);
-	__declspec(dllexport) void removeButton(IGUIButton* button);
+	__declspec(dllexport) void addButton(CurrentGameObject<GameObject>* gameObject, int id);
+	__declspec(dllexport) void removeButton(IGUIButton* button, bool shift = true);
 
 	__declspec(dllexport) IGUIIconTable(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, int width, int height);
 	__declspec(dllexport) ~IGUIIconTable(void);

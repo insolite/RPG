@@ -28,11 +28,17 @@ enum ClientGUIElements
 	ChatBox,
 	ChatEditBox,
 	ChatInputEditBox,
-	InventoryWindow,
 	InventoryItemsIconTable,
+	SkillsIconTable,
 	HotkeyBar,
-	TESTSkillUseButton1,
-	TESTSkillUseButton2
+	InventoryToggleButton,
+	SkillsToggleButton,
+	QuestsToggleButton,
+	InventoryWindow,
+	SkillsWindow,
+	QuestsWindow,
+	IconTableItemButton,
+	IconTableSkillButton
 };
 
 class Universe

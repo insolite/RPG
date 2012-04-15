@@ -5,6 +5,8 @@
 #include "Render.h"
 #include "GameObject.h"
 #include "MapObject.h"
+#include "Skill.h"
+#include "Item.h"
 #include "Character.h"
 #include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
@@ -13,7 +15,7 @@
 #include "CurrentSkill.h"
 #include "GameResources.h"
 #include "Game.h"
-#include "../Include/RPGator/ConnectSocket.h"
+#include "ConnectSocket.h"
 #include "CurrentCharacter.h"
 
 //Initialization from DB (Editor, Server)
@@ -37,9 +39,7 @@ CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location
 	rowsCount = sqliteResultsChildren.size();
 	while (currentItemsCount < rowsCount)
 	{
-		currentItemsCount++;
-		currentItems = (CurrentItem**)realloc(currentItems, currentItemsCount * sizeof(CurrentItem*));
-		currentItems[currentItemsCount - 1] = new CurrentItem(sqliteResultsChildren[currentItemsCount - 1], NULL, this);
+		SpawnItem(new CurrentItem(sqliteResultsChildren[currentItemsCount], NULL, this));
 	}
 
 	//CurrentQuests
@@ -63,9 +63,7 @@ CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location
 	rowsCount = sqliteResultsChildren.size();
 	while (currentSkillsCount < rowsCount)
 	{
-		currentSkillsCount++;
-		currentSkills = (CurrentSkill**)realloc(currentSkills, currentSkillsCount * sizeof(CurrentSkill*));
-		currentSkills[currentSkillsCount - 1] = new CurrentSkill(sqliteResultsChildren[currentSkillsCount - 1], this);
+		SpawnSkill(new CurrentSkill(sqliteResultsChildren[currentSkillsCount], this));
 	}
 }
 
@@ -117,4 +115,44 @@ CurrentSkill* CurrentCharacter::GetSkill(int id)
 		if (currentSkills[i]->id == id)
 			return currentSkills[i];
 	return NULL;
+}
+
+void CurrentCharacter::SpawnItem(CurrentItem* currentItem)
+{
+	currentItemsCount++;
+	currentItems = (CurrentItem**)realloc(currentItems, currentItemsCount * sizeof(CurrentItem*));
+	currentItems[currentItemsCount - 1] = currentItem;
+}
+
+void CurrentCharacter::SpawnSkill(CurrentSkill* currentSkill)
+{
+	currentSkillsCount++;
+	currentSkills = (CurrentSkill**)realloc(currentSkills, currentSkillsCount * sizeof(CurrentSkill*));
+	currentSkills[currentSkillsCount - 1] = currentSkill;
+}
+
+CurrentItem* CurrentCharacter::AddItem(Item* base, int count)
+{
+	char query[256];
+
+	sprintf(query, "INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES(%d, 0, 0, NULL, %d, %d)", base->id, this->id, count);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+	sprintf(query, "SELECT * FROM CurrentItem WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
+	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
+	CurrentItem* currentItem = new CurrentItem(sqliteResult, NULL, this);
+	SpawnItem(currentItem);
+	return currentItem;
+}
+
+CurrentSkill* CurrentCharacter::AddSkill(Skill* base)
+{
+	char query[256];
+
+	sprintf(query, "INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES(%d, %d)", base->id, this->id);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+	sprintf(query, "SELECT * FROM CurrentSkill WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
+	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
+	CurrentSkill* currentSkill = new CurrentSkill(sqliteResult, this);
+	SpawnSkill(currentSkill);
+	return currentSkill;
 }

@@ -9,18 +9,24 @@ enum Packet
 	Register,
 	RegisterOK,
 	RegisterFail,
+
 	Say,
 	Move,
 	CharacterMoving,
+	
 	NPCSpawned,
 	StaticSpawned,
 	ItemSpawned,
 	CharacterSpawned,
-	SkillUse,
+	SkillSpawned,
+	
 	NPCUnspawned,
 	StaticUnspawned,
 	ItemUnspawned,
-	CharacterUnspawned
+	CharacterUnspawned,
+
+	SkillUse,
+	ItemUse
 };
 
 enum SpawnType

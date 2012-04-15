@@ -8,6 +8,6 @@ public:
 
 	__declspec(dllexport) void Abstr(void) { }; //Abstract class inheritance
 
-	__declspec(dllexport) Skill(SqliteResult sqliteResult);
+	__declspec(dllexport) Skill(SqliteResult sqliteResult, char* iconPath);
 	__declspec(dllexport) ~Skill(void);
 };

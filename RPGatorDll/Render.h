@@ -28,7 +28,7 @@ public:
 	__declspec(dllexport) void moveNode(ISceneNode* node,core::vector3df nextpos);
 	__declspec(dllexport) vector3df MouseCoordToWorldCoord();
  	template<class T>
-	__declspec(dllexport) T* getNodeUnderCursor(T** currentMapObjects, int currentMapObjectsCount)
+	__declspec(dllexport) T* GetCurrentMapObjectUnderCursor(T** currentMapObjects, int currentMapObjectsCount)
 	{
 		vector3df mousePosition3D;
 		line3df ray2 = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(device->getCursorControl()->getPosition(), smgr->getActiveCamera());

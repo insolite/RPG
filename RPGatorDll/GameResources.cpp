@@ -57,8 +57,10 @@ GameResources::GameResources(InitializationType initializationType)
 	MapObjectsInit<Item>(items, itemsCount, "Item", initializationType);
 	MapObjectsInit<Static>(statics, staticsCount, "Static", initializationType);
 	MapObjectsInit<Character>(characters, charactersCount, "Character", initializationType);
-	GameObjectsInit<Quest>(quests, questsCount, "Quest", initializationType);
-	GameObjectsInit<Skill>(skills, skillsCount, "Skill", initializationType);
+	//GameObjectsInit<Quest>(quests, questsCount, "Quest", initializationType);
+	//GameObjectsInit<Skill>(skills, skillsCount, "Skill", initializationType);
+	MapObjectsInit<Quest>(quests, questsCount, "Quest", initializationType);
+	MapObjectsInit<Skill>(skills, skillsCount, "Skill", initializationType);
 }
 
 GameResources::~GameResources(void)
@@ -127,7 +129,7 @@ void GameResources::MapObjectsInit(T** &mapObjects, int &mapObjectsCount, char* 
 	if (path)
 		delete path;
 }
-
+/*
 template<class T> //T inherits MapObject
 void GameResources::GameObjectsInit(T** &mapObjects, int &mapObjectsCount, char* tableName, InitializationType initializationType)
 {
@@ -148,7 +150,7 @@ void GameResources::GameObjectsInit(T** &mapObjects, int &mapObjectsCount, char*
 		mapObjects[mapObjectsCount - 1] = new T(sqliteResults[mapObjectsCount - 1]);
 	}
 }
-
+*/
 int GameResources::GetMapObjectsTags(MapObject** mapObjects, int mapObjectsCount, char** &tags)
 {
 	int tagsCount;

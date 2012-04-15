@@ -1,8 +1,17 @@
 #include "StdAfx.h"
+#include "ForwardDeclaration.h"
+#include "SqliteResult.h"
+#include "utilities.h"
 #include "Render.h"
+#include "GameObject.h"
+#include "CurrentGameObject.h"
+#include "CurrentMapObject.h"
+#include "CurrentSkill.h"
+#include "CurrentCharacter.h"
+#include "ConnectSocket.h"
 #include "CGUIButton.h"
 
-CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, bool noclip) :
+CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, CurrentGameObject<GameObject>* currentGameObject, bool noclip) :
 	IGUIButton(environment, parent, id, rectangle),
 	SpriteBank(0), OverrideFont(0), Image(0), PressedImage(0),
 	ClickTime(0), IsPushButton(false), Pressed(false),
@@ -21,6 +30,18 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 	// This element can be tabbed.
 	setTabStop(true);
 	setTabOrder(-1);
+
+	this->currentGameObject = currentGameObject;
+
+	wchar_t wstr[256];
+	mbstowcs(wstr, currentGameObject->base->name, 255);
+	this->setToolTipText(wstr);
+
+	this->setUseAlphaChannel(true);
+	if (currentGameObject->base->icon)
+		this->setImage(currentGameObject->base->icon);
+	else
+		this->setImage(Render::instance->driver->getTexture("rpgator.png"));
 }
 
 CGUIButton::~CGUIButton(void)
@@ -160,11 +181,17 @@ bool CGUIButton::OnEvent(const SEvent& event)
 			if (Parent)
 			{
 				Parent->bringToFront(this);
-				StartDragging();
+				if (event.MouseInput.Control)
+					StartDragging();
 			}
 			
 			return true;
-		}
+		}/*
+		else
+		if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
+		{
+			StartDragging();
+		}*/
 		else
 		if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
 		{
@@ -185,20 +212,22 @@ bool CGUIButton::OnEvent(const SEvent& event)
 				setPressed(!Pressed);
 			}
 
-			if ((!IsPushButton && wasPressed && Parent) ||
-				(IsPushButton && wasPressed != Pressed))
-			{
-				SEvent newEvent;
-				newEvent.EventType = EET_GUI_EVENT;
-				newEvent.GUIEvent.Caller = this;
-				newEvent.GUIEvent.Element = 0;
-				newEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
-				Parent->OnEvent(newEvent);
-			}
-
 			if (Dragging)
 			{
 				StopDragging();
+			}
+			else
+			{
+				if ((!IsPushButton && wasPressed && Parent) ||
+					(IsPushButton && wasPressed != Pressed))
+				{
+					SEvent newEvent;
+					newEvent.EventType = EET_GUI_EVENT;
+					newEvent.GUIEvent.Caller = this;
+					newEvent.GUIEvent.Element = 0;
+					newEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
+					Parent->OnEvent(newEvent);
+				}
 			}
 
 			return true;

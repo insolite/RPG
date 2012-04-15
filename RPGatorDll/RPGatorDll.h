@@ -1,7 +1,7 @@
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "utilities.h"
-#include "../Include/RPGator/ConnectSocket.h"
+#include "ConnectSocket.h"
 #include "Render.h"
 #include "IGUIIconTable.h"
 #include "IGUIChatBox.h"

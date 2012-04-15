@@ -105,7 +105,6 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						//Add this game to the games ListBox and select it
 						IGUIListBox* lb = (IGUIListBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(GamesListBox);
 						lb->setSelected(lb->addItem(gneb->getText()));
-						//TODO: reorder list in alphabetical order
 						//Close the NewGameWindow
 						wnd->remove();
 						break;

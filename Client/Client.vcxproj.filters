@@ -30,9 +30,6 @@
     <ClInclude Include="ClientSocket.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\RPGator\ConnectSocket.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="MenuEventReceiver.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -54,9 +51,6 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="ClientSocket.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Include\RPGator\ConnectSocket.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="MenuEventReceiver.cpp">

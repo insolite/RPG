@@ -176,7 +176,29 @@ void Universe::Run(char* gameName)
 										newCurrentCharacter->currentLocation->currentItems[i]->x,
 										newCurrentCharacter->currentLocation->currentItems[i]->y,
 										Ground,
-										1/*newCurrentCharacter->currentLocation->currentItems[i]->count*/
+										newCurrentCharacter->currentLocation->currentItems[i]->count
+										);
+									newCurrentCharacter->connectSocket->Send(outPacket);
+								}
+								//Inventory
+								for (int i = 0; i < newCurrentCharacter->currentItemsCount; i++)
+								{
+									CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
+										newCurrentCharacter->currentItems[i]->id,
+										newCurrentCharacter->currentItems[i]->base->id,
+										0,
+										0,
+										Inventory,
+										newCurrentCharacter->currentItems[i]->count
+										);
+									newCurrentCharacter->connectSocket->Send(outPacket);
+								}
+								//Skills
+								for (int i = 0; i < newCurrentCharacter->currentSkillsCount; i++)
+								{
+									CreatePacket(outPacket, SkillSpawned, "%i%i",
+										newCurrentCharacter->currentSkills[i]->id,
+										newCurrentCharacter->currentSkills[i]->base->id
 										);
 									newCurrentCharacter->connectSocket->Send(outPacket);
 								}
@@ -241,7 +263,7 @@ void Universe::Run(char* gameName)
 							CurrentSkill* currentSkill = clients[ci]->character->GetSkill(PacketGetInt(inPacket, 1));
 							if (currentSkill)
 							{
-								char str[512]; //For inint script variables
+								char str[512]; //For init script variables
 
 								sprintf(str, "\
 									CHARACTER_ID=%d;\
@@ -262,6 +284,35 @@ void Universe::Run(char* gameName)
 							else
 							{
 								Log(Warning, "Client requested skill use which is not in the list of skills of his character");
+							}
+							break;
+						}
+						case ItemUse:
+						{
+							CurrentItem* currentItem = clients[ci]->character->GetItem(PacketGetInt(inPacket, 1));
+							if (currentItem)
+							{
+								char str[512]; //For init script variables
+
+								sprintf(str, "\
+									CHARACTER_ID=%d;\
+									CHARACTER_BID=%d;\
+									CHARACTER_X=%d;\
+									CHARACTER_Y=%d;\
+									CHARACTER_LOCATION_ID=%d;\
+									",
+									clients[ci]->character->id,
+									clients[ci]->character->base->id,
+									clients[ci]->character->x,
+									clients[ci]->character->y,
+									clients[ci]->character->currentLocation->id
+									);
+								luaL_dostring(luaState, str);
+								luaL_dofile(luaState, currentItem->base->path);
+							}
+							else
+							{
+								Log(Warning, "Client requested item use which is not in the list of items of his character");
 							}
 							break;
 						}

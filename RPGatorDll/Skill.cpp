@@ -9,10 +9,10 @@
 #include "Game.h"
 #include "Skill.h"
 
-Skill::Skill(SqliteResult sqliteResult) :
-	GameObject(sqliteResult)
+Skill::Skill(SqliteResult sqliteResult, char* iconPath) :
+	GameObject(sqliteResult, iconPath)
 {
-	sprintf(path, "server/%s/script/skill/%d.lua", Game::instance->name, id);
+	sprintf(path, "server/%s/script/Skill/%d.lua", Game::instance->name, id);
 }
 
 Skill::~Skill(void)

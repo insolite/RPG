@@ -76,9 +76,10 @@ int LuaFunctions::AddNPC(lua_State* lua) //baseId, x, y, locationId, ...
 	return currentNPC->id;
 }
 
-int LuaFunctions::AddItem(lua_State* lua) //baseId, spawnType, [x, y, locationId | characterId], ...
+int LuaFunctions::AddItem(lua_State* lua) //baseId, spawnType, [x, y, locationId | characterId], count, ...
 {
 	int baseId;
+	int count;
 	CurrentItem* currentItem;
 	char outPacket[256];
 	SpawnType spawnType;
@@ -96,16 +97,17 @@ int LuaFunctions::AddItem(lua_State* lua) //baseId, spawnType, [x, y, locationId
 			x = lua_tointeger(lua, 3);
 			y = lua_tointeger(lua, 4);
 			locationId = lua_tointeger(lua, 5);
+			count = lua_tointeger(lua, 6);
 
 			currentLocation = Universe::instance->game->data->GetLocation(locationId);
-			currentItem = currentLocation->AddItem(Universe::instance->game->resources->GetItem(baseId), x, y);
+			currentItem = currentLocation->AddItem(Universe::instance->game->resources->GetItem(baseId), x, y, count);
 			CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
 				currentItem->id,
 				currentItem->base->id,
 				currentItem->x,
 				currentItem->y,
 				Ground,
-				1/*currentItem->count*/
+				currentItem->count
 				);
 			for (int i = 0; i < currentLocation->currentCharactersCount; i++)
 				currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
@@ -117,20 +119,22 @@ int LuaFunctions::AddItem(lua_State* lua) //baseId, spawnType, [x, y, locationId
 			CurrentCharacter* currentCharacter;
 
 			characterId = lua_tointeger(lua, 3);
+			count = lua_tointeger(lua, 4);
 
 			//TODO: data->GetCharacter
 			currentCharacter = NULL;
 			for (int i = 0; i < Universe::instance->game->data->locationsCount; i++)
 				if (currentCharacter = Universe::instance->game->data->locations[i]->GetCharacter(characterId))
 					break;
-			currentItem = currentCharacter->currentLocation->AddItem(Universe::instance->game->resources->GetItem(baseId), 0, 0);
+			currentItem = currentCharacter->AddItem(Universe::instance->game->resources->GetItem(baseId), count);
 			CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
 				currentItem->id,
 				currentItem->base->id,
 				0,
 				0,
 				Inventory,
-				1/*currentItem->count*/);
+				currentItem->count
+				);
 			currentCharacter->connectSocket->Send(outPacket);
 			break;
 		}

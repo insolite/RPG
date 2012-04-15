@@ -33,7 +33,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 		}
 		else //Mouse is not in a window area
 			return false;
-		if (Mouse[EMIE_LMOUSE_LEFT_UP])
+		if (Mouse[EMIE_LMOUSE_PRESSED_DOWN])
 		{
 			char outPacket[256];
 			vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
@@ -51,6 +51,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 	else if (event.EventType == EET_GUI_EVENT)
 	{
 		s32 eventCallerId = event.GUIEvent.Caller->getID();
+		IGUIElement* eventCaller = event.GUIEvent.Caller;
 
 		switch(event.GUIEvent.EventType)
 		{
@@ -83,30 +84,81 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 						if (wcslen(eb->getText()) > 0)
 						{
 							char outPacket[256];
-							char str[256]; //TODO: %ws
-							wcstombs(str, eb->getText(), 255);
-							CreatePacket(outPacket, Say, "%b%s", Public, str);
+							CreatePacket(outPacket, Say, "%b%ws", Public, eb->getText());
 							Universe::instance->connectSocket->Send(outPacket);
 							eb->setText(NULL);
 						}
 						break;
 				}
 				break;
+			case EGDT_WINDOW_CLOSE:
+				switch (eventCallerId)
+				{
+					case InventoryWindow:
+						((IGUIButton*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(InventoryToggleButton))->setPressed(false);
+						break;
+					case SkillsWindow:
+						((IGUIButton*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(SkillsToggleButton))->setPressed(false);
+						break;
+				}
+				break;
 			case EGET_BUTTON_CLICKED:
 				switch (eventCallerId)
 				{
-					case TESTSkillUseButton1:
+					case IconTableItemButton:
 					{
 						char outPacket[256];
-						CreatePacket(outPacket, SkillUse, "%i", 1);
+						CreatePacket(outPacket, ItemUse, "%i", ((CGUIButton*)eventCaller)->currentGameObject->id);
 						Universe::instance->connectSocket->Send(outPacket);
 						break;
 					}
-					case TESTSkillUseButton2:
+					case IconTableSkillButton:
 					{
 						char outPacket[256];
-						CreatePacket(outPacket, SkillUse, "%i", 6);
+						CreatePacket(outPacket, SkillUse, "%i", ((CGUIButton*)eventCaller)->currentGameObject->id);
 						Universe::instance->connectSocket->Send(outPacket);
+						break;
+					}
+					case InventoryToggleButton:
+					{
+						IGUIWindow* wnd = (IGUIWindow*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(InventoryWindow);
+						if (wnd)
+							wnd->remove();
+						else
+						{
+							int btnsSize = 48;
+
+							wnd = Universe::instance->guienv->addWindow(rect< s32 >(Universe::instance->render->screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20, 150, Universe::instance->render->screenWidth, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Inventory", NULL, InventoryWindow);
+
+							IGUIIconTable* tbl = new IGUIIconTable(Universe::instance->guienv, wnd, InventoryItemsIconTable, rect< s32 >(10, 100, 10 + btnsSize * 6 + (6 - 1) * 2, 100 + btnsSize * 6 + (6 - 1) * 2), 6, 6);
+							tbl->buttonSize = btnsSize;
+							wnd->addChild(tbl);
+							for (int i = 0; i < Universe::instance->currentCharacter->currentItemsCount; i++)
+							{
+								tbl->addButton((CurrentGameObject<GameObject>*)Universe::instance->currentCharacter->currentItems[i], IconTableItemButton);
+							}
+						}
+						break;
+					}
+					case SkillsToggleButton:
+					{
+						IGUIWindow* wnd = (IGUIWindow*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(SkillsWindow);
+						if (wnd)
+							wnd->remove();
+						else
+						{
+							int btnsSize = 48;
+
+							wnd = Universe::instance->guienv->addWindow(rect< s32 >(Universe::instance->render->screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20 - 400, 150, Universe::instance->render->screenWidth - 400, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Skills", NULL, SkillsWindow);
+
+							IGUIIconTable* tbl = new IGUIIconTable(Universe::instance->guienv, wnd, SkillsIconTable, rect< s32 >(10, 100, 10 + btnsSize * 6 + (6 - 1) * 2, 100 + btnsSize * 6 + (6 - 1) * 2), 6, 6);
+							tbl->buttonSize = btnsSize;
+							wnd->addChild(tbl);
+							for (int i = 0; i < Universe::instance->currentCharacter->currentSkillsCount; i++)
+							{
+								tbl->addButton((CurrentGameObject<GameObject>*)Universe::instance->currentCharacter->currentSkills[i], IconTableSkillButton);
+							}
+						}
 						break;
 					}
 					case ChatInputEditBox:

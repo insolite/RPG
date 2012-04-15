@@ -71,6 +71,17 @@ enum EditorGUIElements
 	MapObjectEditWindowFileOpenDialog,
 	MapObjectEditWindowOKButton,
 
+	//CurrentEdit
+
+	CurrentMapCellEditWindow, //Is not used
+	CurrentNPCEditWindow,
+	CurrentStaticEditWindow,
+	CurrentItemEditWindow,
+	CurrentCharacterEditWindow,
+
+	//CurrentMapObjectEditWindowPreview,
+	CurrentMapObjectEditWindowOKButton,
+
 	//Add
 
 	MapObjectAddWindowFileOpenDialog

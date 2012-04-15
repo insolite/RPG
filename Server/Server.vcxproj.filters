@@ -33,9 +33,6 @@
     <ClInclude Include="ServerClientSocket.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\RPGator\ConnectSocket.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="LuaFunctions.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -51,9 +48,6 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="ServerSocket.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Include\RPGator\ConnectSocket.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="ServerClientSocket.cpp">

@@ -76,7 +76,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\RPGator\ConnectSocket.h" />
     <ClInclude Include="LuaFunctions.h" />
     <ClInclude Include="ServerClientSocket.h" />
     <ClInclude Include="ServerSocket.h" />
@@ -85,7 +84,6 @@
     <ClInclude Include="Universe.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Include\RPGator\ConnectSocket.cpp" />
     <ClCompile Include="LuaFunctions.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerClientSocket.cpp" />

@@ -212,11 +212,11 @@ CurrentStatic* Location::AddStatic(Static* base, int x, int y)
 	return currentStatic;
 }
 
-CurrentItem* Location::AddItem(Item* base, int x, int y)
+CurrentItem* Location::AddItem(Item* base, int x, int y, int count)
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId) VALUES(%d, %d, %d, %d, NULL)", base->id, x, y, this->id);
+	sprintf(query, "INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES(%d, %d, %d, %d, NULL, %d)", base->id, x, y, this->id, count);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 	sprintf(query, "SELECT * FROM CurrentItem WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
 	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];

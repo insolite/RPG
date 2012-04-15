@@ -76,7 +76,8 @@ CREATE TABLE CurrentItem (
 	x INTEGER,
 	y INTEGER,
 	locationId INTEGER,
-	currentCharacterId INTEGER
+	currentCharacterId INTEGER,
+	`count` INTEGER
 	);
 
 CREATE TABLE CurrentStatic (
@@ -123,6 +124,7 @@ INSERT INTO Item(name, tags) VALUES ('Test Item', '');
 INSERT INTO `Static`(name, tags) VALUES ('Test Static', '');
 
 INSERT INTO Skill(name, tags) VALUES ('SayHello', '');
+INSERT INTO Skill(name, tags) VALUES ('Spawn 4 NPCs', '');
 
 INSERT INTO `Character`(name, tags) VALUES ('Dwarf', '');
 
@@ -138,3 +140,12 @@ INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, 1);
 INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, 2);
 INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, 3);
 INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, 4);
+INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (2, 1);
+INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (2, 2);
+INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (2, 3);
+INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (2, 4);
+
+INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES (1, 0, 0, 0, 1, 10);
+INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES (1, 0, 0, 0, 2, 10);
+INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES (1, 0, 0, 0, 3, 10);
+INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES (1, 0, 0, 0, 4, 10);

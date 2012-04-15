@@ -77,6 +77,7 @@
   <ItemGroup>
     <ClInclude Include="CGUIEditBox.h" />
     <ClInclude Include="CGUIMeshViewer.h" />
+    <ClInclude Include="ConnectSocket.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="CGUIButton.h" />
     <ClInclude Include="IGUIChatBox.h" />
@@ -113,6 +114,7 @@
   <ItemGroup>
     <ClCompile Include="CGUIEditBox.cpp" />
     <ClCompile Include="CGUIMeshViewer.cpp" />
+    <ClCompile Include="ConnectSocket.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="CGUIButton.cpp" />
     <ClCompile Include="IGUIChatBox.cpp" />

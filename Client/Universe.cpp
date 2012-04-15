@@ -155,13 +155,13 @@ bool Universe::Run()
 						currentLocation->SpawnStatic(new CurrentStatic(inPacket));
 						break;
 					case ItemSpawned:
-						switch(PacketGetByte(inPacket, 1))
+						switch(PacketGetByte(inPacket, 17))
 						{
 							case Ground:
 								currentLocation->SpawnItem(new CurrentItem(inPacket));
 								break;
 							case Inventory:
-								//currentCharacter->SpawnItem(new CurrentItem(inPacket));
+								currentCharacter->SpawnItem(new CurrentItem(inPacket));
 								break;
 						}
 						break;
@@ -176,6 +176,9 @@ bool Universe::Run()
 							currentLocation->SpawnCharacter(new CurrentCharacter(inPacket));
 						}
 						break;
+					case SkillSpawned:
+						currentCharacter->SpawnSkill(new CurrentSkill(inPacket));
+						break;
 					case NPCUnspawned:
 						currentLocation->UnSpawnNPC(currentLocation->GetNPC(PacketGetInt(inPacket, 1)));
 						break;
@@ -183,7 +186,15 @@ bool Universe::Run()
 						currentLocation->UnSpawnStatic(currentLocation->GetStatic(PacketGetInt(inPacket, 1)));
 						break;
 					case ItemUnspawned:
-						currentLocation->UnSpawnItem(currentLocation->GetItem(PacketGetInt(inPacket, 1)));
+						switch(PacketGetByte(inPacket, 5))
+						{
+							case Ground:
+								currentLocation->UnSpawnItem(currentLocation->GetItem(PacketGetInt(inPacket, 1)));
+								break;
+							case Inventory:
+								//currentCharacter->UnSpawnItem(currentCharacter->GetItem(PacketGetInt(inPacket, 1)));
+								break;
+						}
 						break;
 					case CharacterUnspawned:
 						currentLocation->UnSpawnCharacter(currentLocation->GetCharacter(PacketGetInt(inPacket, 1)));
@@ -197,7 +208,7 @@ bool Universe::Run()
 							str = PacketGetString(inPacket, 10);
 						else
 							str = PacketGetString(inPacket, 6);
-						//TODO: daat->GetCharacter;
+						//TODO: data->GetCharacter;
 						//for (int i = 0; i < game->data->locationsCount; i++)
 						CurrentCharacter* sender = currentLocation->GetCharacter(PacketGetInt(inPacket, 2));
 						wchar_t* wstr = new wchar_t[wcslen(eb->getText()) + strlen(str) + strlen(sender->login) + 4];
@@ -301,36 +312,20 @@ void Universe::ClientGUIInit()
 	clientEventReceiver = new ClientEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)clientEventReceiver);
 
-	//TEST
-	guienv->addButton(rect< s32 >(0, 0, 128, 32), NULL, TESTSkillUseButton1, L"SayHello", NULL);
-	guienv->addButton(rect< s32 >(128, 0, 128 + 128, 32), NULL, TESTSkillUseButton2, L"AddNPC", NULL);
+	//Window toggle buttons
+	IGUIButton* btn;
+	btn = guienv->addButton(rect< s32 >(0, render->screenHeight - 32, 64, render->screenHeight), NULL, InventoryToggleButton, L"Inventory", NULL);
+	btn->setIsPushButton(true);
+	btn = guienv->addButton(rect< s32 >(64, render->screenHeight - 32, 64 + 64, render->screenHeight), NULL, SkillsToggleButton, L"Skills", NULL);
+	btn->setIsPushButton(true);
+	btn = guienv->addButton(rect< s32 >(64 + 64, render->screenHeight - 32, 64 + 64 + 64, render->screenHeight), NULL, QuestsToggleButton, L"Quests", NULL);
+	btn->setIsPushButton(true);
 
 	//Chat
 	IGUIChatBox* cb = new IGUIChatBox(guienv, NULL, ChatBox, ChatEditBox, ChatInputEditBox, rect< s32 >(0, 128, 256, 128 + 256 + 24));
 	guienv->getRootGUIElement()->addChild(cb);
 
 	int btnsSize = 48;
-
-	//Inventory
-
-	IGUIWindow* iwnd = guienv->addWindow(rect< s32 >(render->screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20, 150, render->screenWidth, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Inventory", NULL, InventoryWindow);
-
-	IGUIIconTable* tbl1 = new IGUIIconTable(guienv, iwnd, InventoryItemsIconTable, rect< s32 >(10, 100, 10 + btnsSize * 6 + (6 - 1) * 2, 100 + btnsSize * 6 + (6 - 1) * 2), 6, 6);
-	tbl1->buttonSize = btnsSize;
-	iwnd->addChild(tbl1);
-	//TEST
-	for (int i = 0; i < 27; i++)
-	{
-		tbl1->addButton(Universe::instance->render->driver->getTexture("rpgator.png"));
-	}
-
-	//Skills
-
-	IGUIWindow* swnd = guienv->addWindow(rect< s32 >(render->screenWidth - btnsSize * 6 - (6 - 1) * 2 - 20 - 400, 150, render->screenWidth - 400, 150 + 100 + btnsSize * 6 + (6 - 1) * 2 + 10), false, L"Skills", NULL, InventoryWindow);
-
-	IGUIIconTable* tbl2 = new IGUIIconTable(guienv, swnd, InventoryItemsIconTable, rect< s32 >(10, 100, 10 + btnsSize * 6 + (6 - 1) * 2, 100 + btnsSize * 6 + (6 - 1) * 2), 6, 6);
-	tbl2->buttonSize = btnsSize;
-	swnd->addChild(tbl2);
 
 	//Hotkey
 	IGUIIconTable* tbl3 = new IGUIIconTable(guienv, NULL, HotkeyBar, rect< s32 >(320, render->screenHeight - btnsSize, 320 + 12 * btnsSize + (12 - 1) * 2, render->screenHeight), 12, 1);

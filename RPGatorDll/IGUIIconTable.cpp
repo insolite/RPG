@@ -1,5 +1,8 @@
 #include "StdAfx.h"
+#include "SqliteResult.h"
 #include "Render.h"
+#include "GameObject.h"
+#include "CurrentGameObject.h"
 #include "CGUIButton.h"
 #include "IGUIIconTable.h"
 
@@ -55,25 +58,32 @@ void IGUIIconTable::addButton(CGUIButton* button)
 		}
 }
 
-void IGUIIconTable::addButton(ITexture* image)
+void IGUIIconTable::addButton(CurrentGameObject<GameObject>* currentGameObject, int id)
 {
-	CGUIButton* button = new CGUIButton(Environment, NULL, -1, rect< s32 >(0, 0, buttonSize, buttonSize), false);
-	button->setUseAlphaChannel(true);
-	if (image)
-		button->setImage(image);
-
-	addButton(button);
+	addButton(new CGUIButton(Environment, NULL, id, rect< s32 >(0, 0, buttonSize, buttonSize), currentGameObject, false));
 }
 
-void IGUIIconTable::removeButton(IGUIButton* button)
+void IGUIIconTable::removeButton(IGUIButton* button, bool shift)
 {
-	//TODO: do :)
+	for (list<IGUIElement*>::ConstIterator i = this->getChildren().begin(); i != this->getChildren().end(); i++)
+		if ((*i)->getChildren().getSize() == 1)
+		{
+			if (*(*i)->getChildren().getLast() == button)
+			{
+				(*i)->removeChild(button);
+				if (shift)
+				{
+					//TODO: shift
+				}
+				break;
+			}
+		}
 }
 
 //IGUIIconTable::IGUIIconTableContainer
 
 IGUIIconTable::IGUIIconTableContainer::IGUIIconTableContainer(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle) :
-	IGUIElement(EGUI_ELEMENT_TYPE::EGUIET_ELEMENT, environment, parent, id, rectangle)
+	IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle)
 {
 	#ifdef _DEBUG
 	setDebugName("IGUIIconTableContainer");

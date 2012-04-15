@@ -10,16 +10,17 @@ public:
 	core::position2d<s32> DragStart;
 	IGUIElement* lastParent;
 	rect< s32 > lastPosition;
+	CurrentGameObject<GameObject>* currentGameObject;
 
 	__declspec(dllexport) void StartDragging();
 	__declspec(dllexport) void StopDragging();
 
-	__declspec(dllexport) CGUIButton(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, bool noclip = false);
+	__declspec(dllexport) CGUIButton(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, CurrentGameObject<GameObject>* currentGameObject, bool noclip = false);
 	__declspec(dllexport) ~CGUIButton(void);
 
 	//! called if an event happened.
 	__declspec(dllexport) virtual bool OnEvent(const SEvent& event);
-
+	
 	//! draws the element and its children
 	__declspec(dllexport) virtual void draw();
 
@@ -40,7 +41,7 @@ public:
 
 	//! Sets the sprite bank used by the button
 	__declspec(dllexport) virtual void setSpriteBank(IGUISpriteBank* bank=0);
-
+	
 	//! Sets the animated sprite for a specific button state
 	/** \param index: Number of the sprite within the sprite bank, use -1 for no sprite
 	\param state: State of the button to set the sprite for
@@ -87,7 +88,7 @@ public:
 
 	//! Reads attributes of the element
 	__declspec(dllexport) virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
-
+	
 private:
 
 	struct ButtonSprite

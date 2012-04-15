@@ -11,7 +11,7 @@
 
 Item::Item(SqliteResult sqliteResult, char* modelPath) : MapObject(sqliteResult, modelPath)
 {
-	sprintf(path, "server/%s/script/skill/%d.lua", Game::instance->name, id);
+	sprintf(path, "server/%s/script/Item/%d.lua", Game::instance->name, id);
 }
 
 Item::~Item(void)

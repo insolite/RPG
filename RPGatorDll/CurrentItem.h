@@ -5,6 +5,7 @@ class CurrentItem :
 {
 public:
 	CurrentCharacter* owner;
+	int count;
 
 	__declspec(dllexport) CurrentItem(SqliteResult sqliteResult, Location* location, CurrentCharacter* currentCharacter = NULL);
 	__declspec(dllexport) CurrentItem(char* currentMapObjectSpawnedPacket);

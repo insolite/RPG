@@ -77,7 +77,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\RPGator\ConnectSocket.h" />
     <ClInclude Include="ClientSocket.h" />
     <ClInclude Include="ClientEventReceiver.h" />
     <ClInclude Include="ForwardDeclaration.h" />
@@ -87,7 +86,6 @@
     <ClInclude Include="Universe.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Include\RPGator\ConnectSocket.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientSocket.cpp" />
     <ClCompile Include="ClientEventReceiver.cpp" />

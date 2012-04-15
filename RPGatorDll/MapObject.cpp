@@ -7,7 +7,7 @@
 #include "MapObject.h"
 
 MapObject::MapObject(SqliteResult sqliteResult, char* modelPath) :
-	GameObject(sqliteResult)
+	GameObject(sqliteResult, modelPath)
 {
 	if (modelPath) //if (Render::instance) //The same
 	{ //Client or Editor

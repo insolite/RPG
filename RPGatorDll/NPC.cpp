@@ -11,7 +11,7 @@
 
 NPC::NPC(SqliteResult sqliteResult, char* modelPath) : MapObject(sqliteResult, modelPath)
 {
-	sprintf(path, "server/%s/script/skill/%d.lua", Game::instance->name, id);
+	sprintf(path, "server/%s/script/NPC/%d.lua", Game::instance->name, id);
 }
 
 NPC::~NPC(void)

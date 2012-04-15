@@ -32,7 +32,7 @@ public:
 	__declspec(dllexport) void DeleteCharacter(CurrentCharacter* currentCharacter);
 	__declspec(dllexport) CurrentNPC* AddNPC(NPC* base, int x, int y);
 	__declspec(dllexport) CurrentStatic* AddStatic(Static* base, int x, int y);
-	__declspec(dllexport) CurrentItem* AddItem(Item* base, int x, int y);
+	__declspec(dllexport) CurrentItem* AddItem(Item* base, int x, int y, int count);
 	__declspec(dllexport) CurrentCharacter* AddCharacter(Character* base, int x, int y, char* login, char* password);
 	__declspec(dllexport) CurrentNPC* GetNPCAt(int x, int y);
 	__declspec(dllexport) CurrentStatic* GetStaticAt(int x, int y);
