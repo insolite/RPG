@@ -77,11 +77,11 @@ void Render::drawKub(f32 xPos, f32 yPos, f32 zPos, int width, int height)
         terrain->setMaterialTexture(0,
                         driver->getTexture("terrain-texture.jpg"));
         terrain->setMaterialTexture(1,
-                        driver->getTexture("detailmap3.jpg"));
+                        driver->getTexture("Grass.jpg"));
         
         terrain->setMaterialType(video::EMT_DETAIL_MAP);
 
-        terrain->scaleTexture(1.0f, 20.0f);
+        terrain->scaleTexture(1.0f, 45.0f);
 }
 
 ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
