@@ -42,19 +42,46 @@ void Render::drawKub(f32 xPos, f32 yPos, f32 zPos, int width, int height)
 {
 	//int cell= Universe::instanse->
 	//IMeshSceneNode* n = smgr->addCubeSceneNode(10,0,-1,vector3df(xPos, yPos, zPos),vector3df(0,0,0),vector3df(Wid, 1, Hei));
-	IMeshSceneNode* n = smgr->addCubeSceneNode();
-	
-	//n=smgr->addP
-	if (n)
-	{
-		n->setScale(vector3df((f32)width, 1.0f, (f32)height));
-		n->setPosition(core::vector3df(xPos, yPos, zPos));
+	//IMeshSceneNode* n = smgr->addMeshSceneNode(smgr->getMesh("Cube_1.3ds"));
+	//IMeshSceneNode* n = smgr->addMeshSceneNode(smgr->getMesh("house_1.x"));
+	//n=smgr->addHillPlaneMesh("",dimension2d<f32>(10,10),dimension2d<f32>(64,64),0,1);
+	//n=smgr->create
+	//if (n)
+		n->setScale(vector3df(Wid, 1, Hei));
+		//n->setScale(vector3df(3, 3, 3));
+		//n->setPosition(core::vector3df(xPos, yPos, zPos));
 		//smgr->getMeshManipulator()->makePlanarTextureMapping(
-		n->setMaterialTexture(0, driver->getTexture("grass.bmp"));
-		//n->setMaterialFlag(video::EMF_LIGHTING, true);
+		//n->setMaterialTexture(0, driver->getTexture("grass.bmp"));
+		//n->setMaterialTexture(0, driver->getTexture("ScotsPineTrunk.TGA"));
+		//n->setMaterialTexture(0, driver->getTexture("house.png"));
+		//n->setMaterialFlag(video::EMF_LIGHTING,false);
 		//n->addShadowVolumeSceneNode();
-		n->setID(ID_IsNotPickable);
-	}
+		//n->setID(ID_IsNotPickable);
+	//}
+	// add terrain scene node
+        scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
+                "heith.bmp",
+                0,                                      // parent node
+                -1,                                     // node id
+                core::vector3df(0.f, 0.f, 0.f),         // position
+                core::vector3df(0.f, 0.f, 0.f),         // rotation
+                core::vector3df(20.f, 1.0f, 20.f),      // scale
+                video::SColor ( 255, 255, 255, 255 ),   // vertexColor
+                5,                                      // maxLOD
+                scene::ETPS_17,                         // patchSize
+                4                                       // smoothFactor
+                );
+
+        //terrain->setMaterialFlag(video::EMF_LIGHTING, false);
+
+        terrain->setMaterialTexture(0,
+                        driver->getTexture("terrain-texture.jpg"));
+        terrain->setMaterialTexture(1,
+                        driver->getTexture("detailmap3.jpg"));
+        
+        terrain->setMaterialType(video::EMT_DETAIL_MAP);
+
+        terrain->scaleTexture(1.0f, 20.0f);
 }
 
 ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)

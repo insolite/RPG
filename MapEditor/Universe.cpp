@@ -154,7 +154,7 @@ void Universe::DrawScene()
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
 				case Free:
-					render->drawKub(j*CELL_SIZE*4,-20,i*CELL_SIZE*4,1,1);
+					render->drawKub(j*CELL_SIZE*9.9,-20,i*CELL_SIZE*9.9,1,1);
 					break;
 				//case Locked:
 					//glColor4d(1, 0, 0, 0.5);
@@ -164,7 +164,7 @@ void Universe::DrawScene()
 			}
 		}
 	}//*/
-	render->drawKub(320,-20,320,currentLocation->width,currentLocation->height);
+	render->drawKub(0,-20,0,currentLocation->width,currentLocation->height);
 
 }
 
@@ -214,14 +214,18 @@ bool Universe::Run()
 	camPos=render->smgr->addEmptySceneNode();
 	camPos->setPosition(vector3df(50,50,10));
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
+
+
+
 	camera2=render->smgr->addCameraSceneNode(0, vector3df(0,50,-20), vector3df(0,0,0));
+	//camera2=render->smgr->addCameraSceneNodeFPS();
 	render->smgr->setActiveCamera(camera);
 	//render->smgr->addCameraSceneNodeFPS()->setPosition(vector3df(0,30,0));
 	//=============================
 	
 	scene::ILightSceneNode* light; 
 	light = render->smgr->addLightSceneNode(0,vector3df(0,40,0),video::SColorf(1.0f, 0.6f, 0.7f, 1.0f),150.0F);
-	render->smgr->setAmbientLight(video::SColor(0,60,60,60));
+	//render->smgr->setAmbientLight(video::SColor(0,60,60,60));
 	//light->setLightType(video::ELT_POINT);
 	//light->setDebugDataVisible
 	//light->setDebugDataVisible(EDS_BBOX);
@@ -230,12 +234,12 @@ bool Universe::Run()
 
 	// цепляем билборд к источнику света
 		
-    IBillboardSceneNode* bill = render->smgr->addBillboardSceneNode(light, core::dimension2d<f32>(50, 50));
-    bill->setMaterialFlag(video::EMF_LIGHTING, false);
-    bill->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
+    IBillboardSceneNode* bill = render->smgr->addBillboardSceneNode(light, core::dimension2d<f32>(10, 10));
+        bill->setMaterialFlag(video::EMF_LIGHTING, false);
+        bill->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
 
-    bill->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
-	
+        bill->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
+	//bill->setMaterialFlag(video::EMF_LIGHTING, false);
 	camPos->setID(ID_IsNotPickable);
 	camera->setID(ID_IsNotPickable);
 	camera2->setID(ID_IsNotPickable);
