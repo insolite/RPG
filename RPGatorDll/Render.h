@@ -55,6 +55,8 @@ public:
 	__declspec(dllexport) int GetAngle(int x1, int y1, int x2, int y2);
 	__declspec(dllexport) dimension2d<u32> GetDesktopRes();
 
+	__declspec(dllexport) void Efect_1(ISceneNode* p);
+
 	__declspec(dllexport) Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* windowTitle);
 	__declspec(dllexport) ~Render(void);
 };

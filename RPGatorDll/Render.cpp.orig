@@ -42,14 +42,24 @@ void Render::drawKub(f32 xPos, f32 yPos, f32 zPos, int width, int height)
 {
 	//int cell= Universe::instanse->
 	//IMeshSceneNode* n = smgr->addCubeSceneNode(10,0,-1,vector3df(xPos, yPos, zPos),vector3df(0,0,0),vector3df(Wid, 1, Hei));
+<<<<<<< Updated upstream
+	IMeshSceneNode* n = smgr->addCubeSceneNode();
+	
+	//n=smgr->addP
+	if (n)
+	{
+		n->setScale(vector3df((f32)width, 1.0f, (f32)height));
+		n->setPosition(core::vector3df(xPos, yPos, zPos));
+=======
 	//IMeshSceneNode* n = smgr->addMeshSceneNode(smgr->getMesh("Cube_1.3ds"));
 	//IMeshSceneNode* n = smgr->addMeshSceneNode(smgr->getMesh("house_1.x"));
 	//n=smgr->addHillPlaneMesh("",dimension2d<f32>(10,10),dimension2d<f32>(64,64),0,1);
 	//n=smgr->create
 	//if (n)
-		//n->setScale(vector3df(Wid, 1, Hei));
+	//{
 		//n->setScale(vector3df(3, 3, 3));
 		//n->setPosition(core::vector3df(xPos, yPos, zPos));
+>>>>>>> Stashed changes
 		//smgr->getMeshManipulator()->makePlanarTextureMapping(
 		//n->setMaterialTexture(0, driver->getTexture("grass.bmp"));
 		//n->setMaterialTexture(0, driver->getTexture("ScotsPineTrunk.TGA"));
@@ -77,11 +87,11 @@ void Render::drawKub(f32 xPos, f32 yPos, f32 zPos, int width, int height)
         terrain->setMaterialTexture(0,
                         driver->getTexture("terrain-texture.jpg"));
         terrain->setMaterialTexture(1,
-                        driver->getTexture("Grass.jpg"));
+                        driver->getTexture("detailmap3.jpg"));
         
         terrain->setMaterialType(video::EMT_DETAIL_MAP);
 
-        terrain->scaleTexture(1.0f, 45.0f);
+        terrain->scaleTexture(1.0f, 20.0f);
 }
 
 ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
@@ -98,14 +108,6 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 		selector = smgr->createTriangleSelector(node);
 		node->setTriangleSelector(selector);
 		selector->drop();
-
-		//Autoscale
-		vector3df extent = node->getBoundingBox().getExtent(); 
-		if(extent.Y != 0) 
-		{
-			f32 scale = 10.0f / extent.Y; 
-			node->setScale(vector3df(scale,scale,scale)); 
-		}
 
 		if (texture)
 		{
@@ -182,37 +184,4 @@ dimension2d<u32> Render::GetDesktopRes()
 	DesktopResolution = list->getDesktopResolution();
 	device0->drop();
 	return DesktopResolution;
-}
-
-void Render::Efect_1(ISceneNode* p)
-{
-	scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(0, -1,
-                                32,                              // Subdivisions on U axis
-                                32,                              // Subdivisions on V axis
-                                video::SColor(0, 255, 255, 255), // foot color
-                                video::SColor(0, 0, 0, 0));      // tail color
-
-        if (n)
-        {
-			n->setParent(p);
-            n->setScale(core::vector3df(56.0f, 56.0f, 56.0f));
-            //n->setPosition(core::vector3df(-120,50,40));
-
-            core::array< video::ITexture* > textures;
-            for (s32 g=7; g > 0; --g)
-             {
-                core::stringc tmp;
-                tmp = "portal";
-                tmp += g;
-                tmp += ".bmp";
-                video::ITexture* t = driver->getTexture( tmp.c_str() );
-                textures.push_back(t);
-             }
-
-             scene::ISceneNodeAnimator* glow = smgr->createTextureAnimator(textures, 150);
-
-             n->addAnimator(glow);
-
-             glow->drop();
-        }
 }

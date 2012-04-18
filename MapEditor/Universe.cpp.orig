@@ -8,6 +8,14 @@ Universe* Universe::instance;
 
 Universe::Universe(void)
 {
+	screenWidth = 800;
+	screenHeight = 600;
+	fullscreen = false;
+	/*
+	screenWidth = 1366;
+	screenHeight = 768;
+	fullscreen = true;
+	*/
 	cameraMoveZoneWidth = 24;
 	toolbarWidth = 192;
 	toolbarLeftMargin = 8;
@@ -15,22 +23,13 @@ Universe::Universe(void)
 	brushMaskMaxSize = 10;
 	instance = this;
 
-	render = new Render(1366, 768, fullscreen, L"RPGator");
+	render = new Render(screenWidth, screenHeight, fullscreen, L"RPGator");
 
 	guienv = render->device->getGUIEnvironment();
 
 	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
 	guienv->getSkin()->setFont(font2);
-	
-	SColor color;
-
-	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE);
-	color.setAlpha(192);
-	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE, color);
-	
-	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW);
-	color.setAlpha(192);
-	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW, color);
+	//TODO: font delete?
 }
 
 Universe::~Universe(void)
@@ -65,6 +64,13 @@ void Universe::MenuGUIInit()
 	guienv->addButton(rect< s32 >(488, 192, 544, 216), NULL, LoadGameButton, L"Load", L"Loads selected game");
 	guienv->addButton(rect< s32 >(488, 224, 544, 248), NULL, DeleteGameButton, L"Delete", L"Deletes selected game");
 	guienv->addButton(rect< s32 >(488, 256, 544, 280), NULL, QuitMenuButton, L"Quit", L"Exits editor");
+
+	for (u32 i = 0; i < EGDC_COUNT; i++)
+	{
+		SColor color = guienv->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
+		color.setAlpha(255);
+		guienv->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, color);
+	}
 }
 
 void Universe::EditorGUIInit()
@@ -72,7 +78,7 @@ void Universe::EditorGUIInit()
 	editorEventReceiver = new EditorEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)editorEventReceiver);
 
-	IGUIWindow* wnd = guienv->addWindow(rect< s32 >(0, 0, toolbarWidth, render->screenHeight), false, L"Toolbar", 0, ToolBarWindow);
+	IGUIWindow* wnd = guienv->addWindow(rect< s32 >(0, 0, toolbarWidth, screenHeight), false, L"Toolbar", 0, ToolBarWindow);
 	
 	//Floors ComboBox
 	IGUIComboBox* floorsComboBox = guienv->addComboBox(rect< s32 >(toolbarLeftMargin, 32, toolbarLeftMargin + 176, 48), wnd, FloorsComboBox);
@@ -95,22 +101,19 @@ void Universe::EditorGUIInit()
 	//MapObject select windows, tabs, buttons, etc.
 	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 92, toolbarLeftMargin + 176, 92 + 256), wnd, true, true, MapObjectsTabControl);
 	IGUITab* tab;
-	wchar_t* wstrs[5] = { L"C", L"N", L"S", L"I", L"C" };
 	for (int i = 0; i < 5; i++)
 	{
-		tab = tabc->addTab(wstrs[i], -1);
-		guienv->addButton(rect< s32 >(8, 8, 8 + 70, 8 + 32), tab, MapObjectSelectWindowToggleButton, L"Select", L"Select MapObject from list");
-		guienv->addButton(rect< s32 >(8 + 70 + 8, 8, 8 + 70 + 8 + 70, 8 + 32), tab, MapObjectAddButton, L"Add", L"Add MapObject to list");
+		tab = tabc->addTab(L"MO", i + MapCellSelectWindowTab);
+		guienv->addButton(rect< s32 >(16, 16, 64, 32), tab, i + MapCellSelectWindowToggleButton, L"Select", L"Select MapObject from list");
 	}
-	tabc->setActiveTab(1);
-	/*
+	
 	//Brush mask ScrollBar and StaticText
 	IGUIScrollBar* sb = guienv->addScrollBar(true, rect< s32 >(8, 64, 168, 80), tabc->getTab(0), BrushMaskSizeScroll);
 	sb->setMax(10);
 	sb->setMin(1);
 	sb->setPos(3);
 	guienv->addStaticText(L"3x", rect< s32 >(8, 88, 168, 104), false, false, tabc->getTab(0), BrushMaskSizeStaticText, true);
-	*/
+
 	wnd->setDraggable(false); //TEST
 	wnd->getCloseButton()->setEnabled(false); //TEST
 	wnd->getCloseButton()->setVisible(false); //TEST
@@ -132,9 +135,9 @@ void Universe::EditorGUIDestroy()
 
 void Universe::CameraMove(int x, int y)
 {
-	if ((cameraX + x) < 0 || ((cameraX + x) + render->screenWidth - toolbarWidth) >= currentLocation->width * CELL_SIZE)
+	if ((cameraX + x) < 0 || ((cameraX + x) + screenWidth - toolbarWidth) >= currentLocation->width * CELL_SIZE)
 		x = 0;
-	if ((cameraY + y) < 0 || ((cameraY + y) + render->screenHeight) >= currentLocation->height * CELL_SIZE)
+	if ((cameraY + y) < 0 || ((cameraY + y) + screenHeight) >= currentLocation->height * CELL_SIZE)
 		y = 0;
 	cameraX += x;
 	cameraY += y;
@@ -154,7 +157,7 @@ void Universe::DrawScene()
 			switch (currentLocation->mask[i][j]->cellProperty)
 			{
 				case Free:
-					render->drawKub(j*CELL_SIZE*9.9,-20,i*CELL_SIZE*9.9,1,1);
+					render->drawKub(j*CELL_SIZE*4,-20,i*CELL_SIZE*4,1,1);
 					break;
 				//case Locked:
 					//glColor4d(1, 0, 0, 0.5);
@@ -164,7 +167,7 @@ void Universe::DrawScene()
 			}
 		}
 	}//*/
-	render->drawKub(0,-20,0,currentLocation->width,currentLocation->height);
+	render->drawKub(320,-20,320,currentLocation->width,currentLocation->height);
 
 }
 
@@ -211,21 +214,17 @@ bool Universe::Run()
 
 	DrawScene();
 	//variables for camera
-	camPos=render->smgr->addEmptySceneNode();
+	ISceneNode* camPos=render->smgr->addEmptySceneNode();
 	camPos->setPosition(vector3df(50,50,10));
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
-
-
-
 	camera2=render->smgr->addCameraSceneNode(0, vector3df(0,50,-20), vector3df(0,0,0));
-	//camera2=render->smgr->addCameraSceneNodeFPS();
 	render->smgr->setActiveCamera(camera);
 	//render->smgr->addCameraSceneNodeFPS()->setPosition(vector3df(0,30,0));
 	//=============================
 	
 	scene::ILightSceneNode* light; 
 	light = render->smgr->addLightSceneNode(0,vector3df(0,40,0),video::SColorf(1.0f, 0.6f, 0.7f, 1.0f),150.0F);
-	//render->smgr->setAmbientLight(video::SColor(0,60,60,60));
+	render->smgr->setAmbientLight(video::SColor(0,60,60,60));
 	//light->setLightType(video::ELT_POINT);
 	//light->setDebugDataVisible
 	//light->setDebugDataVisible(EDS_BBOX);
@@ -234,68 +233,80 @@ bool Universe::Run()
 
 	// цепляем билборд к источнику света
 		
-    IBillboardSceneNode* bill = render->smgr->addBillboardSceneNode(light, core::dimension2d<f32>(10, 10));
-        bill->setMaterialFlag(video::EMF_LIGHTING, false);
-        bill->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
+<<<<<<< Updated upstream
+    IBillboardSceneNode* bill = render->smgr->addBillboardSceneNode(light, core::dimension2d<f32>(50, 50));
+    bill->setMaterialFlag(video::EMF_LIGHTING, false);
+    bill->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
 
-        bill->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
-	//bill->setMaterialFlag(video::EMF_LIGHTING, false);
+    bill->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
+	
 	camPos->setID(ID_IsNotPickable);
 	camera->setID(ID_IsNotPickable);
 	camera2->setID(ID_IsNotPickable);
 	light->setID(ID_IsNotPickable);
 	bill->setID(ID_IsNotPickable);
+=======
+    IBillboardSceneNode* bill = render->smgr->addBillboardSceneNode(light, core::dimension2d<f32>(10, 10));
+    //bill->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
+	bill->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
+	bill->setMaterialFlag(video::EMF_LIGHTING, false);
+
+
+>>>>>>> Stashed changes
 	
+//	render->drawKub(0,0,0);
 	state = Continue;
-
-	int lastUpdate = render->device->getTimer()->getTime();
-
 	while (render->device->run() && state == Continue)
 	{
+		
 		core::vector3df Km = camPos->getPosition();
-		render->Kt = camera->getTarget();
-			
-		if (editorEventReceiver->IsKeyDown(KEY_LEFT))
+		Kt = camera->getTarget();
+		
+		if(editorEventReceiver->IsKeyDown(irr::KEY_LEFT))
 		{
-			render->Kt.X -= CAMERA_STEP;
-			Km.X -= CAMERA_STEP;
+			Kt.X-=1;
+			Km.X-=1;
 			camPos->setPosition(Km);
 		}
-		if (editorEventReceiver->IsKeyDown(KEY_RIGHT))
+		if(editorEventReceiver->IsKeyDown(irr::KEY_RIGHT))
 		{
-			render->Kt.X += CAMERA_STEP;
-			Km.X += CAMERA_STEP;
+			Kt.X+=1;
+			Km.X+=1;
 			camPos->setPosition(Km);
 		}
-		if (editorEventReceiver->IsKeyDown(KEY_UP))
+		if(editorEventReceiver->IsKeyDown(irr::KEY_UP))
 		{
-			render->Kt.Z += CAMERA_STEP;
-			Km.Z += CAMERA_STEP;
+			Kt.Z+=1;
+			Km.Z+=1;
 			camPos->setPosition(Km);
 		}
-		if (editorEventReceiver->IsKeyDown(KEY_DOWN))
+		if(editorEventReceiver->IsKeyDown(irr::KEY_DOWN))
 		{
-			render->Kt.Z -= CAMERA_STEP;
-			Km.Z -= CAMERA_STEP;
+			Kt.Z-=1;
+			Km.Z-=1;
 			camPos->setPosition(Km);
 		}
+		//camera->setPosition(Km)
 		camera->setPosition(Km);
-		camera->setTarget(render->Kt);
-
+		camera->setTarget(Kt);
+		
 		vector3df A=render->MouseCoordToWorldCoord();
 		A.Y+=30;
 		light->setPosition(A);
 		
-		if ((render->device->getTimer()->getTime() - lastUpdate) > 30)
-		{
-			//OMG, performance is too high :)
-			lastUpdate = render->device->getTimer()->getTime();
+		
+		//TESTESTESTESTESTESTESTES
+		
+		//printf("Mouse X= %d\tY= %d \n",render->device->getCursorControl()->getPosition().X,render->device->getCursorControl()->getPosition().Y);
+		//printf("World X= %f\tY= %f\tZ= %f \n",render->MouseCoordToWorldCoord().X,render->MouseCoordToWorldCoord().Y,render->MouseCoordToWorldCoord().Z);
+		
+		//TESTESTESTESTESTESTESTES
 
-			render->driver->beginScene(true, true, SColor(255,100,101,140));
-				render->smgr->drawAll();
-				guienv->drawAll();
-			render->driver->endScene();
-		}
+		//render->driver->setTransform(video::ETS_WORLD, core::matrix4());
+		render->driver->beginScene(true, true, SColor(255,100,101,140));
+			render->smgr->drawAll();
+			guienv->drawAll();
+		render->driver->endScene();
 	}
 	render->smgr->clear();
 
