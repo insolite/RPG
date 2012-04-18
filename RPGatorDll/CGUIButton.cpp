@@ -41,7 +41,7 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 	if (currentGameObject->base->icon)
 		this->setImage(currentGameObject->base->icon);
 	else
-		this->setImage(Render::instance->driver->getTexture("rpgator.png"));
+		this->setImage(Render::instance->driver->getTexture("res/rpgator.png"));
 }
 
 CGUIButton::~CGUIButton(void)

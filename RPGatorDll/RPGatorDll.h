@@ -8,6 +8,7 @@
 #include "CGUIEditBox.h"
 #include "CGUIButton.h"
 #include "CGUIMeshViewer.h"
+#include "CGUIFileOpenDialog.h"
 
 #include "GameObject.h"
 #include "MapObject.h"

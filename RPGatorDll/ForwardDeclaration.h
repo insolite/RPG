@@ -9,6 +9,7 @@ class IGUIChatBox;
 class CGUIEditBox;
 class CGUIButton;
 class CGUIMeshViewer;
+class CGUIFileOpenDialog;
 
 class GameObject;
 class MapObject;

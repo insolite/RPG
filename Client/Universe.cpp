@@ -222,12 +222,64 @@ bool Universe::Run()
 						break;
 					}
 					case CharacterMoving:
+					{
 						//printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
 						render->moveNode(currentLocation->GetCharacter(PacketGetInt(inPacket,1))->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
 						//TEST
 						currentCharacter->x = PacketGetInt(inPacket, 5);
 						currentCharacter->y = PacketGetInt(inPacket, 9);
 						break;
+					}
+					case DialogOpened:
+					{
+						char title[256];
+						char text[4096];
+						wchar_t wstr[512];
+
+						//npcID = PacketGetInt(inPacket, 1);
+						strcpy(title, PacketGetString(inPacket, 5));
+						strcpy(text, PacketGetString(inPacket, strlen(title) + 5 + 1));
+
+						mbstowcs(wstr, title, 255);
+						IGUIWindow* wnd = guienv->addWindow(rect<s32>(256, 128, 256 + 256, 128 + 320), false, wstr, NULL, -1);
+						
+						std::vector<HTMLElement> guiElements = HTML2GUI(text);
+						for (std::vector<HTMLElement>::iterator i = guiElements.begin(); i != guiElements.end(); i++)
+						{
+							int elementRectInt[4];
+							int elementId;
+							elementRectInt[0] = atoi((*i).args["left"].c_str());
+							elementRectInt[1] = atoi((*i).args["top"].c_str());
+							elementRectInt[2] = elementRectInt[0] + atoi((*i).args["width"].c_str());
+							elementRectInt[3] = elementRectInt[1] + atoi((*i).args["height"].c_str());
+							rect<s32> elementRect(elementRectInt[0], elementRectInt[1], elementRectInt[2], elementRectInt[3]);
+							elementId = atoi((*i).args["id"].c_str());
+							
+							if ((*i).name == "input")
+							{
+								if ((*i).args["type"] == "button")
+								{
+									wchar_t wstr[256];
+									mbstowcs(wstr, (*i).args["value"].c_str(), 255);
+									guienv->addButton(elementRect, wnd, elementId, wstr, NULL);
+								}
+								else if ((*i).args["type"] == "text" || (*i).args["type"] == "hidden" || (*i).args["type"] == "password")
+								{
+									wchar_t wstr[256];
+									mbstowcs(wstr, (*i).args["value"].c_str(), 255);
+									IGUIEditBox* eb = guienv->addEditBox(wstr, elementRect, true, wnd, elementId);
+									if ((*i).args["type"] == "hidden")
+										eb->setVisible(false);
+									else if ((*i).args["type"] == "password")
+										eb->setPasswordBox(true);
+								}
+							}
+						}
+
+						mbstowcs(wstr, text, 4095);
+						guienv->addStaticText(wstr, rect<s32>(16, 32, 256 - 16, 320 - 16), false, true, wnd, -1, false);
+						break;
+					}
 				}
 			}
 			else if (iResult == -1)
@@ -295,6 +347,13 @@ bool Universe::Run()
 	return true;
 }
 
+std::vector<HTMLElement> Universe::HTML2GUI(char* text)
+{
+	std::vector<HTMLElement> elements;
+
+	return elements;
+}
+
 void Universe::MenuGUIInit()
 {
 	menuEventReceiver = new MenuEventReceiver();
@@ -311,8 +370,11 @@ void Universe::ClientGUIInit()
 {
 	clientEventReceiver = new ClientEventReceiver();
 	render->device->setEventReceiver((IEventReceiver*)clientEventReceiver);
+	
+	int btnsSize = 48;
 
 	//Window toggle buttons
+	/*
 	IGUIButton* btn;
 	btn = guienv->addButton(rect< s32 >(0, render->screenHeight - 32, 64, render->screenHeight), NULL, InventoryToggleButton, L"Inventory", NULL);
 	btn->setIsPushButton(true);
@@ -320,12 +382,24 @@ void Universe::ClientGUIInit()
 	btn->setIsPushButton(true);
 	btn = guienv->addButton(rect< s32 >(64 + 64, render->screenHeight - 32, 64 + 64 + 64, render->screenHeight), NULL, QuestsToggleButton, L"Quests", NULL);
 	btn->setIsPushButton(true);
+	*/
+	IGUIButton* btn;
+	btn = guienv->addButton(rect< s32 >(0, render->screenHeight - btnsSize, btnsSize, render->screenHeight), NULL, InventoryToggleButton, NULL, L"Inventory");
+	btn->setIsPushButton(true);
+	btn->setUseAlphaChannel(true);
+	btn->setImage(render->driver->getTexture("res/inventory_icon.png"));
+	btn = guienv->addButton(rect< s32 >(btnsSize, render->screenHeight - btnsSize, btnsSize + btnsSize, render->screenHeight), NULL, SkillsToggleButton, NULL, L"Skills");
+	btn->setIsPushButton(true);
+	btn->setUseAlphaChannel(true);
+	btn->setImage(render->driver->getTexture("res/skills_icon.png"));
+	btn = guienv->addButton(rect< s32 >(btnsSize + btnsSize, render->screenHeight - btnsSize, btnsSize + btnsSize + btnsSize, render->screenHeight), NULL, QuestsToggleButton, NULL, L"Quests");
+	btn->setIsPushButton(true);
+	btn->setUseAlphaChannel(true);
+	btn->setImage(render->driver->getTexture("res/quests_icon.png"));
 
 	//Chat
 	IGUIChatBox* cb = new IGUIChatBox(guienv, NULL, ChatBox, ChatEditBox, ChatInputEditBox, rect< s32 >(0, 128, 256, 128 + 256 + 24));
 	guienv->getRootGUIElement()->addChild(cb);
-
-	int btnsSize = 48;
 
 	//Hotkey
 	IGUIIconTable* tbl3 = new IGUIIconTable(guienv, NULL, HotkeyBar, rect< s32 >(320, render->screenHeight - btnsSize, 320 + 12 * btnsSize + (12 - 1) * 2, render->screenHeight), 12, 1);

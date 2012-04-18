@@ -257,7 +257,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 			{
 				char filename[256];
 
-				wcstombs(filename, ((IGUIFileOpenDialog*)event.GUIEvent.Caller)->getFileName(), 255);
+				wcstombs(filename, ((CGUIFileOpenDialog*)eventCaller)->getFileName(), 255);
 				switch (eventCallerId)
 				{
 					case MapObjectEditWindowFileOpenDialog:
@@ -604,7 +604,8 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						break;
 					}
 					case MapObjectEditWindowImportModelButton:
-						Universe::instance->guienv->addFileOpenDialog(L"Model file", true, NULL, MapObjectEditWindowFileOpenDialog);
+						//Universe::instance->guienv->addFileOpenDialog(L"Model file", true, NULL, MapObjectEditWindowFileOpenDialog);
+						Universe::instance->guienv->getRootGUIElement()->addChild(new CGUIFileOpenDialog(L"Model file", Universe::instance->guienv, Universe::instance->guienv->getRootGUIElement(), MapObjectEditWindowFileOpenDialog));
 						break;
 					case MapObjectEditButton:
 					{
@@ -692,7 +693,8 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						break;
 					}
 					case MapObjectAddButton:
-						Universe::instance->guienv->addFileOpenDialog(L"Model file", true, NULL, MapObjectAddWindowFileOpenDialog);
+						//Universe::instance->guienv->addFileOpenDialog(L"Model file", true, NULL, MapObjectAddWindowFileOpenDialog);
+						Universe::instance->guienv->getRootGUIElement()->addChild(new CGUIFileOpenDialog(L"Model file", Universe::instance->guienv, Universe::instance->guienv->getRootGUIElement(), MapObjectAddWindowFileOpenDialog));
 						break;
 					case LocationsEditButton:
 					{

@@ -8,6 +8,7 @@ void LuaFunctions::RegisterFunctions(lua_State* luaState)
 	lua_register(luaState, "GetQuestState", GetQuestState);
 	lua_register(luaState, "AddNPC", AddNPC);
 	lua_register(luaState, "AddItem", AddItem);
+	lua_register(luaState, "SendDialog", SendDialog);
 }
 
 int LuaFunctions::SayHello(lua_State* lua) //str
@@ -141,4 +142,34 @@ int LuaFunctions::AddItem(lua_State* lua) //baseId, spawnType, [x, y, locationId
 	}
 
 	return currentItem->id;
+}
+
+int LuaFunctions::SendDialog(lua_State* lua) //currentNPCId, title, text, currentCharacterId
+{
+	int currentNPCId;
+	char title[256];
+	char text[512];
+	int currentCharacterId;
+	CurrentCharacter* currentCharacter;
+	
+	currentNPCId = lua_tointeger(lua, 1);
+	strcpy(title, lua_tostring(lua, 2));
+	strcpy(text, lua_tostring(lua, 3));
+	currentCharacterId = lua_tointeger(lua, 4);
+
+	//TODO: data->GetCharacter
+	currentCharacter = NULL;
+	for (int i = 0; i < Universe::instance->game->data->locationsCount; i++)
+		if (currentCharacter = Universe::instance->game->data->locations[i]->GetCharacter(currentCharacterId))
+			break;
+
+	if (currentCharacter)
+	{
+		char outPacket[256];
+
+		CreatePacket(outPacket, DialogOpened, "%i%s%s", currentNPCId, title, text);
+		currentCharacter->connectSocket->Send(outPacket);
+	}
+
+	return 0;
 }

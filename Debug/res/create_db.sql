@@ -67,7 +67,10 @@ CREATE TABLE CurrentNPC (
 	baseId INTEGER,
 	x INTEGER,
 	y INTEGER,
-	locationId INTEGER
+	locationId INTEGER,
+	
+	FOREIGN KEY(baseId) REFERENCES NPC(id),
+	FOREIGN KEY(locationId) REFERENCES Location(id)
 	);
 
 CREATE TABLE CurrentItem (
@@ -77,7 +80,11 @@ CREATE TABLE CurrentItem (
 	y INTEGER,
 	locationId INTEGER,
 	currentCharacterId INTEGER,
-	`count` INTEGER
+	`count` INTEGER,
+	
+	FOREIGN KEY(baseId) REFERENCES Item(id),
+	FOREIGN KEY(locationId) REFERENCES Location(id),
+	FOREIGN KEY(currentCharacterId) REFERENCES CurrentCharacter(id)
 	);
 
 CREATE TABLE CurrentStatic (
@@ -85,7 +92,10 @@ CREATE TABLE CurrentStatic (
 	baseId INTEGER,
 	x INTEGER,
 	y INTEGER,
-	locationId INTEGER
+	locationId INTEGER,
+	
+	FOREIGN KEY(baseId) REFERENCES `Static`(id),
+	FOREIGN KEY(locationId) REFERENCES Location(id)
 	);
 
 CREATE TABLE `CurrentCharacter` (
@@ -96,20 +106,29 @@ CREATE TABLE `CurrentCharacter` (
 	locationId INTEGER,
 	
 	login VARCHAR(32),
-	password VARCHAR(32)
+	password VARCHAR(32),
+	
+	FOREIGN KEY(baseId) REFERENCES `Character`(id),
+	FOREIGN KEY(locationId) REFERENCES Location(id)
 );
 
 CREATE TABLE CurrentQuest (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
 	currentCharacterId INTEGER,
-	`state` INTEGER
+	`state` INTEGER,
+	
+	FOREIGN KEY(baseId) REFERENCES Quest(id),
+	FOREIGN KEY(currentCharacterId) REFERENCES CurrentCharacter(id)
 );
 
 CREATE TABLE CurrentSkill (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
-	currentCharacterId INTEGER
+	currentCharacterId INTEGER,
+	
+	FOREIGN KEY(baseId) REFERENCES Skill(id),
+	FOREIGN KEY(currentCharacterId) REFERENCES CurrentCharacter(id)
 );
 
 /*=============Init resources=============*/

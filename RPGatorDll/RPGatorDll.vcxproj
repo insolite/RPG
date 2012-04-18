@@ -80,6 +80,7 @@
     <ClInclude Include="ConnectSocket.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="CGUIButton.h" />
+    <ClInclude Include="CGUIFileOpenDialog.h" />
     <ClInclude Include="IGUIChatBox.h" />
     <ClInclude Include="IGUIIconTable.h" />
     <ClInclude Include="CurrentGameObject.h" />
@@ -117,6 +118,7 @@
     <ClCompile Include="ConnectSocket.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="CGUIButton.cpp" />
+    <ClCompile Include="CGUIFileOpenDialog.cpp" />
     <ClCompile Include="IGUIChatBox.cpp" />
     <ClCompile Include="IGUIIconTable.cpp" />
     <ClCompile Include="CurrentGameObject.cpp" />

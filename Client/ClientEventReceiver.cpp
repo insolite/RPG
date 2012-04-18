@@ -35,13 +35,38 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			return false;
 		if (Mouse[EMIE_LMOUSE_PRESSED_DOWN])
 		{
-			char outPacket[256];
-			vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
-			int x, y;
-			x = (int)(position.X / CELL_SIZE);
-			y = (int)(position.Z / CELL_SIZE);
-			CreatePacket(outPacket, Move, "%i%i", x, y);
-			Universe::instance->connectSocket->Send(outPacket);
+			CurrentMapObject<MapObject>* targetCurrentMapObject;
+			if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentNPC>(Universe::instance->currentLocation->currentNPCs, Universe::instance->currentLocation->currentNPCsCount))
+			{ //TODO: Attack
+				char outPacket[256];
+
+				CreatePacket(outPacket, DialogOpen, "%i%i", targetCurrentMapObject->id, 0);
+				Universe::instance->connectSocket->Send(outPacket);
+			}
+			else if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentItem>(Universe::instance->currentLocation->currentItems, Universe::instance->currentLocation->currentItemsCount))
+			{
+				char outPacket[256];
+
+				CreatePacket(outPacket, ItemPickUp, "%i", targetCurrentMapObject->id);
+				Universe::instance->connectSocket->Send(outPacket);
+			}
+			else if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentCharacter>(Universe::instance->currentLocation->currentCharacters, Universe::instance->currentLocation->currentCharactersCount))
+			{
+				char outPacket[256];
+
+				//CreatePacket(outPacket, Attack, "%i%i", targetCurrentMapObject->id, 0);
+				//Universe::instance->connectSocket->Send(outPacket);
+			}
+			else
+			{
+				char outPacket[256];
+				vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
+				int x, y;
+				x = (int)(position.X / CELL_SIZE);
+				y = (int)(position.Z / CELL_SIZE);
+				CreatePacket(outPacket, Move, "%i%i", x, y);
+				Universe::instance->connectSocket->Send(outPacket);
+			}
 		}
 		else if (Mouse[EMIE_MOUSE_WHEEL])
 		{

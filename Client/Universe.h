@@ -41,6 +41,13 @@ enum ClientGUIElements
 	IconTableSkillButton
 };
 
+struct HTMLElement
+{
+	std::string name; //tag name
+	std::string content; //tag content
+	std::map<std::string, std::string> args; //tag arguments (type="text", src="img.png", etc.)
+};
+
 class Universe
 {/*
  Main wrapper. Holds connection socket, game instance, etc.
@@ -73,6 +80,7 @@ public:
 	void MenuGUIDestroy();
 	void ClientGUIDestroy();
 	void DrawScene(); //TEST
+	std::vector<HTMLElement> HTML2GUI(char* text);
 
 	Universe(void); //Initializes the instance
 	~Universe(void); //Finalizes the instance

@@ -70,11 +70,23 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						sprintf(path, "editor/%s/data/location", gameName);
 						CreateDirectory(path, NULL);
 						*/
-						sprintf(path, "editor/%s/resource", gameName);
+						sprintf(path, "editor/%s/model", gameName);
 						CreateDirectory(path, NULL);
-						sprintf(path, "editor/%s/resource/texture", gameName);
+						sprintf(path, "editor/%s/model/NPC", gameName);
 						CreateDirectory(path, NULL);
-						sprintf(path, "editor/%s/resource/script", gameName);
+						sprintf(path, "editor/%s/model/Static", gameName);
+						CreateDirectory(path, NULL);
+						sprintf(path, "editor/%s/model/Item", gameName);
+						CreateDirectory(path, NULL);
+						sprintf(path, "editor/%s/model/Character", gameName);
+						CreateDirectory(path, NULL);
+						sprintf(path, "editor/%s/script", gameName);
+						CreateDirectory(path, NULL);
+						sprintf(path, "editor/%s/script/Skill", gameName);
+						CreateDirectory(path, NULL);
+						sprintf(path, "editor/%s/script/Item", gameName);
+						CreateDirectory(path, NULL);
+						sprintf(path, "editor/%s/script/NPC", gameName);
 						CreateDirectory(path, NULL);
 
 						//Create subdirs

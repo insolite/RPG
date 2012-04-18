@@ -26,7 +26,18 @@ enum Packet
 	CharacterUnspawned,
 
 	SkillUse,
-	ItemUse
+	ItemUse,
+
+	DialogOpen,
+	DialogOpened,
+	ItemPickUp
+};
+
+enum NPCEvent
+{
+	Attack,
+	Kill,
+	Dialog
 };
 
 enum SpawnType

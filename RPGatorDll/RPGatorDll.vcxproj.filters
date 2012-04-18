@@ -138,6 +138,9 @@
     <ClInclude Include="ConnectSocket.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="CGUIFileOpenDialog.h">
+      <Filter>Заголовочные файлы\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="ConnectSocket.cpp">
       <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="CGUIFileOpenDialog.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

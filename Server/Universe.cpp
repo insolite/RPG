@@ -316,6 +316,42 @@ void Universe::Run(char* gameName)
 							}
 							break;
 						}
+						case DialogOpen:
+						{
+							CurrentNPC* currentNPC = clients[ci]->character->currentLocation->GetNPC(PacketGetInt(inPacket, 1));
+							if (currentNPC)
+							{
+								//TODO: check distance from NPC to Character
+								char str[512]; //For init script variables
+
+								sprintf(str, "\
+									EVENT_TYPE=%d;\
+									DIALOG_ID=%d;\
+									NPC_ID=%d;\
+									CHARACTER_ID=%d;\
+									CHARACTER_BID=%d;\
+									CHARACTER_X=%d;\
+									CHARACTER_Y=%d;\
+									CHARACTER_LOCATION_ID=%d;\
+									",
+									Dialog,
+									PacketGetInt(inPacket, 5),
+									currentNPC->id,
+									clients[ci]->character->id,
+									clients[ci]->character->base->id,
+									clients[ci]->character->x,
+									clients[ci]->character->y,
+									clients[ci]->character->currentLocation->id
+									);
+								luaL_dostring(luaState, str);
+								luaL_dofile(luaState, currentNPC->base->path);
+							}
+							else
+							{
+								Log(Warning, "Client requested dialog with NPC which is not exist in current location (or absolutely)");
+							}
+							break;
+						}
 					}
 				}
 				else if (iResult == -1)
