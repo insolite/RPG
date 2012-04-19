@@ -75,6 +75,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FlyStraightWCallBackAnimator.h" />
+    <ClInclude Include="CAnimationEndCallBack.h" />
     <ClInclude Include="CGUIEditBox.h" />
     <ClInclude Include="CGUIMeshViewer.h" />
     <ClInclude Include="ConnectSocket.h" />
@@ -113,6 +115,8 @@
     <ClInclude Include="utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FlyStraightWCallBackAnimator.cpp" />
+    <ClCompile Include="CAnimationEndCallBack.cpp" />
     <ClCompile Include="CGUIEditBox.cpp" />
     <ClCompile Include="CGUIMeshViewer.cpp" />
     <ClCompile Include="ConnectSocket.cpp" />

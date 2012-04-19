@@ -58,7 +58,6 @@ void Universe::Run(char* gameName)
 			{
 				if (iResult > 0)
 				{ //Packet received
-					printf("Packet received\n");
 					switch (GetPacketType(inPacket))
 					{
 						case LogIn:

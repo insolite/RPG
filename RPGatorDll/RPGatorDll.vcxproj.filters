@@ -141,6 +141,12 @@
     <ClInclude Include="CGUIFileOpenDialog.h">
       <Filter>Заголовочные файлы\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="CAnimationEndCallBack.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="FlyStraightWCallBackAnimator.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -238,6 +244,12 @@
     </ClCompile>
     <ClCompile Include="CGUIFileOpenDialog.cpp">
       <Filter>Файлы исходного кода\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CAnimationEndCallBack.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="FlyStraightWCallBackAnimator.cpp">
+      <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

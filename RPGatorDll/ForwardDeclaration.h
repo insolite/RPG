@@ -4,6 +4,8 @@ class SqliteResult;
 class ConnectSocket;
 
 class Render;
+class CAnimationEndCallBack;
+
 class IGUIIconTable;
 class IGUIChatBox;
 class CGUIEditBox;
@@ -23,9 +25,9 @@ class Quest;
 class Skill;
 
 template<class T>
-class CurrentGameObject;
+class __declspec(dllexport) CurrentGameObject;
 template<class T>
-class CurrentMapObject;
+class __declspec(dllexport) CurrentMapObject;
 class CurrentNPC;
 class CurrentStatic;
 class CurrentItem;

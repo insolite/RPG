@@ -11,6 +11,8 @@
 #include "Location.h"
 #include "GameData.h"
 #include "Game.h"
+#include "CAnimationEndCallBack.h"
+#include "FlyStraightWCallBackAnimator.h"
 #include "Render.h"
 
 Render* Render::instance = NULL;
@@ -29,6 +31,8 @@ Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* wind
 	driver = device->getVideoDriver();
 	smgr = device->getSceneManager();
 	
+	animationEndCallBack = new CAnimationEndCallBack();
+
 	instance = this;
 }
 
@@ -112,23 +116,8 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 			//node->setMaterialFlag(EMF_LIGHTING, false);
 			node->setMaterialTexture(0, texture);
 		}
-		/*
-		if(isMD2)
-		{
-			//node->setMD2Animation(scene::EMAT_POINT); //or interval of frame for scelet animation
-			//node->setAnimationSpeed(20.f);
-			video::SMaterial material;
-			material.setTexture(0, driver->getTexture(""));
-			material.Lighting = light;
-			//material.NormalizeNormals = true;// on future
-			node->getMaterial(0) = material;
-		}
-		else
-		{
-			//
-			//...
-		}
-		*/
+
+		node->setMD2Animation(EMAT_STAND);
 	}
 
 	return node;
@@ -138,7 +127,9 @@ void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 {
 	vector3df oldPosition = node->getPosition();
 	int duration = (int)(30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2)));
-	scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
+	//scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
+	scene::ISceneNodeAnimator* anim = new FlyStraightWCallBackAnimator(node->getPosition(), nextpos, duration, false, device->getTimer()->getTime());
+	((FlyStraightWCallBackAnimator*)anim)->setAnimatorEndCallBack(Render::instance->animationEndCallBack);
 	vector3df rot(0.0f, (f32)GetAngle(oldPosition.X, oldPosition.Z, nextpos.X, nextpos.Z), 0.0f);
 	node->setRotation(rot);
 	if (anim)

@@ -58,7 +58,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 				//Universe::instance->connectSocket->Send(outPacket);
 			}
 			else
-			{
+			{ //Move
 				char outPacket[256];
 				vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
 				int x, y;
@@ -66,6 +66,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 				y = (int)(position.Z / CELL_SIZE);
 				CreatePacket(outPacket, Move, "%i%i", x, y);
 				Universe::instance->connectSocket->Send(outPacket);
+				Universe::instance->currentCharacter->setAnimation(EMAT_RUN);
 			}
 		}
 		else if (Mouse[EMIE_MOUSE_WHEEL])

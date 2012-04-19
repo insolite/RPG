@@ -24,13 +24,13 @@ Universe::Universe(void)
 	
 	SColor color;
 
-	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE);
+	color = guienv->getSkin()->getColor(EGDC_3D_FACE);
 	color.setAlpha(192);
-	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE, color);
+	guienv->getSkin()->setColor(EGDC_3D_FACE, color);
 	
-	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW);
+	color = guienv->getSkin()->getColor(EGDC_3D_SHADOW);
 	color.setAlpha(192);
-	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW, color);
+	guienv->getSkin()->setColor(EGDC_3D_SHADOW, color);
 }
 
 Universe::~Universe(void)

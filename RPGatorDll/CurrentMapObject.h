@@ -2,7 +2,7 @@
 #include "Render.h"
 
 template<class T> //T inherits MapObject
-class CurrentMapObject :
+class __declspec(dllexport) CurrentMapObject :
 	public CurrentGameObject<T>
 {
 public:
@@ -10,40 +10,15 @@ public:
 	int y; //in "our" coordinates, not in pixels
 	Location* currentLocation; //Cross-link. Client does not use it. It uses Universe->currentLocation
 	ISceneNode* node;
+	ISceneNode* title;
 	
-	__declspec(dllexport) CurrentMapObject(SqliteResult sqliteResult, T** mapObjects, int mapObjectsCount, Location* location) :
-		CurrentGameObject<T>::CurrentGameObject(sqliteResult, mapObjects, mapObjectsCount)
-	{
-		x = sqliteResult.integers["x"];
-		y = sqliteResult.integers["y"];
-		currentLocation = location;
-		if (base->mesh)
-		{
-			node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df((f32)x * CELL_SIZE, 0.0f, (f32)y * CELL_SIZE));
-			((IAnimatedMeshSceneNode*)node)->setMD2Animation(EMAT_RUN); //TEST
-		}
-		else
-			node = NULL;
-	}
+	CurrentMapObject(SqliteResult sqliteResult, T** mapObjects, int mapObjectsCount, Location* location);
 
-	__declspec(dllexport) CurrentMapObject(char* currentMapObjectSpawnedPacket, T** mapObjects, int mapObjectsCount) :
-		CurrentGameObject<T>::CurrentGameObject(currentMapObjectSpawnedPacket, mapObjects, mapObjectsCount)
-	{
-		x = PacketGetInt(currentMapObjectSpawnedPacket, 9);
-		y = PacketGetInt(currentMapObjectSpawnedPacket, 13);
-		currentLocation = NULL; //Client does not use it. It uses Universe->currentLocation
-		if (base->mesh)
-		{
-			node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df((f32)x * CELL_SIZE, 0.0f, (f32)y * CELL_SIZE));
-			((IAnimatedMeshSceneNode*)node)->setMD2Animation(EMAT_RUN);
-		}
-		else
-			node = NULL;
-	}
+	CurrentMapObject(char* currentMapObjectSpawnedPacket, T** mapObjects, int mapObjectsCount);
 
-	__declspec(dllexport) ~CurrentMapObject(void)
-	{
-		if (node)
-			node->remove();
-	}
+	void setTitle(char* text);
+
+	void setAnimation(EMD2_ANIMATION_TYPE animationType);
+
+	~CurrentMapObject(void);
 };

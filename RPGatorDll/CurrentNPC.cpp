@@ -16,12 +16,16 @@
 CurrentNPC::CurrentNPC(SqliteResult sqliteResult, Location* location) :
 	CurrentMapObject<NPC>::CurrentMapObject(sqliteResult, Game::instance->resources->npcs, Game::instance->resources->npcsCount, location)
 {
+	if (node)
+		setTitle(base->name);
 }
 
 //Initialization from incoming packet (Client)
 CurrentNPC::CurrentNPC(char* currentMapObjectSpawnedPacket) :
 	CurrentMapObject<NPC>::CurrentMapObject(currentMapObjectSpawnedPacket, Game::instance->resources->npcs, Game::instance->resources->npcsCount)
 {
+	if (node)
+		setTitle(base->name);
 }
 
 CurrentNPC::~CurrentNPC(void)

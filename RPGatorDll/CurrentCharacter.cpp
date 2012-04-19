@@ -31,6 +31,9 @@ CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location
 	int rowsCount;
 	std::vector<SqliteResult> sqliteResultsChildren;
 
+	if (node)
+		setTitle(login);
+
 	//CurrentItems
 	sprintf(query, "SELECT * FROM CurrentItem WHERE locationId=0 AND currentCharacterId=%d", id);
 	sqliteResultsChildren = SqliteGetRows(Game::instance->db, query);
@@ -75,6 +78,9 @@ CurrentCharacter::CurrentCharacter(char* currentMapObjectSpawnedPacket) :
 	login = new char[strlen(PacketGetString(currentMapObjectSpawnedPacket, 17)) + 1];
 	strcpy(login, PacketGetString(currentMapObjectSpawnedPacket, 17));
 	password = NULL;
+	
+	if (node)
+		setTitle(login);
 
 	currentItems = NULL;
 	currentItemsCount = 0;

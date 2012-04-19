@@ -3,6 +3,7 @@
 #include "utilities.h"
 #include "ConnectSocket.h"
 #include "Render.h"
+#include "CAnimationEndCallBack.h"
 #include "IGUIIconTable.h"
 #include "IGUIChatBox.h"
 #include "CGUIEditBox.h"
