@@ -589,10 +589,10 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 									Universe::instance->brush[index] = Universe::instance->game->resources->GetNPC(mapObjectId);
 									break;
 								case 2:
-									Universe::instance->brush[index] = Universe::instance->game->resources->GetItem(mapObjectId);
+									Universe::instance->brush[index] = Universe::instance->game->resources->GetStatic(mapObjectId);
 									break;
 								case 3:
-									Universe::instance->brush[index] = Universe::instance->game->resources->GetStatic(mapObjectId);
+									Universe::instance->brush[index] = Universe::instance->game->resources->GetItem(mapObjectId);
 									break;
 								case 4:
 									Universe::instance->brush[index] = Universe::instance->game->resources->GetCharacter(mapObjectId);
