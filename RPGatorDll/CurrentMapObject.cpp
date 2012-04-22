@@ -65,7 +65,7 @@ void CurrentMapObject<T>::setTitle( char* text )
 		title->remove();
 	wchar_t wstr[256];
 	mbstowcs(wstr, text, 255);
-	IBillboardTextSceneNode* title = Render::instance->smgr->addBillboardTextSceneNode(Render::instance->device->getGUIEnvironment()->getSkin()->getFont(), wstr, node, dimension2df(strlen(text) / 1.5f,1.5f), vector3df(0,60,0));
+	IBillboardTextSceneNode* title = Render::instance->smgr->addBillboardTextSceneNode(Render::instance->device->getGUIEnvironment()->getSkin()->getFont(), wstr, node, dimension2df(strlen(text) / 1.5f,1.5f), vector3df(0,40,0));
 }
 
 template<class T>

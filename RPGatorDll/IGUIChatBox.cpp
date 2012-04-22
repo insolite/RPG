@@ -10,7 +10,7 @@ IGUIChatBox::IGUIChatBox(IGUIEnvironment* environment, IGUIElement* parent, s32 
 	CGUIEditBox* chatEditBox = new CGUIEditBox(NULL, true, environment, this, editBoxId, rect< s32 >(0, 0, 256, 256));
 	chatEditBox->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	chatEditBox->setMultiLine(true);
-	//chatEditBox->setEditable(false);
+	chatEditBox->setEditable(false);
 	//Environment->addEditBox(NULL, rect< s32 >(0, 256, 256, 256 + 24), true, this, chatInpuId);
 	CGUIEditBox* chatInputEditBox = new CGUIEditBox(NULL, true, environment, this, chatInpuId, rect< s32 >(0, 256 - 4, 256, 256 + 24 + 4));
 

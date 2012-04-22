@@ -402,6 +402,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		}
 		break;
 	case KEY_RETURN:
+		if (!this->IsEditable)
+			break;
 		if (MultiLine)
 		{
 			inputChar(L'\n');
@@ -518,7 +520,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		break;
 
 	case KEY_BACK:
-		if ( !this->IsEnabled )
+		if ( !this->IsEnabled || !this->IsEditable )
 			break;
 
 		if (Text.size())
@@ -558,7 +560,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		}
 		break;
 	case KEY_DELETE:
-		if ( !this->IsEnabled )
+		if ( !this->IsEnabled || !this->IsEditable )
 			break;
 
 		if (Text.size() != 0)
@@ -626,6 +628,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		return false;
 
 	default:
+		if (!this->IsEditable)
+			break;
 		inputChar(event.KeyInput.Char);
 		return true;
 	}
@@ -1480,4 +1484,9 @@ void CGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 			(EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
 
 	// setOverrideFont(in->getAttributeAsFont("OverrideFont"));
+}
+
+void CGUIEditBox::setEditable(bool editable)
+{
+	this->IsEditable = editable;
 }

@@ -38,14 +38,9 @@ enum ClientGUIElements
 	SkillsWindow,
 	QuestsWindow,
 	IconTableItemButton,
-	IconTableSkillButton
-};
+	IconTableSkillButton,
 
-struct HTMLElement
-{
-	std::string name; //tag name
-	std::string content; //tag content
-	std::map<std::string, std::string> args; //tag arguments (type="text", src="img.png", etc.)
+	DialogElement //Must be the last
 };
 
 class Universe
@@ -79,7 +74,6 @@ public:
 	void MenuGUIDestroy();
 	void ClientGUIDestroy();
 	void DrawScene(); //TEST
-	std::vector<HTMLElement> HTML2GUI(char* text);
 
 	Universe(void); //Initializes the instance
 	~Universe(void); //Finalizes the instance

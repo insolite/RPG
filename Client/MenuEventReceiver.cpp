@@ -45,7 +45,7 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						break;
 					case RegisterButton:
 					{
-						IGUIWindow* wnd = Universe::instance->guienv->addWindow(rect<s32>(Universe::instance->render->screenWidth / 2 - 256, Universe::instance->render->screenHeight / 2 - 256, Universe::instance->render->screenWidth / 2 + 256, Universe::instance->render->screenHeight / 2 + 256), false, L"Registration", NULL, RegisterWindow);
+						IGUIWindow* wnd = Universe::instance->guienv->addWindow(rect<s32>(Universe::instance->render->screenWidth / 2 - 256, Universe::instance->render->screenHeight / 2 - 256, Universe::instance->render->screenWidth / 2 + 256, Universe::instance->render->screenHeight / 2 + 256), true, L"Registration", NULL, RegisterWindow);
 
 						IGUIEditBox* lbtn = Universe::instance->guienv->addEditBox(NULL, rect<s32>(32, 32, 32 + 128, 32 + 32), true, wnd, RegisterWindowLoginEditBox);
 						Universe::instance->guienv->setFocus(lbtn);

@@ -107,7 +107,7 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 		vector3df extent = node->getBoundingBox().getExtent(); 
 		if(extent.Y != 0) 
 		{
-			f32 scale = 10.0f / extent.Y; 
+			f32 scale = 15.0f / extent.Y; 
 			node->setScale(vector3df(scale,scale,scale)); 
 		}
 

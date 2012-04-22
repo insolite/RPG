@@ -357,6 +357,9 @@ void Universe::Run(char* gameName)
 
 								sprintf(str, "\
 									EVENT_TYPE=%d;\
+									EVENT_TYPE_ATTACK=0;\
+									EVENT_TYPE_KILL=1;\
+									EVENT_TYPE_DIALOG=2;\
 									DIALOG_ID=%d;\
 									NPC_ID=%d;\
 									CHARACTER_ID=%d;\
@@ -365,9 +368,9 @@ void Universe::Run(char* gameName)
 									CHARACTER_Y=%d;\
 									CHARACTER_LOCATION_ID=%d;\
 									",
-									Dialog,
-									PacketGetInt(inPacket, 5),
-									currentNPC->id,
+									Dialog, //EVENT_TYPE
+									PacketGetInt(inPacket, 5), //DIALOG_ID
+									currentNPC->id, //NPC_ID
 									clients[ci]->character->id,
 									clients[ci]->character->base->id,
 									clients[ci]->character->x,

@@ -9,6 +9,7 @@ public:
 	int buttonSize;
 	bool Dragging;
 	core::position2d<s32> DragStart;
+	CGUIButton *selectedButton;
 
 	__declspec(dllexport) void draw();
 	__declspec(dllexport) void addButton(CGUIButton* button);

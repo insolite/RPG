@@ -31,6 +31,8 @@ IGUIIconTable::IGUIIconTable(IGUIEnvironment* environment, IGUIElement* parent, 
 				);
 			this->addChild(container);
 		}
+
+	selectedButton = NULL;
 }
 
 IGUIIconTable::~IGUIIconTable(void)
