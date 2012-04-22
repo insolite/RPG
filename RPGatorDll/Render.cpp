@@ -85,7 +85,7 @@ void Render::drawKub(f32 xPos, f32 yPos, f32 zPos, int width, int height)
         
         terrain->setMaterialType(video::EMT_DETAIL_MAP);
 
-        terrain->scaleTexture(1.0f, 45.0f);
+        terrain->scaleTexture(1.0f, 100.0f);
 }
 
 ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* texture, bool light,core::vector3df scale, core::vector3df pos, core::vector3df rotation)
@@ -175,7 +175,7 @@ dimension2d<u32> Render::GetDesktopRes()
 	return DesktopResolution;
 }
 
-void Render::Efect_1(ISceneNode* p)
+void Render::PlayEffect(ISceneNode* p, core::array< video::ITexture* > textures)
 {
 	scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(0, -1,
                                 32,                              // Subdivisions on U axis
@@ -189,21 +189,11 @@ void Render::Efect_1(ISceneNode* p)
             n->setScale(core::vector3df(56.0f, 56.0f, 56.0f));
             //n->setPosition(core::vector3df(-120,50,40));
 
-            core::array< video::ITexture* > textures;
-            for (s32 g=7; g > 0; --g)
-             {
-                core::stringc tmp;
-                tmp = "portal";
-                tmp += g;
-                tmp += ".bmp";
-                video::ITexture* t = driver->getTexture( tmp.c_str() );
-                textures.push_back(t);
-             }
-
-             scene::ISceneNodeAnimator* glow = smgr->createTextureAnimator(textures, 150);
-
+             scene::ISceneNodeAnimator* glow = smgr->createTextureAnimator(textures, 92, false);
+			 
+			 //((IAnimatedMeshSceneNode*)n)->setAnimationEndCallback(animationEndCallBack);
              n->addAnimator(glow);
-
+			 
              glow->drop();
         }
 }

@@ -81,6 +81,12 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 	fillListBox();
 
 	//CGUIFileOpenDialog changes:
+
+	// Careful, don't just set the modal as parent above. That will mess up the focus (and is hard to change because we have to be very
+	// careful not to get virtual function call, like OnEvent, in the window.
+	IGUIElement * modalScreen = Environment->addModalScreen(parent);
+	modalScreen->addChild(this);
+	
 	initialWorkingDirectory = FileSystem->getWorkingDirectory();
 }
 

@@ -80,6 +80,8 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						CreateDirectory(path, NULL);
 						sprintf(path, "editor/%s/model/Character", gameName);
 						CreateDirectory(path, NULL);
+						sprintf(path, "editor/%s/model/Skill", gameName);
+						CreateDirectory(path, NULL);
 						sprintf(path, "editor/%s/script", gameName);
 						CreateDirectory(path, NULL);
 						sprintf(path, "editor/%s/script/Skill", gameName);

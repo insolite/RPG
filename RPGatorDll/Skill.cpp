@@ -12,7 +12,19 @@
 Skill::Skill(SqliteResult sqliteResult, char* iconPath) :
 	GameObject(sqliteResult, iconPath)
 {
-	sprintf(path, "server/%s/script/Skill/%d.lua", Game::instance->name, id);
+	char path[256];
+
+	if (iconPath)
+	{
+		for (s32 g = 0; g < 7; g++)
+		{
+			sprintf(path, "client/%s/model/Skill/%d.%d.bmp", Game::instance->name, id, g); //TODO: Editor path
+			if (FileExists(path))
+				effectTextures.push_back(Render::instance->driver->getTexture(path));
+		}
+	}
+	else
+		sprintf(scriptPath, "server/%s/script/Skill/%d.lua", Game::instance->name, id); //TODO: Editor path
 }
 
 Skill::~Skill(void)

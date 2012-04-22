@@ -164,60 +164,58 @@ bool CGUIButton::OnEvent(const SEvent& event)
 	case EET_MOUSE_INPUT_EVENT:
 		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 		{
-			if (Environment->hasFocus(this) &&
-				!AbsoluteClippingRect.isPointInside(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
+			if (event.MouseInput.Control)
 			{
-					Environment->removeFocus(this);
-					return false;
+				DragStart.X = event.MouseInput.X;
+				DragStart.Y = event.MouseInput.Y;
+				StartDragging();
 			}
-
-			if (!IsPushButton)
-				setPressed(true);
-
-			Environment->setFocus(this);
-
-			DragStart.X = event.MouseInput.X;
-			DragStart.Y = event.MouseInput.Y;
-			if (Parent)
+			else
 			{
-				Parent->bringToFront(this);
-				if (event.MouseInput.Control)
-					StartDragging();
+				if (Environment->hasFocus(this) &&
+					!AbsoluteClippingRect.isPointInside(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
+				{
+						Environment->removeFocus(this);
+						return false;
+				}
+
+				if (!IsPushButton)
+					setPressed(true);
+
+				Environment->setFocus(this);
+
+				if (Parent)
+				{
+					Parent->bringToFront(this);
+				}
 			}
-			
 			return true;
-		}/*
-		else
-		if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
-		{
-			StartDragging();
-		}*/
+		}
 		else
 		if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
 		{
-			bool wasPressed = Pressed;
-			//Environment->removeFocus(this);
-
-			if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ) ) )
-			{
-				if (!IsPushButton)
-					setPressed(false);
-				return true;
-			}
-
-			if (!IsPushButton)
-				setPressed(false);
-			else
-			{
-				setPressed(!Pressed);
-			}
-
 			if (Dragging)
 			{
 				StopDragging();
 			}
-			else
 			{
+				bool wasPressed = Pressed;
+				//Environment->removeFocus(this);
+
+				if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ) ) )
+				{
+					if (!IsPushButton)
+						setPressed(false);
+					return true;
+				}
+
+				if (!IsPushButton)
+					setPressed(false);
+				else
+				{
+					setPressed(!Pressed);
+				}
+
 				if ((!IsPushButton && wasPressed && Parent) ||
 					(IsPushButton && wasPressed != Pressed))
 				{
@@ -229,7 +227,6 @@ bool CGUIButton::OnEvent(const SEvent& event)
 					Parent->OnEvent(newEvent);
 				}
 			}
-
 			return true;
 		}
 		else if (event.MouseInput.Event == EMIE_MOUSE_MOVED)

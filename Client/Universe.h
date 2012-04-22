@@ -70,7 +70,6 @@ public:
 	ProgramState state;
 	Render* render;
 	ICameraSceneNode *camera;
-	ICameraSceneNode *camera2;
 	int cameraY;
 
 	bool Run(); //Main loop

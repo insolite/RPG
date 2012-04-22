@@ -112,20 +112,10 @@ bool Universe::Run()
 	ISceneNode* camPos=render->smgr->addEmptySceneNode();
 	camPos->setPosition(vector3df(50,cameraY,10));
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
-	camera2=render->smgr->addCameraSceneNode(0, vector3df(0,50,-20), vector3df(0,0,0));
-	render->smgr->setActiveCamera(camera);
 
-	//=============================
 	scene::ISceneNode* lnode; 
 	lnode = render->smgr->addLightSceneNode(0,vector3df(0,30,0),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
-	// цепляем билборд к источнику света
 	render->smgr->setAmbientLight(video::SColor(0,60,60,60));
-	//scene::ISceneNode* bnode;
-	IMeshSceneNode* bnode = render->smgr->addCubeSceneNode(10,lnode);
-	//bnode = render->smgr->addBillboardSceneNode(0,dimension2df(550,550),vector3df(0,30,0));
-    //bnode->setMaterialFlag(video::EMF_LIGHTING, false);
-    //bnode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-    //bnode->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
 	
 	state = Continue;
 
@@ -280,6 +270,23 @@ bool Universe::Run()
 						guienv->addStaticText(wstr, rect<s32>(16, 32, 256 - 16, 320 - 16), false, true, wnd, -1, false);
 						break;
 					}
+					case PlayEffect:
+					{
+						CurrentMapObject<MapObject>* currentMapObject;
+						int currentMapObjectId = PacketGetInt(inPacket, 2);
+						int skillId = PacketGetInt(inPacket, 6);
+						switch (PacketGetByte(inPacket, 1))
+						{
+							case 0: //NPC
+								currentMapObject = (CurrentMapObject<MapObject>*)currentLocation->GetNPC(currentMapObjectId);
+								break;
+							case 3: //Character
+								currentMapObject = (CurrentMapObject<MapObject>*)currentLocation->GetCharacter(currentMapObjectId);
+								break;
+						}
+						render->PlayEffect(currentMapObject->node, game->resources->GetSkill(skillId)->effectTextures);
+						break;
+					}
 				}
 			}
 			else if (iResult == -1)
@@ -320,10 +327,8 @@ bool Universe::Run()
 					camera->setPosition(Km);
 					camera->setTarget(render->Kt);
 				}
-			
-				vector3df A=render->MouseCoordToWorldCoord();
-				A.Y=20;
-				lnode->setPosition(A);
+				
+				lnode->setPosition(camera->getPosition());
 
 				render->driver->beginScene(true, true, SColor(255,100,101,140));
 					render->smgr->drawAll();
@@ -402,7 +407,8 @@ void Universe::ClientGUIInit()
 	guienv->getRootGUIElement()->addChild(cb);
 
 	//Hotkey
-	IGUIIconTable* tbl3 = new IGUIIconTable(guienv, NULL, HotkeyBar, rect< s32 >(320, render->screenHeight - btnsSize, 320 + 12 * btnsSize + (12 - 1) * 2, render->screenHeight), 12, 1);
+	int slotsCount = 9;
+	IGUIIconTable* tbl3 = new IGUIIconTable(guienv, NULL, HotkeyBar, rect< s32 >(320, render->screenHeight - btnsSize, 320 + slotsCount * btnsSize + (slotsCount - 1) * 2, render->screenHeight), slotsCount, 1);
 	guienv->getRootGUIElement()->addChild(tbl3);
 }
 

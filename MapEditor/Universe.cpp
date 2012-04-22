@@ -208,43 +208,18 @@ bool Universe::Run()
 	
 	CreateBrushMask(1); //TODO: slider get value
 	
-
 	DrawScene();
 	//variables for camera
 	camPos=render->smgr->addEmptySceneNode();
 	camPos->setPosition(vector3df(50,50,10));
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
 
-
-
-	camera2=render->smgr->addCameraSceneNode(0, vector3df(0,50,-20), vector3df(0,0,0));
-	//camera2=render->smgr->addCameraSceneNodeFPS();
-	render->smgr->setActiveCamera(camera);
-	//render->smgr->addCameraSceneNodeFPS()->setPosition(vector3df(0,30,0));
-	//=============================
+	scene::ISceneNode* lnode; 
+	lnode = render->smgr->addLightSceneNode(0,vector3df(0,30,0),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
+	render->smgr->setAmbientLight(video::SColor(0,60,60,60));
 	
-	scene::ILightSceneNode* light; 
-	light = render->smgr->addLightSceneNode(0,vector3df(0,40,0),video::SColorf(1.0f, 0.6f, 0.7f, 1.0f),150.0F);
-	//render->smgr->setAmbientLight(video::SColor(0,60,60,60));
-	//light->setLightType(video::ELT_POINT);
-	//light->setDebugDataVisible
-	//light->setDebugDataVisible(EDS_BBOX);
-	//light->setLightType(video::ELT_SPOT);
-	//light->setLightType(ELT_DIRECTIONAL);
-
-	// цепляем билборд к источнику света
-		
-    IBillboardSceneNode* bill = render->smgr->addBillboardSceneNode(light, core::dimension2d<f32>(10, 10));
-        bill->setMaterialFlag(video::EMF_LIGHTING, false);
-        bill->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
-
-        bill->setMaterialTexture(0, render->driver->getTexture("particlewhite.bmp"));
-	//bill->setMaterialFlag(video::EMF_LIGHTING, false);
 	camPos->setID(ID_IsNotPickable);
 	camera->setID(ID_IsNotPickable);
-	camera2->setID(ID_IsNotPickable);
-	light->setID(ID_IsNotPickable);
-	bill->setID(ID_IsNotPickable);
 	
 	state = Continue;
 
@@ -282,10 +257,8 @@ bool Universe::Run()
 		camera->setPosition(Km);
 		camera->setTarget(render->Kt);
 
-		vector3df A=render->MouseCoordToWorldCoord();
-		A.Y+=30;
-		light->setPosition(A);
-		
+		lnode->setPosition(camera->getPosition());
+
 		if ((render->device->getTimer()->getTime() - lastUpdate) > 30)
 		{
 			//OMG, performance is too high :)

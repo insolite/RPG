@@ -260,9 +260,37 @@ void Universe::Run(char* gameName)
 						case SkillUse:
 						{
 							CurrentSkill* currentSkill = clients[ci]->character->GetSkill(PacketGetInt(inPacket, 1));
+							int targetType;
+							int targetMapObjectId;
+
 							if (currentSkill)
 							{
 								char str[512]; //For init script variables
+								
+								targetType = PacketGetByte(inPacket, 5);
+								targetMapObjectId = PacketGetInt(inPacket, 6);
+								switch (targetType)
+								{
+									case 0:
+										if (!clients[ci]->character->currentLocation->GetNPC(targetMapObjectId))
+										{
+											targetType = -1;
+											targetMapObjectId = 0;
+										}
+										break;
+									case 3:
+										if (!clients[ci]->character->currentLocation->GetCharacter(targetMapObjectId))
+										{
+											targetType = -1;
+											targetMapObjectId = 0;
+										}
+										break;
+									default:
+										targetType = -1;
+										targetMapObjectId = 0;
+										Log(Warning, "Client requested bad target type");
+										break;
+								}
 
 								sprintf(str, "\
 									CHARACTER_ID=%d;\
@@ -270,15 +298,19 @@ void Universe::Run(char* gameName)
 									CHARACTER_X=%d;\
 									CHARACTER_Y=%d;\
 									CHARACTER_LOCATION_ID=%d;\
+									TARGET_TYPE=%d;\
+									TARGET_ID=%d;\
 									",
 									clients[ci]->character->id,
 									clients[ci]->character->base->id,
 									clients[ci]->character->x,
 									clients[ci]->character->y,
-									clients[ci]->character->currentLocation->id
+									clients[ci]->character->currentLocation->id,
+									targetType,
+									targetMapObjectId
 									);
 								luaL_dostring(luaState, str);
-								luaL_dofile(luaState, currentSkill->base->path);
+								luaL_dofile(luaState, currentSkill->base->scriptPath);
 							}
 							else
 							{

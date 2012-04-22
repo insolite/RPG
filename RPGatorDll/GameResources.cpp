@@ -198,6 +198,11 @@ Character* GameResources::GetCharacter(int id)
 	return GetMapObject<Character>(characters, charactersCount, id);
 }
 
+Skill* GameResources::GetSkill(int id)
+{
+	return GetMapObject<Skill>(skills, skillsCount, id);
+}
+
 NPC* GameResources::AddNPC(char* name, char* tags, char* modelPath, char* texturePath)
 {
 	char query[256];
@@ -263,4 +268,3 @@ T* GameResources::AddMapObject(T** &mapObjects, int &mapObjectsCount, char* tabl
 	SpawnMapObject<T>(mapObjects, mapObjectsCount, mapObject);
 	return mapObject;
 }
-

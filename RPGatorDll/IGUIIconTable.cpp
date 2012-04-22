@@ -63,6 +63,23 @@ void IGUIIconTable::addButton(CurrentGameObject<GameObject>* currentGameObject, 
 	addButton(new CGUIButton(Environment, NULL, id, rect< s32 >(0, 0, buttonSize, buttonSize), currentGameObject, false));
 }
 
+CGUIButton* IGUIIconTable::getButtonAt(int index)
+{
+	list<IGUIElement*>::ConstIterator ei = this->getChildren().begin();
+	int i = 0;
+	while (ei != this->getChildren().end() && i < index)
+	{
+		ei++;
+		i++;
+	}
+	if ((*ei)->getChildren().getSize() == 1)
+	{
+		return (CGUIButton*)*(*ei)->getChildren().getLast();
+	}
+	else
+		return NULL;
+}
+
 void IGUIIconTable::removeButton(IGUIButton* button, bool shift)
 {
 	for (list<IGUIElement*>::ConstIterator i = this->getChildren().begin(); i != this->getChildren().end(); i++)

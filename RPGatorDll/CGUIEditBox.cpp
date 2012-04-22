@@ -667,7 +667,8 @@ void CGUIEditBox::draw()
 			false, true, AbsoluteRect, &AbsoluteClippingRect);
 		*/
 		SColor color = skin->getColor(EGDC_WINDOW);
-		color.set(48, 0, 0, 0);
+		//color.set(48, 0, 0, 0);
+		color.set(128, 0, 0, 0);
 		skin->draw2DRectangle(this, color, FrameRect, &AbsoluteClippingRect);
 
 		calculateFrameRect();

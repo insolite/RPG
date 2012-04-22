@@ -13,6 +13,9 @@ IGUIChatBox::IGUIChatBox(IGUIEnvironment* environment, IGUIElement* parent, s32 
 	//chatEditBox->setEditable(false);
 	//Environment->addEditBox(NULL, rect< s32 >(0, 256, 256, 256 + 24), true, this, chatInpuId);
 	CGUIEditBox* chatInputEditBox = new CGUIEditBox(NULL, true, environment, this, chatInpuId, rect< s32 >(0, 256 - 4, 256, 256 + 24 + 4));
+
+	chatEditBox->setOverrideColor(SColor(223, 255, 255, 255));
+	chatInputEditBox->setOverrideColor(SColor(223, 255, 255, 255));
 }
 
 IGUIChatBox::~IGUIChatBox(void)

@@ -8,7 +8,20 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 	{
 		KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
-		if (KeyIsDown[KEY_ESCAPE])
+		if (event.KeyInput.Key >= KEY_KEY_1 && event.KeyInput.Char <= KEY_KEY_9)
+		{
+			IGUIElement* hkb = Universe::instance->guienv->getRootGUIElement()->getElementFromId(HotkeyBar);
+			CGUIButton* btn = ((IGUIIconTable*)hkb)->getButtonAt(event.KeyInput.Char - '1');
+			if (btn)
+			{
+				SEvent clickEvent;
+				clickEvent.EventType = EET_GUI_EVENT;
+				clickEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
+				clickEvent.GUIEvent.Caller = btn;
+				Universe::instance->render->device->postEventFromUser(clickEvent);
+			}
+		}
+		else if (KeyIsDown[KEY_ESCAPE])
 		{ //Return to the main menu
 			delete Universe::instance->login;
 			delete Universe::instance->password;
@@ -141,7 +154,27 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 					case IconTableSkillButton:
 					{
 						char outPacket[256];
-						CreatePacket(outPacket, SkillUse, "%i", ((CGUIButton*)eventCaller)->currentGameObject->id);
+						CurrentMapObject<MapObject>* targetCurrentMapObject;
+						int currentMapObjectId;
+						int targetType;
+
+						if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentNPC>(Universe::instance->currentLocation->currentNPCs, Universe::instance->currentLocation->currentNPCsCount))
+						{
+							currentMapObjectId = targetCurrentMapObject->id;
+							targetType = 0;
+						}
+						else if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentCharacter>(Universe::instance->currentLocation->currentCharacters, Universe::instance->currentLocation->currentCharactersCount))
+						{
+							currentMapObjectId = targetCurrentMapObject->id;
+							targetType = 3;
+						}
+						else
+						{
+							currentMapObjectId = 0;
+							targetType = -1;
+						}
+
+						CreatePacket(outPacket, SkillUse, "%i%b%i", ((CGUIButton*)eventCaller)->currentGameObject->id, targetType, currentMapObjectId);
 						Universe::instance->connectSocket->Send(outPacket);
 						break;
 					}

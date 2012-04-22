@@ -22,7 +22,7 @@ public:
 	int skillsCount;
 
 	template<class T>
-	__declspec(dllexport) T* GetMapObject(T** mapObjects, int mapObjectsCount, int id)
+	__declspec(dllexport) T* GetMapObject(T** mapObjects, int mapObjectsCount, int id) //TODO: move implementation to source file
 	{
 		for (int i = 0; i < mapObjectsCount; i++)
 			if (mapObjects[i]->id == id)
@@ -34,6 +34,7 @@ public:
 	__declspec(dllexport) Static* GetStatic(int id);
 	__declspec(dllexport) Item* GetItem(int id);
 	__declspec(dllexport) Character* GetCharacter(int id);
+	__declspec(dllexport) Skill* GetSkill(int id);
 	//We are using add methods only for editor, so we don't need to implement spawn methods as it did in GameData. We can do it in add method as well
 	__declspec(dllexport) NPC* AddNPC(char* name, char* tags, char* modelPath, char* texturePath);
 	__declspec(dllexport) Static* AddStatic(char* name, char* tags, char* modelPath, char* texturePath);

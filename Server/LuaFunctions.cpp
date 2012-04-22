@@ -9,6 +9,7 @@ void LuaFunctions::RegisterFunctions(lua_State* luaState)
 	lua_register(luaState, "AddNPC", AddNPC);
 	lua_register(luaState, "AddItem", AddItem);
 	lua_register(luaState, "SendDialog", SendDialog);
+	lua_register(luaState, "PlayEffect", PlayEffect);
 }
 
 int LuaFunctions::SayHello(lua_State* lua) //str
@@ -170,6 +171,42 @@ int LuaFunctions::SendDialog(lua_State* lua) //currentNPCId, title, text, curren
 		CreatePacket(outPacket, DialogOpened, "%i%s%s", currentNPCId, title, text);
 		currentCharacter->connectSocket->Send(outPacket);
 	}
+
+	return 0;
+}
+
+int LuaFunctions::PlayEffect(lua_State* lua) //targetType, currentMapObjectId, skillId
+{
+	int targetType;
+	int currentMapObjectId, skillId;
+	char outPacket[256];
+
+	targetType = lua_tointeger(lua, 1);
+	currentMapObjectId = lua_tointeger(lua, 2);
+	skillId = lua_tointeger(lua, 3);
+
+	CreatePacket(outPacket, Packet::PlayEffect, "%b%i%i", targetType, currentMapObjectId, skillId);
+	
+	CurrentMapObject<MapObject>* currentMapObject;
+	//TODO: data->GetMapObject
+	currentMapObject = NULL;
+	for (int i = 0; i < Universe::instance->game->data->locationsCount; i++)
+	{
+		switch (targetType)
+		{
+			case 0: //NPC
+				currentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->game->data->locations[i]->GetNPC(currentMapObjectId);
+				break;
+			case 3: //Character
+				currentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->game->data->locations[i]->GetCharacter(currentMapObjectId);
+				break;
+		}
+		if (currentMapObject)
+			break;
+	}
+	
+	for (int i = 0; i < currentMapObject->currentLocation->currentCharactersCount; i++)
+		currentMapObject->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
 
 	return 0;
 }

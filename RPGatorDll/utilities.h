@@ -30,7 +30,8 @@ enum Packet
 
 	DialogOpen,
 	DialogOpened,
-	ItemPickUp
+	ItemPickUp,
+	PlayEffect
 };
 
 enum NPCEvent
