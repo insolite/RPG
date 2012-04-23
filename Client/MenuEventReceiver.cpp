@@ -56,7 +56,7 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						IGUIComboBox* cb = Universe::instance->guienv->addComboBox(rect<s32>(32, 112, 32 + 128, 112 + 32), wnd, RegisterWindowCharacterComboBox);
 						//TEST
 						//TODO: Receive game name from server (important!)
-						game = new Game("testgame2", Client);
+						game = new Game("testgame", Client);
 						wchar_t wstr[512];
 						for (int i = 0; i < game->resources->charactersCount; i++)
 						{

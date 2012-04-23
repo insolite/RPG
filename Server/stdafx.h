@@ -31,4 +31,8 @@ extern "C"
 #pragma comment(lib, "../Lib/Irrlicht.lib")
 #pragma comment(lib, "../Lib/lua52.lib")
 
-#pragma comment(lib, "../Debug/RPGator.lib")
+#if _DEBUG
+	#pragma comment(lib, "../Debug/RPGator.lib")
+#else
+	#pragma comment(lib, "../Release/RPGator.lib")
+#endif

@@ -11,13 +11,13 @@ cls
 echo Enter the game name
 set /p gamename=
 mkdir server\%gamename%
-xcopy editor\%gamename%\db.sqlite server\%gamename%
+xcopy /y /e editor\%gamename%\db.sqlite server\%gamename%
 mkdir server\%gamename%\script
-xcopy /e editor\%gamename%\script server\%gamename%\script
+xcopy /y /e editor\%gamename%\script server\%gamename%\script
 mkdir client\%gamename%
-xcopy editor\%gamename%\db.sqlite client\%gamename%
+xcopy /y /e editor\%gamename%\db.sqlite client\%gamename%
 mkdir client\%gamename%\model
-xcopy /e editor\%gamename%\model client\%gamename%\model
+xcopy /y /e editor\%gamename%\model client\%gamename%\model
 echo.
 echo Done!
 echo.

@@ -5,10 +5,9 @@
 int main(int argc, char* argv[])
 {
 	SetConsoleTitle("Client");
-
-	Universe* universe;
-
-	universe = new Universe();
+	setlocale(LC_CTYPE, "Russian_Russia.1251");
+	
+	Universe* universe = new Universe();
 
 	while (!universe->Menu())
 	{

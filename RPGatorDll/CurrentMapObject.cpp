@@ -17,6 +17,8 @@ template class __declspec(dllexport) CurrentMapObject<Static>;
 template class __declspec(dllexport) CurrentMapObject<Item>;
 template class __declspec(dllexport) CurrentMapObject<Character>;
 
+template class __declspec(dllexport) CurrentMapObject<MapObject>;
+
 template<class T>
 CurrentMapObject<T>::CurrentMapObject( SqliteResult sqliteResult, T** mapObjects, int mapObjectsCount, Location* location ) :
 CurrentGameObject<T>::CurrentGameObject(sqliteResult, mapObjects, mapObjectsCount)
@@ -65,7 +67,7 @@ void CurrentMapObject<T>::setTitle( char* text )
 		title->remove();
 	wchar_t wstr[256];
 	mbstowcs(wstr, text, 255);
-	IBillboardTextSceneNode* title = Render::instance->smgr->addBillboardTextSceneNode(Render::instance->device->getGUIEnvironment()->getSkin()->getFont(), wstr, node, dimension2df(strlen(text) / 1.5f,1.5f), vector3df(0,40,0));
+	title = Render::instance->smgr->addBillboardTextSceneNode(Render::instance->device->getGUIEnvironment()->getSkin()->getFont(), wstr, node, dimension2df(strlen(text) / 1.25f,1.5f), vector3df(0,40,0));
 }
 
 template<class T>

@@ -30,6 +30,9 @@ template class __declspec(dllexport) CurrentGameObject<Character>;
 template class __declspec(dllexport) CurrentGameObject<Skill>;
 template class __declspec(dllexport) CurrentGameObject<Quest>;
 
+template class __declspec(dllexport) CurrentGameObject<MapObject>;
+template class __declspec(dllexport) CurrentGameObject<GameObject>;
+
 template<class T>
 CurrentGameObject<T>::CurrentGameObject( SqliteResult sqliteResult, T** mapObjects, int mapObjectsCount )
 {
@@ -47,5 +50,4 @@ CurrentGameObject<T>::CurrentGameObject( char* currentMapObjectSpawnedPacket, T*
 template<class T>
 CurrentGameObject<T>::~CurrentGameObject( void )
 {
-
 }

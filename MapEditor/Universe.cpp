@@ -19,7 +19,7 @@ Universe::Universe(void)
 
 	guienv = render->device->getGUIEnvironment();
 
-	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
+	gui::IGUIFont* font2 = guienv->getFont("res/font.xml");
 	guienv->getSkin()->setFont(font2);
 	
 	SColor color;

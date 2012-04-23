@@ -13,10 +13,8 @@ Universe::Universe(void)
 	render = new Render(1366, 768, fullscreen, L"Client");
 
 	guienv = render->device->getGUIEnvironment();
-	menuEventReceiver = new MenuEventReceiver();
-	clientEventReceiver = new ClientEventReceiver();
 
-	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
+	gui::IGUIFont* font2 = guienv->getFont("res/font.xml");
 	guienv->getSkin()->setFont(font2);
 
 	SColor color;
@@ -114,7 +112,7 @@ bool Universe::Run()
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
 
 	scene::ISceneNode* lnode; 
-	lnode = render->smgr->addLightSceneNode(0,vector3df(0,30,0),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
+	lnode = render->smgr->addLightSceneNode(0,camPos->getPosition(),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
 	render->smgr->setAmbientLight(video::SColor(0,60,60,60));
 	
 	state = Continue;
@@ -249,8 +247,7 @@ bool Universe::Run()
 						int count;
 						int ovector[30];
 						
-						const unsigned char *tables = NULL;         
-						setlocale (LC_CTYPE, (const char *) "ru.");
+						const unsigned char *tables = NULL;
 						tables = pcre_maketables();
 
 						for (int i = 0; i < patternsCount; i++)
@@ -358,9 +355,15 @@ bool Universe::Run()
 
 					camera->setPosition(Km);
 					camera->setTarget(render->Kt);
+
+					//vector3df lPos = camera->getPosition();
+					vector3df lPos = currentCharacter->node->getPosition();
+					lPos.Y = 15;
+					//lPos.Z += 20;
+					lnode->setPosition(lPos);
 				}
 				
-				lnode->setPosition(camera->getPosition());
+				
 
 				render->driver->beginScene(true, true, SColor(255,100,101,140));
 					render->smgr->drawAll();
