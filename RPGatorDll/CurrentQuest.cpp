@@ -7,6 +7,8 @@
 #include "MapObject.h"
 #include "Quest.h"
 #include "CurrentGameObject.h"
+#include "CurrentMapObject.h"
+#include "CurrentCharacter.h"
 #include "GameResources.h"
 #include "Game.h"
 #include "CurrentQuest.h"
@@ -29,4 +31,11 @@ CurrentQuest::CurrentQuest(char* currentQuestInfoPacket) :
 
 CurrentQuest::~CurrentQuest(void)
 {
+}
+
+void CurrentQuest::Update()
+{
+	char sql[256];
+	sprintf(sql, "UPDATE CurrentQuest SET currentCharacterId=%d, `state`=%d WHERE id=%d;", owner->id, state, id);
+	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
 }

@@ -13,6 +13,7 @@
 #include "CurrentItem.h"
 #include "CurrentQuest.h"
 #include "CurrentSkill.h"
+#include "Location.h"
 #include "GameResources.h"
 #include "Game.h"
 #include "ConnectSocket.h"
@@ -161,4 +162,11 @@ CurrentSkill* CurrentCharacter::AddSkill(Skill* base)
 	CurrentSkill* currentSkill = new CurrentSkill(sqliteResult, this);
 	SpawnSkill(currentSkill);
 	return currentSkill;
+}
+
+void CurrentCharacter::Update()
+{
+	char sql[256];
+	sprintf(sql, "UPDATE CurrentCharacter SET x=%d, y=%d, locationId=%d, login='%s', password='%s' WHERE id=%d;", x, y, currentLocation->id, login, password, id);
+	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
 }

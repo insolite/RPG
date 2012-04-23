@@ -27,6 +27,8 @@ public:
 	__declspec(dllexport) CurrentItem* AddItem(Item* base, int count);
 	__declspec(dllexport) CurrentSkill* AddSkill(Skill* base);
 	
+	__declspec(dllexport) void Update();
+
 	__declspec(dllexport) CurrentCharacter(SqliteResult sqliteResult, Location* location);
 	__declspec(dllexport) CurrentCharacter(char* currentMapObjectSpawnedPacket);
 	__declspec(dllexport) ~CurrentCharacter(void);

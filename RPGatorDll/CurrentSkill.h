@@ -6,6 +6,8 @@ class CurrentSkill :
 public:
 	CurrentCharacter* owner;
 
+	__declspec(dllexport) void Update();
+
 	__declspec(dllexport) CurrentSkill(SqliteResult sqliteResult, CurrentCharacter* currentCharacter);
 	__declspec(dllexport) CurrentSkill(char* currentSkillInfoPacket);
 	__declspec(dllexport) ~CurrentSkill(void);

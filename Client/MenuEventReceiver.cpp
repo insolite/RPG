@@ -55,7 +55,8 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						
 						IGUIComboBox* cb = Universe::instance->guienv->addComboBox(rect<s32>(32, 112, 32 + 128, 112 + 32), wnd, RegisterWindowCharacterComboBox);
 						//TEST
-						game = new Game("testgame", Client);
+						//TODO: Receive game name from server (important!)
+						game = new Game("testgame2", Client);
 						wchar_t wstr[512];
 						for (int i = 0; i < game->resources->charactersCount; i++)
 						{
@@ -97,11 +98,12 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						ClientSocket* connectSocket;
 						int iResult; //The result of 'Receive' and 'Send'
 						bool continueFlag;
+						IGUIWindow* wnd = (IGUIWindow*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow, true);
 
 						CreatePacket(outPacket, Register, "%i%ws%ws",
-													game->resources->characters[((IGUIComboBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->getElementFromId(RegisterWindowCharacterComboBox))->getSelected()]->id,
-													Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->getElementFromId(RegisterWindowLoginEditBox)->getText(),
-													Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->getElementFromId(RegisterWindowPasswordEditBox)->getText()
+													game->resources->characters[((IGUIComboBox*)wnd->getElementFromId(RegisterWindowCharacterComboBox))->getSelected()]->id,
+													wnd->getElementFromId(RegisterWindowLoginEditBox)->getText(),
+													wnd->getElementFromId(RegisterWindowPasswordEditBox)->getText()
 													);
 						delete game;
 
@@ -120,14 +122,22 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 										case RegisterOK:
 										{
 											IGUIWindow* wnd = Universe::instance->guienv->addWindow(rect<s32>(Universe::instance->render->screenWidth / 2 - 128, Universe::instance->render->screenHeight / 2 - 64, Universe::instance->render->screenWidth / 2 + 128, Universe::instance->render->screenHeight / 2 + 64), false, L"Registration succeeded", NULL, -1);
-											Universe::instance->guienv->addButton(rect<s32>(82, 57, 82 + 92, 57 + 32), wnd, WindowCloseButton, L"OK", L"Close this window");
+											Universe::instance->guienv->addButton(rect<s32>(82, 80, 82 + 92, 80 + 24), wnd, WindowCloseButton, L"OK", L"Close this window");
 											continueFlag = false;
 											break;
 										}
 										case RegisterFail:
 										{
+											wchar_t wstr[256];
 											IGUIWindow* wnd = Universe::instance->guienv->addWindow(rect<s32>(Universe::instance->render->screenWidth / 2 - 128, Universe::instance->render->screenHeight / 2 - 64, Universe::instance->render->screenWidth / 2 + 128, Universe::instance->render->screenHeight / 2 + 64), false, L"Registration failed", NULL, -1);
-											Universe::instance->guienv->addButton(rect<s32>(82, 57, 82 + 92, 57 + 32), wnd, WindowCloseButton, L"OK", L"Close this window");
+											switch (PacketGetByte(inPacket, 1))
+											{
+												case AccountAlreadyExists:
+													wcscpy(wstr, L"Account already exists");
+													break;
+											}
+											Universe::instance->guienv->addStaticText(wstr, rect<s32>(16, 32, 256 - 16, 32 + 64), false, true, wnd, -1, false);
+											Universe::instance->guienv->addButton(rect<s32>(82, 80, 82 + 92, 80 + 24), wnd, WindowCloseButton, L"OK", L"Close this window");
 											continueFlag = false;
 											break;
 										}
@@ -147,7 +157,7 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						}
 						delete connectSocket;
 
-						Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->remove();
+						wnd->remove();
 						break;
 					}
 				}

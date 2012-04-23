@@ -171,22 +171,28 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 				{
 					case 1:
 					{
-						NPC* npc = (NPC*)currentMapObject;
+						CurrentNPC* currentNPC = (CurrentNPC*)currentMapObject;
 						break;
 					}
 					case 2:
 					{
-						Static* _static = (Static*)currentMapObject;
+						CurrentStatic* currentStatic = (CurrentStatic*)currentMapObject;
 						break;
 					}
 					case 3:
 					{
-						Item* item = (Item*)currentMapObject;
+						CurrentItem* currentItem = (CurrentItem*)currentMapObject;
 						break;
 					}
 					case 4:
 					{
-						Character* character = (Character*)currentMapObject;
+						CurrentCharacter* currentCharacter = (CurrentCharacter*)currentMapObject;
+						wchar_t wstr[256];
+
+						mbstowcs(wstr, currentCharacter->login, 255);
+						Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32, 32 + 128, 32 + 24), true, wnd, CurrentMapObjectEditWindowLoginEditBox);
+						mbstowcs(wstr, currentCharacter->password, 255);
+						Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32 + 24 + 8, 32 + 128, 32 + 24 + 24 + 8), true, wnd, CurrentMapObjectEditWindowPasswordEditBox);
 						break;
 					}
 				}
@@ -389,15 +395,25 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 							{
 								mapObject = Universe::instance->game->resources->GetCharacter(mapObjectId);
 								Character* character = (Character*)mapObject;
+								for (int i = 0; i < Universe::instance->currentLocation->currentCharactersCount; i++)
+									Universe::instance->currentLocation->currentCharacters[i]->setTitle(character->name);
 								break;
 							}
 						}
 
-						//swscanf(, L"%d", &);
 						wcstombs(mapObject->name, wnd->getElementFromId(MapObjectEditWindowName)->getText(), 255);
 
+						//TODO: tags update
+
+						mapObject->Update();
+
+						wchar_t wstr[256];
+						swprintf(wstr, L"[%d] %s", mapObject->id, wnd->getElementFromId(MapObjectEditWindowName)->getText());
+						IGUIListBox* lb = (IGUIListBox*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(MapCellSelectWindow + wnd->getID() - MapCellEditWindow, true)->getElementFromId(MapObjectSelectWindowListBox);
+						lb->setItem(lb->getSelected(), wstr, -1);
+
 						//Close edit window
-						event.GUIEvent.Caller->getParent()->remove();
+						wnd->remove();
 						break;
 					}
 					case CurrentMapObjectEditWindowOKButton:
@@ -411,59 +427,37 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 
 						switch (wnd->getID())
 						{
-							/*
-							case CurrentNPCEditWindow:
-							{
-								currentMapObject = (CurrentNPC*)Universe::instance->currentLocation->GetNPC(currentMapObjectId);
-								CurrentNPC* currentNPC = (CurrentNPC*)currentMapObject;
-								break;
-							}
-							case CurrentStaticEditWindow:
-							{
-								currentMapObject = Universe::instance->currentLocation->GetStatic(currentMapObjectId);
-								CurrentStatic* currentStatic = (CurrentStatic*)currentMapObject;
-								break;
-							}
-							case CurrentItemEditWindow:
-							{
-								currentMapObject = Universe::instance->currentLocation->GetItem(currentMapObjectId);
-								CurrentItem* currentItem = (CurrentItem*)currentMapObject;
-								break;
-							}
-							case CurrentCharacterEditWindow:
-							{
-								currentMapObject = Universe::instance->currentLocation->GetCharacter(currentMapObjectId);
-								CurrentCharacter* currentCharacter = (CurrentCharacter*)currentMapObject;
-								break;
-							}
-							*/
 							case CurrentNPCEditWindow:
 							{
 								CurrentNPC* currentNPC = Universe::instance->currentLocation->GetNPC(currentMapObjectId);
+								currentNPC->Update();
 								break;
 							}
 							case CurrentStaticEditWindow:
 							{
 								CurrentStatic* currentStatic = Universe::instance->currentLocation->GetStatic(currentMapObjectId);
+								currentStatic->Update();
 								break;
 							}
 							case CurrentItemEditWindow:
 							{
 								CurrentItem* currentItem = Universe::instance->currentLocation->GetItem(currentMapObjectId);
+								currentItem->Update();
 								break;
 							}
 							case CurrentCharacterEditWindow:
 							{
 								CurrentCharacter* currentCharacter = Universe::instance->currentLocation->GetCharacter(currentMapObjectId);
+								wcstombs(currentCharacter->login, wnd->getElementFromId(CurrentMapObjectEditWindowLoginEditBox)->getText(), 255);
+								wcstombs(currentCharacter->password, wnd->getElementFromId(CurrentMapObjectEditWindowPasswordEditBox)->getText(), 255);
+								currentCharacter->setTitle(currentCharacter->login);
+								currentCharacter->Update();
 								break;
 							}
 						}
 
-						//swscanf(, L"%d", &);
-						//wcstombs(mapObject->name, wnd->getElementFromId(CurrentMapObjectEditWindowName)->getText(), 255);
-
 						//Close edit window
-						event.GUIEvent.Caller->getParent()->remove();
+						wnd->remove();
 						break;
 					}
 					case MapObjectSelectWindowToggleButton:
@@ -520,7 +514,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						IGUIWindow* wnd1;
 
 						//Create window with the specific title 'wstr'
-						wnd1 = Universe::instance->guienv->addWindow(rect< s32 >(224, 64, 760, 536), true, wstr, 0, MapCellSelectWindow + brushIndex);
+						wnd1 = Universe::instance->guienv->addWindow(rect< s32 >(224, 64, 760, 536), true, wstr, NULL, MapCellSelectWindow + brushIndex);
 
 						//ListBox for MapObjects
 						IGUIListBox* molb = Universe::instance->guienv->addListBox(rect< s32 >(128, 64, 128 + 224, 64 + 320), wnd1, MapObjectSelectWindowListBox, true);
@@ -598,7 +592,15 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 									Universe::instance->brush[index] = Universe::instance->game->resources->GetCharacter(mapObjectId);
 									break;
 							}
-							//Close parent window (MapObject selection window)
+
+							CGUIMeshViewer* mv = (CGUIMeshViewer*)((IGUITabControl*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(MapObjectsTabControl))->getTab(index)->getElementFromId(MapObjectTabPreview);
+							SMaterial* sm = new SMaterial();
+							sm->setTexture(0, Universe::instance->brush[index]->texture);
+							sm->setFlag(EMF_LIGHTING, false);
+							mv->setMesh(Universe::instance->brush[index]->mesh);
+							mv->setMaterial(*sm);
+
+							//Close select window
 							lb->getParent()->remove();
 						}
 						break;

@@ -10,7 +10,8 @@ public:
 
 	__declspec(dllexport) void Abstr(void) { }; //Abstract class inheritance
 
-	//MapCell(int _id);
+	__declspec(dllexport) void Update();
+
 	__declspec(dllexport) MapCell(SqliteResult sqliteResult, char* modelPath);
 	__declspec(dllexport) ~MapCell(void);
 };

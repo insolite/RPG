@@ -6,6 +6,8 @@ class Quest :
 public:
 	__declspec(dllexport) void Abstr(void) { }; //Abstract class inheritance
 
+	__declspec(dllexport) void Update();
+
 	__declspec(dllexport) Quest(SqliteResult sqliteResult, char* iconPath);
 	__declspec(dllexport) ~Quest(void);
 };

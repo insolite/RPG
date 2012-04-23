@@ -7,6 +7,8 @@
 #include "MapObject.h"
 #include "Skill.h"
 #include "CurrentGameObject.h"
+#include "CurrentMapObject.h"
+#include "CurrentCharacter.h"
 #include "GameResources.h"
 #include "Game.h"
 #include "CurrentSkill.h"
@@ -27,4 +29,11 @@ CurrentSkill::CurrentSkill(char* currentSkillInfoPacket) :
 
 CurrentSkill::~CurrentSkill(void)
 {
+}
+
+void CurrentSkill::Update()
+{
+	char sql[256];
+	sprintf(sql, "UPDATE CurrentSkill SET currentCharacterId=%d WHERE id=%d;", owner->id, id);
+	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
 }

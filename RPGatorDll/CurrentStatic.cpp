@@ -8,6 +8,7 @@
 #include "Static.h"
 #include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
+#include "Location.h"
 #include "GameResources.h"
 #include "Game.h"
 #include "CurrentStatic.h"
@@ -26,4 +27,11 @@ CurrentStatic::CurrentStatic(char* currentMapObjectSpawnedPacket) :
 
 CurrentStatic::~CurrentStatic(void)
 {
+}
+
+void CurrentStatic::Update()
+{
+	char sql[256];
+	sprintf(sql, "UPDATE CurrentStatic SET x=%d, y=%d, locationId=%d WHERE id=%d;", x, y, currentLocation->id, id);
+	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
 }

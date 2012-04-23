@@ -39,12 +39,11 @@ enum EditorGUIElements
 	LocationWidthEditBox,
 	LocationHeightEditBox,
 
-	MapObjectEditButton,
 	MapObjectAddButton,
+	MapObjectSelectWindowToggleButton,
+	MapObjectTabPreview,
 
 	//Select
-
-	MapObjectSelectWindowToggleButton,
 
 	MapCellSelectWindow,
 	NPCSelectWindow,
@@ -54,10 +53,11 @@ enum EditorGUIElements
 
 	MapObjectSelectWindowListBox,
 	MapObjectMeshViever,
+	MapObjectEditButton,
 	MapObjectSelectWindowOKButton,
 
 	//Edit
-
+	
 	MapCellEditWindow,
 	NPCEditWindow,
 	StaticEditWindow,
@@ -79,8 +79,11 @@ enum EditorGUIElements
 	CurrentItemEditWindow,
 	CurrentCharacterEditWindow,
 
-	//CurrentMapObjectEditWindowPreview,
 	CurrentMapObjectEditWindowOKButton,
+
+	//CurrentCharacter
+	CurrentMapObjectEditWindowLoginEditBox,
+	CurrentMapObjectEditWindowPasswordEditBox,
 
 	//Add
 

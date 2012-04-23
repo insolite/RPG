@@ -25,11 +25,11 @@ Universe::Universe(void)
 	SColor color;
 
 	color = guienv->getSkin()->getColor(EGDC_3D_FACE);
-	color.setAlpha(192);
+	color.setAlpha(208);
 	guienv->getSkin()->setColor(EGDC_3D_FACE, color);
 	
 	color = guienv->getSkin()->getColor(EGDC_3D_SHADOW);
-	color.setAlpha(192);
+	color.setAlpha(208);
 	guienv->getSkin()->setColor(EGDC_3D_SHADOW, color);
 }
 
@@ -93,7 +93,7 @@ void Universe::EditorGUIInit()
 	b->setIsPushButton(true);
 
 	//MapObject select windows, tabs, buttons, etc.
-	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 92, toolbarLeftMargin + 176, 92 + 256), wnd, true, true, MapObjectsTabControl);
+	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 92, toolbarLeftMargin + 176, 92 + 256 + 32), wnd, true, true, MapObjectsTabControl);
 	IGUITab* tab;
 	wchar_t* wstrs[5] = { L"C", L"N", L"S", L"I", L"C" };
 	for (int i = 0; i < 5; i++)
@@ -101,6 +101,13 @@ void Universe::EditorGUIInit()
 		tab = tabc->addTab(wstrs[i], -1);
 		guienv->addButton(rect< s32 >(8, 8, 8 + 70, 8 + 32), tab, MapObjectSelectWindowToggleButton, L"Select", L"Select MapObject from list");
 		guienv->addButton(rect< s32 >(8 + 70 + 8, 8, 8 + 70 + 8 + 70, 8 + 32), tab, MapObjectAddButton, L"Add", L"Add MapObject to list");
+		CGUIMeshViewer* mv = new CGUIMeshViewer(guienv, tab, MapObjectTabPreview, rect< s32 >(8, 8 + 32 + 16, 8 + 70 + 8 + 70, 8 + 70 + 16 + 128));
+		SMaterial* sm = new SMaterial();
+		sm->setTexture(0, brush[i]->texture);
+		sm->setFlag(EMF_LIGHTING, false);
+		mv->setMesh(brush[i]->mesh);
+		mv->setMaterial(*sm);
+		mv->drop();
 	}
 	tabc->setActiveTab(1);
 	/*

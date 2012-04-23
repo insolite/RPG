@@ -60,6 +60,11 @@ enum MessageType
 	Public
 };
 
+enum RegisterFailReasons
+{
+	AccountAlreadyExists
+};
+
 #define CELL_SIZE 10.0
 
 extern "C" __declspec(dllexport) int ReadDir(const char* path, char** &elements, bool directoriesOnly);

@@ -79,6 +79,7 @@ CREATE TABLE CurrentItem (
 	x INTEGER,
 	y INTEGER,
 	locationId INTEGER,
+	
 	currentCharacterId INTEGER,
 	`count` INTEGER,
 	
@@ -115,6 +116,7 @@ CREATE TABLE `CurrentCharacter` (
 CREATE TABLE CurrentQuest (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
+	
 	currentCharacterId INTEGER,
 	`state` INTEGER,
 	
@@ -125,6 +127,7 @@ CREATE TABLE CurrentQuest (
 CREATE TABLE CurrentSkill (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
+	
 	currentCharacterId INTEGER,
 	
 	FOREIGN KEY(baseId) REFERENCES Skill(id),

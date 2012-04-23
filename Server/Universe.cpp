@@ -210,13 +210,29 @@ void Universe::Run(char* gameName)
 						{
 							char* login;
 							char* password;
-							login = PacketGetString(inPacket, 5);
-							password = PacketGetString(inPacket, 5 + strlen(login) + 1);
-							//TODO: default location, coordinates
-							//TODO: without UnSpawnCharacter
-							game->data->locations[0]->UnSpawnCharacter(game->data->locations[0]->AddCharacter(game->resources->GetCharacter(PacketGetInt(inPacket, 1)), 0, 0, login, password));
-							CreatePacket(outPacket, RegisterOK, "");
-							clients[ci]->Send(outPacket);
+							Character *character;
+							if (character = game->resources->GetCharacter(PacketGetInt(inPacket, 1)))
+							{
+								char query[256];
+								
+								login = PacketGetString(inPacket, 5);
+								password = PacketGetString(inPacket, 5 + strlen(login) + 1);
+
+								sprintf(query, "SELECT * FROM CurrentCharacter WHERE login='%s';", login);
+								if (SqliteGetRows(game->db, query).size() == 0)
+								{
+									//TODO: default location, coordinates
+									//TODO: without UnSpawnCharacter
+									//TODO: password check
+									game->data->locations[0]->UnSpawnCharacter(game->data->locations[0]->AddCharacter(character, 16, 16, login, password));
+									CreatePacket(outPacket, RegisterOK, "");
+								}
+								else
+								{
+									CreatePacket(outPacket, RegisterFail, "%b", AccountAlreadyExists);
+								}
+								clients[ci]->Send(outPacket);
+							}
 							break;
 						}
 						case Say:
