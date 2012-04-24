@@ -15,7 +15,7 @@ Universe::Universe(void)
 	brushMaskMaxSize = 10;
 	instance = this;
 
-	render = new Render(1366, 768, fullscreen, L"RPGator");
+	render = new Render(1366, 768, true, L"RPGator");
 
 	guienv = render->device->getGUIEnvironment();
 
@@ -263,14 +263,19 @@ bool Universe::Run()
 		}
 		camera->setPosition(Km);
 		camera->setTarget(render->Kt);
+		
+		//vector3df lPos = camera->getPosition();
+		vector3df lPos = render->Kt;
+		lPos.Y = 15;
+		//lPos.Z += 20;
+		lnode->setPosition(lPos);
 
-		lnode->setPosition(camera->getPosition());
 
 		if ((render->device->getTimer()->getTime() - lastUpdate) > 30)
 		{
 			//OMG, performance is too high :)
 			lastUpdate = render->device->getTimer()->getTime();
-
+			
 			render->driver->beginScene(true, true, SColor(255,100,101,140));
 				render->smgr->drawAll();
 				guienv->drawAll();

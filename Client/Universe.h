@@ -53,7 +53,6 @@ public:
 	Game* game; //Current game, that server is running
 	CurrentCharacter* currentCharacter; //Current character, attached to the current client
 	Location* currentLocation; //Current location of the current character
-	bool fullscreen;
 	
 	//GUI, input
 	IGUIEnvironment* guienv;

@@ -297,18 +297,24 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								sprintf(path, "editor/%s/model/Character", Universe::instance->game->name);
 								break;
 						}
+						mapObject->ModelUnLoad(); //TODO: Make a secure mesh reload with ImportModel
 						ImportModel(filename, path, mapObject->id);
-						mapObject->ModelInit(path);
+						mapObject->ModelInit(path); //TODO: move new mesh loading into MapObjectEditWindowOKButton click event. Here must be only the new mesh path selection
 
-						//Update mesh
-						IGUIMeshViewer* mv = (IGUIMeshViewer*)wnd->getElementFromId(MapObjectEditWindowPreview);
+						//Update meshes
+
+						//Create material
 						SMaterial* sm = new SMaterial();
 						sm->setTexture(0, mapObject->texture);
 						sm->setFlag(EMF_LIGHTING, false);
+
+						//Update mesh in edit window
+						IGUIMeshViewer* mv = (IGUIMeshViewer*)wnd->getElementFromId(MapObjectEditWindowPreview);
 						mv->setMesh(mapObject->mesh);
 						mv->setMaterial(*sm);
 
-						//Update mesh
+						//TODO: move it into MapObjectEditWindowOKButton click event //TODO: //Update mesh in tab (toobar)
+						//Update mesh in select window
 						IGUIMeshViewer* mv2 = (IGUIMeshViewer*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(MapObjectMeshViever, true);
 						mv2->setMesh(mapObject->mesh);
 						mv2->setMaterial(*sm);

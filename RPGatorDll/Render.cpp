@@ -19,10 +19,17 @@ Render* Render::instance = NULL;
 
 Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* windowTitle)
 {
-	this->screenWidth = screenWidth;
-	this->screenHeight = screenHeight;
-	//device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 32, fullscreen, false, false, NULL);
-	device = createDevice(video::EDT_OPENGL, GetDesktopRes(), 32, fullscreen, false, false, NULL);
+	dimension2d<u32> screenRes;
+
+	screenRes = GetDesktopRes();
+	this->screenWidth = screenRes.Width;
+	this->screenHeight = screenRes.Height;
+
+	//this->screenWidth = screenWidth;
+	//this->screenHeight = screenHeight;
+	//screenRes = dimension2d<u32>(screenWidth, screenHeight);
+
+	device = createDevice(video::EDT_OPENGL, screenRes, 32, fullscreen, false, false, NULL);
 	device->setResizable(true);
 	if (!device)
 		return;
@@ -102,15 +109,11 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 		selector = smgr->createTriangleSelector(node);
 		node->setTriangleSelector(selector);
 		selector->drop();
-
+		
 		//Autoscale
-		vector3df extent = node->getBoundingBox().getExtent(); 
-		if(extent.Y != 0) 
-		{
-			f32 scale = 15.0f / extent.Y; 
-			node->setScale(vector3df(scale,scale,scale)); 
-		}
-
+		f32 scale = 0.25f;
+		node->setScale(vector3df(scale,scale,scale));
+		
 		if (texture)
 		{
 			//node->setMaterialFlag(EMF_LIGHTING, false);

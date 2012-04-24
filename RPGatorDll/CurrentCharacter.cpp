@@ -23,9 +23,7 @@
 CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location) :
 	CurrentMapObject<Character>::CurrentMapObject(sqliteResult, Game::instance->resources->characters, Game::instance->resources->charactersCount, location)
 {
-	login = new char[sqliteResult.strings["login"].length() + 1];
 	strcpy(login, sqliteResult.strings["login"].c_str());
-	password = new char[sqliteResult.strings["password"].length() + 1];
 	strcpy(password, sqliteResult.strings["password"].c_str());
 
 	char query[256];
@@ -76,9 +74,8 @@ CurrentCharacter::CurrentCharacter(char* currentMapObjectSpawnedPacket) :
 	CurrentMapObject<Character>::CurrentMapObject(currentMapObjectSpawnedPacket, Game::instance->resources->characters, Game::instance->resources->charactersCount)
 {
 	//type(1) + id(4) + baseId(4) + x(4) + y(4) = 17
-	login = new char[strlen(PacketGetString(currentMapObjectSpawnedPacket, 17)) + 1];
 	strcpy(login, PacketGetString(currentMapObjectSpawnedPacket, 17));
-	password = NULL;
+	password[0] = '\0'; //strcpy(password, "");
 	
 	if (node)
 		setTitle(login);
@@ -95,9 +92,6 @@ CurrentCharacter::CurrentCharacter(char* currentMapObjectSpawnedPacket) :
 
 CurrentCharacter::~CurrentCharacter(void)
 {
-	delete login;
-	if (password) //Client does not hold passwords
-		delete password;
 }
 
 CurrentItem* CurrentCharacter::GetItem(int id)

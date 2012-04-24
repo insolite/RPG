@@ -287,7 +287,7 @@ void ImportModel(char* source, char* destination, int id) //TODO: move this func
 	}
 
 	int i = strlen(source) - 1;
-	while (source[i] != '.' && i >= 0)
+	while (source[i] != '.' && i > 0)
 		i--;
 	strcpy(extension, source + i + 1);
 	
@@ -300,5 +300,7 @@ void ImportModel(char* source, char* destination, int id) //TODO: move this func
 	tPath[i] = '\0';
 	strcat(tPath, ".jpg");
 	sprintf(path, "%s/%d.jpg", destination, id);
+	if (FileExists(path))
+		DeleteFile(path);
 	CopyFile(tPath, path, false);
 }

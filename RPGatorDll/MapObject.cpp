@@ -22,7 +22,14 @@ MapObject::MapObject(SqliteResult sqliteResult, char* modelPath) :
 
 MapObject::~MapObject(void)
 {
-	//TODO: delete mesh, texture?
+	ModelUnLoad();
+}
+
+void MapObject::ModelUnLoad()
+{
+	if (mesh)
+		Render::instance->smgr->getMeshCache()->removeMesh(mesh);
+	//TODO: Unload texture
 }
 
 void MapObject::ModelInit(char* modelPath)

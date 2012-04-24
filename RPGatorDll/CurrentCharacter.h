@@ -4,8 +4,8 @@ class CurrentCharacter :
 	public CurrentMapObject<Character>
 {
 public:
-	char* login; //Also character's name
-	char* password;
+	char login[64]; //Also character's name
+	char password[32];
 	CurrentItem** currentItems; //Inventory
 	CurrentQuest** currentQuests; //Accepted quests
 	CurrentSkill** currentSkills; //Learned skills

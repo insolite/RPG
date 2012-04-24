@@ -10,7 +10,7 @@ Universe::Universe(void)
 {
 	instance = this;
 	
-	render = new Render(1366, 768, fullscreen, L"Client");
+	render = new Render(1366, 768, true, L"Client");
 
 	guienv = render->device->getGUIEnvironment();
 

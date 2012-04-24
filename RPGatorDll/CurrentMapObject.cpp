@@ -56,8 +56,7 @@ CurrentMapObject<T>::~CurrentMapObject( void )
 {
 	if (node)
 		node->remove();
-	if (title)
-		title->remove();
+	//Title removes as child to 'node'
 }
 
 template<class T>

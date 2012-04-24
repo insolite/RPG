@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[])
 {
-	SetConsoleTitle("Client");
+	//SetConsoleTitle("Client");
 	setlocale(LC_CTYPE, "Russian_Russia.1251");
 	
 	Universe* universe = new Universe();
