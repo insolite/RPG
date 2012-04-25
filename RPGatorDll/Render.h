@@ -59,6 +59,8 @@ public:
 
 	__declspec(dllexport) void PlayEffect(ISceneNode* p, core::array< video::ITexture* > textures);
 
+	__declspec(dllexport) void Effect2(core::vector3df s,  core::vector3df f);
+
 	__declspec(dllexport) Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* windowTitle);
 	__declspec(dllexport) ~Render(void);
 };

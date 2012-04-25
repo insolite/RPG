@@ -200,3 +200,45 @@ void Render::PlayEffect(ISceneNode* p, core::array< video::ITexture* > textures)
              glow->drop();
         }
 }
+
+void Render::Effect2(core::vector3df s,  core::vector3df f)
+{
+        scene::ISceneNode* light2 =
+                smgr->addLightSceneNode(0, core::vector3df(0,0,0),
+                video::SColorf(1.0f, 0.2f, 0.2f, 0.0f), 800.0f);
+
+        scene::ISceneNodeAnimator* anim =
+                        smgr->createFlyStraightAnimator(s, f, 3500, true);
+        light2->addAnimator(anim);
+        anim->drop();
+
+        scene::ISceneNode* bill = smgr->addBillboardSceneNode(light2, core::dimension2d< f32 >(120, 120));
+        bill->setMaterialFlag(video::EMF_LIGHTING, false);
+        bill->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+        bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+        bill->setMaterialTexture(0, driver->getTexture("particlewhite.bmp"));
+
+        scene::IParticleSystemSceneNode* ps =
+                smgr->addParticleSystemSceneNode(false, light2);
+
+        scene::IParticleEmitter* em = ps->createBoxEmitter(
+                core::aabbox3d< f32 >(-3,0,-3,3,1,3),
+                core::vector3df(0.0f,0.03f,0.0f),
+                80,100,
+                video::SColor(0,255,255,255), video::SColor(0,255,255,255),
+                400,1100);
+        em->setMinStartSize(core::dimension2d< f32 >(30.0f, 40.0f));
+        em->setMaxStartSize(core::dimension2d< f32 >(30.0f, 40.0f));
+
+        ps->setEmitter(em);
+        em->drop();
+
+        scene::IParticleAffector* paf = ps->createFadeOutParticleAffector();
+        ps->addAffector(paf);
+        paf->drop();
+
+        ps->setMaterialFlag(video::EMF_LIGHTING, false);
+        ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+        ps->setMaterialTexture(0, driver->getTexture("fireball.bmp"));
+        ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+}
