@@ -10,6 +10,7 @@ void LuaFunctions::RegisterFunctions(lua_State* luaState)
 	lua_register(luaState, "AddItem", AddItem);
 	lua_register(luaState, "SendDialog", SendDialog);
 	lua_register(luaState, "PlayEffect", PlayEffect);
+	lua_register(luaState, "ChangeHp", ChangeHp);
 }
 
 int LuaFunctions::SayHello(lua_State* lua) //str
@@ -207,6 +208,70 @@ int LuaFunctions::PlayEffect(lua_State* lua) //targetType, currentMapObjectId, s
 	
 	for (int i = 0; i < currentMapObject->currentLocation->currentCharactersCount; i++)
 		currentMapObject->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
+
+	return 0;
+}
+
+int LuaFunctions::ChangeHp( lua_State *lua )
+{
+	char outPacket[256];
+	int currentCharacterId;
+	int changedHp;
+
+	currentCharacterId = lua_tointeger(lua, 1);
+	changedHp = lua_tointeger(lua, 2);
+
+	CurrentCharacter *currentCharacter;
+	//TODO: data->GetMapObject
+	currentCharacter = NULL;
+
+	for (int i = 0; i < Universe::instance->game->data->locationsCount; i++)
+		if (currentCharacter = Universe::instance->game->data->locations[i]->GetCharacter(currentCharacterId))
+			break;
+
+	printf("---!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!---\n", currentCharacter->id);
+	printf("ID: %d\n", currentCharacter->id);
+	printf("HP: %d\n", currentCharacter->hp);
+
+	printf("TEST1\n");
+	if((currentCharacter->hp += changedHp) <= 0)
+	{
+		printf("TEST2\n");
+		CreatePacket(outPacket, Packet::CharacterDied, "%i", currentCharacterId);
+
+		for (int i = 0; i < currentCharacter->currentLocation->currentCharactersCount; i++)
+		{
+			printf("TEST7\n");
+			currentCharacter->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
+			printf("TEST8\n");
+		}
+
+		CreatePacket(outPacket, Packet::CharacterMoved, "%i%i%i", currentCharacterId, 16, 16);
+
+		for (int i = 0; i < currentCharacter->currentLocation->currentCharactersCount; i++)
+		{
+			printf("TEST9\n");
+			currentCharacter->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
+			printf("TEST10\n");
+		}
+
+		currentCharacter->x = 16;
+		currentCharacter->y = 16;
+		currentCharacter->hp = 100;
+	}
+	
+	printf("TEST3\n");
+
+	CreatePacket(outPacket, Packet::HpChanged, "%i%i", currentCharacterId, currentCharacter->hp);
+
+	printf("TEST4\n");
+
+	for (int i = 0; i < currentCharacter->currentLocation->currentCharactersCount; i++)
+	{
+		printf("TEST5\n");
+		currentCharacter->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
+		printf("TEST6\n");
+	}
 
 	return 0;
 }

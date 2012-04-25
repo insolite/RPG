@@ -30,6 +30,14 @@ void Universe::Run(char* gameName)
 	SOCKET tmp; //Socket for accepting clients. Used to initialize the element of 'clients'
 	int ci;
 
+	int testInt;
+	short testShort;
+	char testStr[10];
+	char testChar;
+	wchar_t testwStr[10];
+	int currTick = 0;
+
+
 	continueFlag = true;
 	clientsCount = 0;
 	clients = NULL;
@@ -53,11 +61,14 @@ void Universe::Run(char* gameName)
 		//Receiving packets from connected clients
 		for (ci = 0; ci < clientsCount; ci++)
 		{
+			int startTick = GetTickCount();
+
+
 			iResult = clients[ci]->Receive(inPacket);
 			if (iResult)
 			{
 				if (iResult > 0)
-				{ //Packet received
+				{//Packet received
 					switch (GetPacketType(inPacket))
 					{
 						case LogIn:
@@ -144,7 +155,7 @@ void Universe::Run(char* gameName)
 										newCurrentCharacter->connectSocket->Send(outPacket);
 									}
 								}
-								//NPCs
+								//NPC
 								for (int i = 0; i < newCurrentCharacter->currentLocation->currentNPCsCount; i++)
 								{
 									CreatePacket(outPacket, NPCSpawned, "%i%i%i%i%i",
@@ -246,17 +257,31 @@ void Universe::Run(char* gameName)
 							}
 							break;
 						case Move:
+						{
 							//TEST!
 							//TODO: changing x and y in time
-							clients[ci]->character->x = PacketGetInt(inPacket, 1);
-							clients[ci]->character->y = PacketGetInt(inPacket, 5);
+
+							int newX = PacketGetInt(inPacket, 1);
+							int newY = PacketGetInt(inPacket, 5);
+
+							clients[ci]->character->floatX = (float)clients[ci]->character->x;
+							clients[ci]->character->floatY = (float)clients[ci]->character->y;
 							
-							CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, PacketGetInt(inPacket, 1), PacketGetInt(inPacket, 5));
+							clients[ci]->character->moveDuration = 
+								(int)(30 * sqrt(pow((float)(clients[ci]->character->x - newX), 2) + pow((float)(clients[ci]->character->y - newY), 2))) * 10;
+
+							clients[ci]->character->x = newX;
+							clients[ci]->character->y = newY;
+
+							CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, newX, newY);
 							for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
 							{
 								clients[i]->Send(outPacket);
 							}
+
+							currTick = GetTickCount();
 							break;
+						}
 						case SkillUse:
 						{
 							CurrentSkill* currentSkill = clients[ci]->character->GetSkill(PacketGetInt(inPacket, 1));
@@ -265,52 +290,56 @@ void Universe::Run(char* gameName)
 
 							if (currentSkill)
 							{
-								char str[512]; //For init script variables
-								
-								targetType = PacketGetByte(inPacket, 5);
-								targetMapObjectId = PacketGetInt(inPacket, 6);
-								switch (targetType)
+								if (GetTickCount() - currentSkill->lastUse > currentSkill->base->useDelay)
 								{
-									case 0:
-										if (!clients[ci]->character->currentLocation->GetNPC(targetMapObjectId))
-										{
+									char str[512]; //For init script variables
+								
+									targetType = PacketGetByte(inPacket, 5);
+									targetMapObjectId = PacketGetInt(inPacket, 6);
+									switch (targetType)
+									{
+										case 0:
+											if (!clients[ci]->character->currentLocation->GetNPC(targetMapObjectId))
+											{
+												targetType = -1;
+												targetMapObjectId = 0;
+											}
+											break;
+										case 3:
+											if (!clients[ci]->character->currentLocation->GetCharacter(targetMapObjectId))
+											{
+												targetType = -1;
+												targetMapObjectId = 0;
+											}
+											break;
+										default:
 											targetType = -1;
 											targetMapObjectId = 0;
-										}
-										break;
-									case 3:
-										if (!clients[ci]->character->currentLocation->GetCharacter(targetMapObjectId))
-										{
-											targetType = -1;
-											targetMapObjectId = 0;
-										}
-										break;
-									default:
-										targetType = -1;
-										targetMapObjectId = 0;
-										Log(Warning, "Client requested bad target type");
-										break;
-								}
+											Log(Warning, "Client requested bad target type");
+											break;
+									}
 
-								sprintf(str, "\
-									CHARACTER_ID=%d;\
-									CHARACTER_BID=%d;\
-									CHARACTER_X=%d;\
-									CHARACTER_Y=%d;\
-									CHARACTER_LOCATION_ID=%d;\
-									TARGET_TYPE=%d;\
-									TARGET_ID=%d;\
-									",
-									clients[ci]->character->id,
-									clients[ci]->character->base->id,
-									clients[ci]->character->x,
-									clients[ci]->character->y,
-									clients[ci]->character->currentLocation->id,
-									targetType,
-									targetMapObjectId
-									);
-								luaL_dostring(luaState, str);
-								luaL_dofile(luaState, currentSkill->base->scriptPath);
+									sprintf(str, "\
+										CHARACTER_ID=%d;\
+										CHARACTER_BID=%d;\
+										CHARACTER_X=%d;\
+										CHARACTER_Y=%d;\
+										CHARACTER_LOCATION_ID=%d;\
+										TARGET_TYPE=%d;\
+										TARGET_ID=%d;\
+										",
+										clients[ci]->character->id,
+										clients[ci]->character->base->id,
+										clients[ci]->character->x,
+										clients[ci]->character->y,
+										clients[ci]->character->currentLocation->id,
+										targetType,
+										targetMapObjectId
+										);
+									luaL_dostring(luaState, str);
+									luaL_dofile(luaState, currentSkill->base->scriptPath);
+									currentSkill->lastUse = GetTickCount();
+								}
 							}
 							else
 							{
@@ -411,6 +440,26 @@ void Universe::Run(char* gameName)
 					Log(Warning, "Wrong packet from client %d", ci);
 				}
 			}
+
+			if ((iResult != -1) && (clients[ci]->character != NULL) && (clients[ci]->character->moveDuration > 0) && ((startTick - currTick) > 10))
+			{
+				float deltaX = ((float)clients[ci]->character->x - clients[ci]->character->floatX) / clients[ci]->character->moveDuration;
+				float deltaY = ((float)clients[ci]->character->y - clients[ci]->character->floatY) / clients[ci]->character->moveDuration;
+
+				
+
+				int deltaTick = ((startTick - currTick) < clients[ci]->character->moveDuration) ? (startTick - currTick) : clients[ci]->character->moveDuration;
+
+				clients[ci]->character->floatX += deltaX * deltaTick;
+				clients[ci]->character->floatY += deltaY * deltaTick;
+
+				clients[ci]->character->moveDuration -= deltaTick;
+
+				printf("%f\t%f\t%d\t%d\n", clients[ci]->character->floatX, clients[ci]->character->floatY, clients[ci]->character->moveDuration, deltaTick);
+
+				currTick = GetTickCount();
+			}
+
 
 			//CreateItemSpawnedPacket(outPacket, Ground, 3, 5, 3, 4);
 			//clients[0]->Send(outPacket);

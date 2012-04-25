@@ -27,6 +27,8 @@ CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location
 	password = new char[sqliteResult.strings["password"].length() + 1];
 	strcpy(password, sqliteResult.strings["password"].c_str());
 
+	hp = 100;
+
 	char query[256];
 	int rowsCount;
 	std::vector<SqliteResult> sqliteResultsChildren;

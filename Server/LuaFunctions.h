@@ -9,5 +9,5 @@ int AddItem(lua_State* lua);
 int AddNPC(lua_State* lua);
 int SendDialog(lua_State* lua);
 int PlayEffect(lua_State* lua);
-
+int ChangeHp(lua_State *lua);
 }

@@ -22,7 +22,7 @@ Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* wind
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 	//device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 32, fullscreen, false, false, NULL);
-	device = createDevice(video::EDT_OPENGL, GetDesktopRes(), 32, fullscreen, false, false, NULL);
+	device = createDevice(video::EDT_OPENGL, GetDesktopRes(), 32, false, false, false, NULL);
 	device->setResizable(true);
 	if (!device)
 		return;
@@ -127,6 +127,7 @@ void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 {
 	vector3df oldPosition = node->getPosition();
 	int duration = (int)(30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2)));
+	printf("duration: %d\n", duration);
 	//scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
 	scene::ISceneNodeAnimator* anim = new FlyStraightWCallBackAnimator(node->getPosition(), nextpos, duration, false, device->getTimer()->getTime());
 	((FlyStraightWCallBackAnimator*)anim)->setAnimatorEndCallBack(Render::instance->animationEndCallBack);

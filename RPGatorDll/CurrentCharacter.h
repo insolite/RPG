@@ -14,6 +14,13 @@ public:
 	int currentSkillsCount;
 	ConnectSocket* connectSocket;
 
+	int moveDuration;
+	float floatX;
+	float floatY;
+
+
+	int hp;
+
 	__declspec(dllexport) CurrentItem* GetItem(int id);
 	__declspec(dllexport) CurrentItem* GetItemByBase(int id);
 	__declspec(dllexport) CurrentQuest* GetQuest(int id);

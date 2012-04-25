@@ -220,6 +220,47 @@ bool Universe::Run()
 						currentCharacter->y = PacketGetInt(inPacket, 9);
 						break;
 					}
+					case HpChanged:
+					{
+						int characterId, changedHp;
+						CurrentCharacter *character;
+						ScanPacket(inPacket, "%i%i", &characterId, &changedHp);
+
+						if (character = currentLocation->GetCharacter(characterId))
+							character->hp = changedHp;
+						
+						break;
+
+					}
+					case CharacterDied:
+					{
+						//okay	
+						break;
+					}
+					case CharacterMoved:
+					{
+						int characterId, whereX, whereY;
+
+						
+						ScanPacket(inPacket, "%i%i%i", &characterId, &whereX, &whereY);
+
+						printf("CLIENT CHAR ID: %d\n", characterId);
+						printf("CLIENT WHERE X: %d\n", whereX);
+						printf("CLIENT WHERE Y: %d\n", whereY);
+						CurrentCharacter *character = currentLocation->GetCharacter(characterId);
+
+						if (character)
+						{
+							printf("CLIENT TEST 1\n");
+							character->node->setPosition(vector3df(whereX * CELL_SIZE, 0, whereY * CELL_SIZE));
+							character->node->updateAbsolutePosition();
+							printf("CLIENT TEST 2\n");
+							character->x = whereX;
+							character->y = whereY;
+						}
+
+						break;
+					}
 					case DialogOpened:
 					{
 						char title[256];
