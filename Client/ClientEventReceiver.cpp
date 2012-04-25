@@ -86,24 +86,21 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			}
 			else if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentItem>(Universe::instance->currentLocation->currentItems, Universe::instance->currentLocation->currentItemsCount))
 			{
-				//ItemPickUp
-				/*
 				char outPacket[256];
 
 				CreatePacket(outPacket, ItemPickUp, "%i", targetCurrentMapObject->id);
 				Universe::instance->connectSocket->Send(outPacket);
-				*/
 			}
 			else
 			{ //Move
 				char outPacket[256];
-				vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
-				int x, y;
-				x = (int)(position.X / CELL_SIZE);
-				y = (int)(position.Z / CELL_SIZE);
-				CreatePacket(outPacket, Move, "%i%i", x, y);
-				Universe::instance->connectSocket->Send(outPacket);
-				Universe::instance->currentCharacter->setAnimation(EMAT_RUN);
+				vector2d<s32> clickPos = Universe::instance->render->MouseCoordToWorldCoord();
+				if (clickPos.X > 0 && clickPos.X < Universe::instance->currentLocation->width && clickPos.Y > 0 && clickPos.Y < Universe::instance->currentLocation->height)
+					if (Universe::instance->currentLocation->mask[clickPos.Y][clickPos.X] == Free) //TODO: see 'void Location::SpawnStatic(CurrentStatic* currentStatic)'
+					{
+						CreatePacket(outPacket, Move, "%i%i", clickPos.X, clickPos.Y);
+						Universe::instance->connectSocket->Send(outPacket);
+					}
 			}
 		}
 		else if (Mouse[EMIE_MOUSE_WHEEL])

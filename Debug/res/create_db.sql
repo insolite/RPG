@@ -15,25 +15,29 @@ CREATE TABLE MapCell (
 CREATE TABLE NPC (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
-	tags VARCHAR(1024)
+	tags VARCHAR(1024),
+	scale INTEGER
 	);
 
 CREATE TABLE Item (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
-	tags VARCHAR(1024)
+	tags VARCHAR(1024),
+	scale INTEGER
 	);
 
 CREATE TABLE `Static` (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
-	tags VARCHAR(1024)
+	tags VARCHAR(1024),
+	scale INTEGER
 	);
 
 CREATE TABLE `Character` (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
-	tags VARCHAR(1024)
+	tags VARCHAR(1024),
+	scale INTEGER
 );
 
 CREATE TABLE Quest (
@@ -139,16 +143,13 @@ CREATE TABLE CurrentSkill (
 INSERT INTO MapCell(name, tags, cellProperty) VALUES ('Green grass', 'grass,free,something', 0);
 INSERT INTO MapCell(name, tags, cellProperty) VALUES ('Red grass', 'grass', 1);
 
-INSERT INTO NPC(name, tags) VALUES ('Test NPC', '');
+INSERT INTO NPC(name, tags, scale) VALUES ('Test NPC', '', 0);
+INSERT INTO `Static`(name, tags, scale) VALUES ('Test Static', '', 0);
+INSERT INTO Item(name, tags, scale) VALUES ('Test Item', '', 0);
+INSERT INTO `Character`(name, tags, scale) VALUES ('Dwarf', '', 0);
 
-INSERT INTO Item(name, tags) VALUES ('Test Item', '');
-
-INSERT INTO `Static`(name, tags) VALUES ('Test Static', '');
-
-INSERT INTO Skill(name, tags) VALUES ('SayHello', '');
-INSERT INTO Skill(name, tags) VALUES ('Spawn 4 NPCs', '');
-
-INSERT INTO `Character`(name, tags) VALUES ('Dwarf', '');
+INSERT INTO Skill(name, tags, scale) VALUES ('SayHello', '');
+INSERT INTO Skill(name, tags, scale) VALUES ('Spawn 4 NPCs', '');
 
 /*=============Init data=============*/
 

@@ -108,7 +108,7 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 						delete game;
 
 						continueFlag = true;
-						connectSocket = new ClientSocket("127.0.0.1", "3127");
+						connectSocket = new ClientSocket(Universe::instance->serverAddress, Universe::instance->serverPort);
 						connectSocket->Send(outPacket);
 						while (continueFlag) //TODO: timeout
 						{

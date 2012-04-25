@@ -59,6 +59,8 @@ public:
 	MenuEventReceiver* menuEventReceiver;
 	ClientEventReceiver* clientEventReceiver;
 
+	char serverAddress[64];
+	char serverPort[8];
 	char* login; //Buffer between menu and editor
 	char* password; //Buffer between menu and editor
 	ProgramState state;
@@ -74,6 +76,6 @@ public:
 	void ClientGUIDestroy();
 	void DrawScene(); //TEST
 
-	Universe(void); //Initializes the instance
+	Universe(char *serverAddress, char *serverPort); //Initializes the instance
 	~Universe(void); //Finalizes the instance
 };

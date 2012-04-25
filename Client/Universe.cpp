@@ -6,9 +6,12 @@
 
 Universe* Universe::instance;
 
-Universe::Universe(void)
+Universe::Universe(char *serverAddress, char *serverPort)
 {
 	instance = this;
+
+	strcpy(this->serverAddress, serverAddress);
+	strcpy(this->serverPort, serverPort);
 	
 	render = new Render(1366, 768, true, L"Client");
 
@@ -95,7 +98,7 @@ bool Universe::Run()
 
 	continueFlag = true;
 
-	connectSocket = new ClientSocket("127.0.0.1", "3127");
+	connectSocket = new ClientSocket(serverAddress, serverPort);
 	printf("Connected to the server\n");
 	CreatePacket(outPacket, LogIn, "%s%s", login, password);
 	connectSocket->Send(outPacket);
@@ -212,6 +215,7 @@ bool Universe::Run()
 					case CharacterMoving:
 					{
 						//printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
+						Universe::instance->currentCharacter->setAnimation(EMAT_RUN);
 						render->moveNode(currentLocation->GetCharacter(PacketGetInt(inPacket,1))->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
 						//TEST
 						currentCharacter->x = PacketGetInt(inPacket, 5);
