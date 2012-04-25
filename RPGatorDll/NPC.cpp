@@ -21,7 +21,7 @@ NPC::~NPC(void)
 void NPC::Update()
 {
 	char sql[256];
-	sprintf(sql, "UPDATE NPC SET name='%s' WHERE id=%d;", name, id);
+	sprintf(sql, "UPDATE NPC SET name='%s', scale=%.0f WHERE id=%d;", name, scale, id);
 	//TODO: Tags update //tags='%s', 
 	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
 }

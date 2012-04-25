@@ -339,24 +339,3 @@ void Universe::DeleteBrushMask()
 		delete brushMask[i];
 	delete brushMask;
 }
-
-void Universe::PaintMapCell()
-{
-	int i, j;
-	MapCell* pBrush;
-	
-	pBrush = (MapCell*)brush[brushIndex];
-	
-	for (i = 0; i < brushRadius * 2 + 1; i++)
-	{
-		for (j = 0; j < brushRadius * 2 + 1; j++)
-		{
-			if ((brushMask[i][j]) &&
-				(cursorX - brushRadius + j) >= 0 && 
-				(cursorY - brushRadius + i) >= 0 && 
-				(cursorX - brushRadius + j) < currentLocation->width && 
-				(cursorY - brushRadius + i) < currentLocation->height)
-				currentLocation->mask[cursorY - brushRadius + i][cursorX - brushRadius + j] = pBrush;
-		}
-	}
-}

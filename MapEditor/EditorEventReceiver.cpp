@@ -61,30 +61,30 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 		}
 		else //Mouse is not in a window area
 			return false;
-		vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
-		int x, y;
-		x = position.X / CELL_SIZE;
-		y = position.Z / CELL_SIZE;
+		vector2d<s32> clickPos = Universe::instance->render->MouseCoordToWorldCoord();
 		if (Mouse[EMIE_LMOUSE_PRESSED_DOWN])
 		{ //Add CurrentMapObject
-			switch (Universe::instance->brushIndex)
+			if (clickPos.X > 0 && clickPos.X < Universe::instance->currentLocation->width && clickPos.Y > 0 && clickPos.Y < Universe::instance->currentLocation->height)
 			{
-				case 0: //MapCell
-					//Universe::instance->currentLocation->mask[y][x] = (MapCell*)Universe::instance->brush[0];
-					//TODO: Save location before exit
-					break;
-				case 1: //NPC
-					Universe::instance->currentLocation->AddNPC((NPC*)Universe::instance->brush[1], x, y);
-					break;
-				case 2: //Static
-					Universe::instance->currentLocation->AddStatic((Static*)Universe::instance->brush[2], x, y);
-					break;
-				case 3: //Item
-					Universe::instance->currentLocation->AddItem((Item*)Universe::instance->brush[3], x, y, 1);
-					break;
-				case 4: //Character
-					Universe::instance->currentLocation->AddCharacter((Character*)Universe::instance->brush[4], x, y, "", "");
-					break;
+				switch (Universe::instance->brushIndex)
+				{
+					case 0: //MapCell
+						//Universe::instance->currentLocation->mask[y][x] = (MapCell*)Universe::instance->brush[0];
+						//TODO: Save location before exit
+						break;
+					case 1: //NPC
+						Universe::instance->currentLocation->AddNPC((NPC*)Universe::instance->brush[1], clickPos.X, clickPos.Y);
+						break;
+					case 2: //Static
+						Universe::instance->currentLocation->AddStatic((Static*)Universe::instance->brush[2], clickPos.X, clickPos.Y);
+						break;
+					case 3: //Item
+						Universe::instance->currentLocation->AddItem((Item*)Universe::instance->brush[3], clickPos.X, clickPos.Y, 1);
+						break;
+					case 4: //Character
+						Universe::instance->currentLocation->AddCharacter((Character*)Universe::instance->brush[4], clickPos.X, clickPos.Y, "", "");
+						break;
+				}
 			}
 		}
 		else if (Mouse[EMIE_RMOUSE_PRESSED_DOWN])
@@ -370,6 +370,9 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						
 						wnd = (IGUIWindow*)event.GUIEvent.Caller->getParent();
 						swscanf(wnd->getText(), L"[%d]", &mapObjectId);
+						
+						//Scale
+						f32 scale = ((IGUIScrollBar*)wnd->getElementFromId(MapObjectEditWindowScale))->getPos();
 
 						switch (wnd->getID())
 						{
@@ -383,18 +386,24 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 							{
 								mapObject = Universe::instance->game->resources->GetNPC(mapObjectId);
 								NPC* npc = (NPC*)mapObject;
+								for (int i = 0; i < Universe::instance->currentLocation->currentNPCsCount; i++)
+									Universe::instance->currentLocation->currentNPCs[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
 								break;
 							}
 							case StaticEditWindow:
 							{
 								mapObject = Universe::instance->game->resources->GetStatic(mapObjectId);
 								Static* _static = (Static*)mapObject;
+								for (int i = 0; i < Universe::instance->currentLocation->currentStaticsCount; i++)
+									Universe::instance->currentLocation->currentStatics[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
 								break;
 							}
 							case ItemEditWindow:
 							{
 								mapObject = Universe::instance->game->resources->GetItem(mapObjectId);
 								Item* item = (Item*)mapObject;
+								for (int i = 0; i < Universe::instance->currentLocation->currentItemsCount; i++)
+									Universe::instance->currentLocation->currentItems[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
 								break;
 							}
 							case CharacterEditWindow:
@@ -402,14 +411,20 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								mapObject = Universe::instance->game->resources->GetCharacter(mapObjectId);
 								Character* character = (Character*)mapObject;
 								for (int i = 0; i < Universe::instance->currentLocation->currentCharactersCount; i++)
+									Universe::instance->currentLocation->currentCharacters[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+								for (int i = 0; i < Universe::instance->currentLocation->currentCharactersCount; i++)
 									Universe::instance->currentLocation->currentCharacters[i]->setTitle(character->name);
 								break;
 							}
 						}
 
+						//Name
 						wcstombs(mapObject->name, wnd->getElementFromId(MapObjectEditWindowName)->getText(), 255);
 
 						//TODO: tags update
+
+						//Scale
+						mapObject->scale = scale;
 
 						mapObject->Update();
 
@@ -626,8 +641,6 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 							swprintf(wstr, L"%s - editing", lb->getListItem(lb->getSelected()));
 							IGUIWindow* wnd = Universe::instance->guienv->addWindow(rect< s32 >(224 + 32, 64 + 32, 760 + 32, 536 + 32), true, wstr, NULL, MapCellEditWindow + index);
 							
-							//Preview
-							CGUIMeshViewer* mv = new CGUIMeshViewer(Universe::instance->guienv, wnd, MapObjectEditWindowPreview, rect< s32 >(32 + 128 + 8, 32, 32 + 128 + 8 + 256, 32 + 320));
 							MapObject* mapObject;
 							int mapObjectId;
 							swscanf(wnd->getText(), L"[%d]", &mapObjectId);
@@ -685,6 +698,18 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 							}
 							IGUIEditBox* teb = Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32 + 24 + 8, 32 + 128, 32 + 24 + 24 + 8), true, wnd, MapObjectEditWindowTags);
 							
+							//Scale
+							IGUIScrollBar* sb = Universe::instance->guienv->addScrollBar(true, rect< s32 >(32, 32 + 24 + 8 + 24 + 8, 32 + 128, 32 + 24 + 24 + 8 + 16 + 8), wnd, MapObjectEditWindowScale);
+							sb->setMax(100);
+							sb->setMin(-100);
+							sb->setPos(mapObject->scale);
+							sb->setSmallStep(1);
+							swprintf(wstr, L"%.0f", mapObject->scale);
+							Universe::instance->guienv->addStaticText(wstr, rect< s32 >(8, 32 + 24 + 8 + 24 + 8, 32, 32 + 24 + 24 + 8 + 16 + 8), false, false, wnd, MapObjectEditWindowScaleStaticText, false);
+							//IGUIEditBox* seb = Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32 + 24 + 8 + 24 + 8, 32 + 128, 32 + 24 + 24 + 8 + 24 + 8), true, wnd, MapObjectEditWindowScale);
+
+							//Preview
+							CGUIMeshViewer* mv = new CGUIMeshViewer(Universe::instance->guienv, wnd, MapObjectEditWindowPreview, rect< s32 >(32 + 128 + 8, 32, 32 + 128 + 8 + 256, 32 + 320));
 							SMaterial* sm = new SMaterial();
 							sm->setTexture(0, mapObject->texture);
 							sm->setFlag(EMF_LIGHTING, false);
@@ -788,6 +813,18 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 					case MapObjectsTabControl:
 						Universe::instance->brushIndex = ((IGUITabControl*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(ToolBarWindow)->getElementFromId(MapObjectsTabControl))->getActiveTab();
 						break;
+				}
+				break;
+			case EGET_SCROLL_BAR_CHANGED:
+				switch (eventCallerId)
+				{
+					case MapObjectEditWindowScale:
+					{
+						wchar_t wstr[256];
+						swprintf(wstr, L"%d", ((IGUIScrollBar*)eventCaller)->getPos());
+						eventCaller->getParent()->getElementFromId(MapObjectEditWindowScaleStaticText)->setText(wstr);
+						break;
+					}
 				}
 				break;
 			case EGET_CHECKBOX_CHANGED:

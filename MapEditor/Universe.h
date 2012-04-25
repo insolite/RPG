@@ -66,6 +66,8 @@ enum EditorGUIElements
 
 	MapObjectEditWindowName,
 	MapObjectEditWindowTags,
+	MapObjectEditWindowScale,
+	MapObjectEditWindowScaleStaticText,
 	MapObjectEditWindowPreview,
 	MapObjectEditWindowImportModelButton,
 	MapObjectEditWindowFileOpenDialog,
@@ -137,7 +139,6 @@ public:
 	bool Menu();
 	bool Run();
 	void CameraMove(int x, int y);
-	void PaintMapCell();
 	
 	Universe(void);
 	~Universe(void);

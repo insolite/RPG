@@ -6,6 +6,7 @@ class MapObject :
 public:
 	IAnimatedMesh* mesh;
 	ITexture* texture;
+	f32 scale;
 
 	virtual __declspec(dllexport) void Abstr (void) = 0; //Abstract class
 

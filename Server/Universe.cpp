@@ -262,17 +262,26 @@ void Universe::Run(char* gameName)
 							}
 							break;
 						case Move:
+						{
 							//TEST!
 							//TODO: changing x and y in time
-							clients[ci]->character->x = PacketGetInt(inPacket, 1);
-							clients[ci]->character->y = PacketGetInt(inPacket, 5);
-							
-							CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, PacketGetInt(inPacket, 1), PacketGetInt(inPacket, 5));
-							for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
+							int x = PacketGetInt(inPacket, 1);
+							int y = PacketGetInt(inPacket, 5);
+							if (x > 0 && x < clients[ci]->character->currentLocation->width //TODO: x >= 0
+							 && y > 0 && y < clients[ci]->character->currentLocation->height) //TODO: x >= 0
 							{
-								clients[i]->Send(outPacket);
+								clients[ci]->character->x = x;
+								clients[ci]->character->y = y;
+							
+								CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, PacketGetInt(inPacket, 1), PacketGetInt(inPacket, 5));
+								for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
+								{
+									clients[i]->Send(outPacket);
+								}
+								clients[ci]->character->Update();
 							}
 							break;
+						}
 						case SkillUse:
 						{
 							CurrentSkill* currentSkill = clients[ci]->character->GetSkill(PacketGetInt(inPacket, 1));
@@ -368,33 +377,38 @@ void Universe::Run(char* gameName)
 							CurrentNPC* currentNPC = clients[ci]->character->currentLocation->GetNPC(PacketGetInt(inPacket, 1));
 							if (currentNPC)
 							{
-								//TODO: check distance from NPC to Character
-								char str[512]; //For init script variables
+								int distanceX = abs(currentNPC->x - clients[ci]->character->x);
+								int distanceY = abs(currentNPC->y - clients[ci]->character->y);
+								if (distanceX < 2 && distanceY < 2)
+								{
+									//TODO: check distance from NPC to Character
+									char str[512]; //For init script variables
 
-								sprintf(str, "\
-									EVENT_TYPE=%d;\
-									EVENT_TYPE_ATTACK=0;\
-									EVENT_TYPE_KILL=1;\
-									EVENT_TYPE_DIALOG=2;\
-									DIALOG_ID=%d;\
-									NPC_ID=%d;\
-									CHARACTER_ID=%d;\
-									CHARACTER_BID=%d;\
-									CHARACTER_X=%d;\
-									CHARACTER_Y=%d;\
-									CHARACTER_LOCATION_ID=%d;\
-									",
-									Dialog, //EVENT_TYPE
-									PacketGetInt(inPacket, 5), //DIALOG_ID
-									currentNPC->id, //NPC_ID
-									clients[ci]->character->id,
-									clients[ci]->character->base->id,
-									clients[ci]->character->x,
-									clients[ci]->character->y,
-									clients[ci]->character->currentLocation->id
-									);
-								luaL_dostring(luaState, str);
-								luaL_dofile(luaState, currentNPC->base->path);
+									sprintf(str, "\
+										EVENT_TYPE=%d;\
+										EVENT_TYPE_ATTACK=0;\
+										EVENT_TYPE_KILL=1;\
+										EVENT_TYPE_DIALOG=2;\
+										DIALOG_ID=%d;\
+										NPC_ID=%d;\
+										CHARACTER_ID=%d;\
+										CHARACTER_BID=%d;\
+										CHARACTER_X=%d;\
+										CHARACTER_Y=%d;\
+										CHARACTER_LOCATION_ID=%d;\
+										",
+										Dialog, //EVENT_TYPE
+										PacketGetInt(inPacket, 5), //DIALOG_ID
+										currentNPC->id, //NPC_ID
+										clients[ci]->character->id,
+										clients[ci]->character->base->id,
+										clients[ci]->character->x,
+										clients[ci]->character->y,
+										clients[ci]->character->currentLocation->id
+										);
+									luaL_dostring(luaState, str);
+									luaL_dofile(luaState, currentNPC->base->path);
+								}
 							}
 							else
 							{
@@ -402,6 +416,43 @@ void Universe::Run(char* gameName)
 							}
 							break;
 						}
+						case ItemPickUp:
+							CurrentItem* currentItem = clients[ci]->character->currentLocation->GetItem(PacketGetInt(inPacket, 1));
+							if (currentItem)
+							{
+								int distanceX = abs(currentItem->x - clients[ci]->character->x);
+								int distanceY = abs(currentItem->y - clients[ci]->character->y);
+								if (distanceX < 2 && distanceY < 2)
+								{
+									CurrentItem* currentItemClone = new CurrentItem(*currentItem);
+
+									CreatePacket(outPacket, ItemUnspawned, "%i%b",
+										currentItem->id,
+										Ground
+										);
+									clients[ci]->character->connectSocket->Send(outPacket);
+									clients[ci]->character->currentLocation->UnSpawnItem(currentItem);
+									
+									currentItemClone->owner = clients[ci]->character;
+									currentItemClone->currentLocation = NULL;
+									currentItemClone->x = 0;
+									currentItemClone->y = 0;
+
+									clients[ci]->character->SpawnItem(currentItemClone);
+									CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
+										currentItemClone->id,
+										currentItemClone->base->id,
+										0,
+										0,
+										Inventory,
+										currentItemClone->count
+										);
+									clients[ci]->character->connectSocket->Send(outPacket);
+
+									currentItemClone->Update(); //TODO:
+								}
+							}
+							break;
 					}
 				}
 				else if (iResult == -1)
