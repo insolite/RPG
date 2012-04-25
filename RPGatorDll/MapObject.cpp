@@ -12,17 +12,26 @@ MapObject::MapObject(SqliteResult sqliteResult, char* modelPath) :
 	if (modelPath) //if (Render::instance) //The same
 	{ //Client or Editor
 		ModelInit(modelPath);
+		scale = sqliteResult.integers["scale"];
 	}
 	else
 	{ //Server
 		mesh = NULL;
 		texture = NULL;
+		scale = 0;
 	}
 }
 
 MapObject::~MapObject(void)
 {
-	//TODO: delete mesh, texture?
+	ModelUnLoad();
+}
+
+void MapObject::ModelUnLoad()
+{
+	if (mesh)
+		Render::instance->smgr->getMeshCache()->removeMesh(mesh);
+	//TODO: Unload texture
 }
 
 void MapObject::ModelInit(char* modelPath)

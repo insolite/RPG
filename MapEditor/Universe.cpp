@@ -15,21 +15,21 @@ Universe::Universe(void)
 	brushMaskMaxSize = 10;
 	instance = this;
 
-	render = new Render(1366, 768, fullscreen, L"RPGator");
+	render = new Render(1366, 768, true, L"RPGator");
 
 	guienv = render->device->getGUIEnvironment();
 
-	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
+	gui::IGUIFont* font2 = guienv->getFont("res/font.xml");
 	guienv->getSkin()->setFont(font2);
 	
 	SColor color;
 
 	color = guienv->getSkin()->getColor(EGDC_3D_FACE);
-	color.setAlpha(192);
+	color.setAlpha(208);
 	guienv->getSkin()->setColor(EGDC_3D_FACE, color);
 	
 	color = guienv->getSkin()->getColor(EGDC_3D_SHADOW);
-	color.setAlpha(192);
+	color.setAlpha(208);
 	guienv->getSkin()->setColor(EGDC_3D_SHADOW, color);
 }
 
@@ -93,7 +93,7 @@ void Universe::EditorGUIInit()
 	b->setIsPushButton(true);
 
 	//MapObject select windows, tabs, buttons, etc.
-	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 92, toolbarLeftMargin + 176, 92 + 256), wnd, true, true, MapObjectsTabControl);
+	IGUITabControl* tabc = guienv->addTabControl(rect< s32 >(toolbarLeftMargin, 92, toolbarLeftMargin + 176, 92 + 256 + 32), wnd, true, true, MapObjectsTabControl);
 	IGUITab* tab;
 	wchar_t* wstrs[5] = { L"C", L"N", L"S", L"I", L"C" };
 	for (int i = 0; i < 5; i++)
@@ -101,6 +101,13 @@ void Universe::EditorGUIInit()
 		tab = tabc->addTab(wstrs[i], -1);
 		guienv->addButton(rect< s32 >(8, 8, 8 + 70, 8 + 32), tab, MapObjectSelectWindowToggleButton, L"Select", L"Select MapObject from list");
 		guienv->addButton(rect< s32 >(8 + 70 + 8, 8, 8 + 70 + 8 + 70, 8 + 32), tab, MapObjectAddButton, L"Add", L"Add MapObject to list");
+		CGUIMeshViewer* mv = new CGUIMeshViewer(guienv, tab, MapObjectTabPreview, rect< s32 >(8, 8 + 32 + 16, 8 + 70 + 8 + 70, 8 + 70 + 16 + 128));
+		SMaterial* sm = new SMaterial();
+		sm->setTexture(0, brush[i]->texture);
+		sm->setFlag(EMF_LIGHTING, false);
+		mv->setMesh(brush[i]->mesh);
+		mv->setMaterial(*sm);
+		mv->drop();
 	}
 	tabc->setActiveTab(1);
 	/*
@@ -256,14 +263,19 @@ bool Universe::Run()
 		}
 		camera->setPosition(Km);
 		camera->setTarget(render->Kt);
+		
+		//vector3df lPos = camera->getPosition();
+		vector3df lPos = render->Kt;
+		lPos.Y = 15;
+		//lPos.Z += 20;
+		lnode->setPosition(lPos);
 
-		lnode->setPosition(camera->getPosition());
 
 		if ((render->device->getTimer()->getTime() - lastUpdate) > 30)
 		{
 			//OMG, performance is too high :)
 			lastUpdate = render->device->getTimer()->getTime();
-
+			
 			render->driver->beginScene(true, true, SColor(255,100,101,140));
 				render->smgr->drawAll();
 				guienv->drawAll();
@@ -326,25 +338,4 @@ void Universe::DeleteBrushMask()
 	for (int i = 0; i < brushRadius * 2 + 1; i++)
 		delete brushMask[i];
 	delete brushMask;
-}
-
-void Universe::PaintMapCell()
-{
-	int i, j;
-	MapCell* pBrush;
-	
-	pBrush = (MapCell*)brush[brushIndex];
-	
-	for (i = 0; i < brushRadius * 2 + 1; i++)
-	{
-		for (j = 0; j < brushRadius * 2 + 1; j++)
-		{
-			if ((brushMask[i][j]) &&
-				(cursorX - brushRadius + j) >= 0 && 
-				(cursorY - brushRadius + i) >= 0 && 
-				(cursorX - brushRadius + j) < currentLocation->width && 
-				(cursorY - brushRadius + i) < currentLocation->height)
-				currentLocation->mask[cursorY - brushRadius + i][cursorX - brushRadius + j] = pBrush;
-		}
-	}
 }

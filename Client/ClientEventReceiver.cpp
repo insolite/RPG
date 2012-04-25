@@ -8,17 +8,20 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 	{
 		KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
-		if (event.KeyInput.Key >= KEY_KEY_1 && event.KeyInput.Char <= KEY_KEY_9)
+		if (event.KeyInput.Key >= KEY_KEY_1 && event.KeyInput.Key <= KEY_KEY_9)
 		{
-			IGUIElement* hkb = Universe::instance->guienv->getRootGUIElement()->getElementFromId(HotkeyBar);
-			CGUIButton* btn = ((IGUIIconTable*)hkb)->getButtonAt(event.KeyInput.Char - '1');
-			if (btn)
+			if (Universe::instance->guienv->getFocus() != Universe::instance->guienv->getRootGUIElement()->getElementFromId(ChatBox)->getElementFromId(ChatInputEditBox))
 			{
-				SEvent clickEvent;
-				clickEvent.EventType = EET_GUI_EVENT;
-				clickEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
-				clickEvent.GUIEvent.Caller = btn;
-				Universe::instance->render->device->postEventFromUser(clickEvent);
+				IGUIElement* hkb = Universe::instance->guienv->getRootGUIElement()->getElementFromId(HotkeyBar);
+				CGUIButton* btn = ((IGUIIconTable*)hkb)->getButtonAt(event.KeyInput.Key - KEY_KEY_1);
+				if (btn)
+				{
+					SEvent clickEvent;
+					clickEvent.EventType = EET_GUI_EVENT;
+					clickEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
+					clickEvent.GUIEvent.Caller = btn;
+					Universe::instance->render->device->postEventFromUser(clickEvent);
+				}
 			}
 		}
 		else if (KeyIsDown[KEY_ESCAPE])
@@ -49,8 +52,33 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 		if (Mouse[EMIE_LMOUSE_PRESSED_DOWN])
 		{
 			CurrentMapObject<MapObject>* targetCurrentMapObject;
+
+			CGUIButton* leftMouseBind = ((IGUIIconTable*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(HotkeyBar))->selectedButton;
+			if (leftMouseBind)
+			{
+				int targetType;
+				char outPacket[256];
+
+				if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentNPC>(Universe::instance->currentLocation->currentNPCs, Universe::instance->currentLocation->currentNPCsCount))
+				{
+					targetType = 0;
+				}
+				else if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentCharacter>(Universe::instance->currentLocation->currentCharacters, Universe::instance->currentLocation->currentCharactersCount))
+				{
+					targetType = 3;
+				}
+				else
+					targetType = -1;
+
+				CreatePacket(outPacket, SkillUse, "%i%b%i", leftMouseBind->currentGameObject->id, targetType, targetCurrentMapObject ? targetCurrentMapObject->id : 0);
+				Universe::instance->connectSocket->Send(outPacket);
+			}
+		}
+		else if (Mouse[EMIE_RMOUSE_PRESSED_DOWN])
+		{
+			CurrentMapObject<MapObject>* targetCurrentMapObject;
 			if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentNPC>(Universe::instance->currentLocation->currentNPCs, Universe::instance->currentLocation->currentNPCsCount))
-			{ //TODO: Attack
+			{
 				char outPacket[256];
 
 				CreatePacket(outPacket, DialogOpen, "%i%i", targetCurrentMapObject->id, 0);
@@ -63,23 +91,16 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 				CreatePacket(outPacket, ItemPickUp, "%i", targetCurrentMapObject->id);
 				Universe::instance->connectSocket->Send(outPacket);
 			}
-			else if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentCharacter>(Universe::instance->currentLocation->currentCharacters, Universe::instance->currentLocation->currentCharactersCount))
-			{
-				char outPacket[256];
-
-				//CreatePacket(outPacket, Attack, "%i%i", targetCurrentMapObject->id, 0);
-				//Universe::instance->connectSocket->Send(outPacket);
-			}
 			else
 			{ //Move
 				char outPacket[256];
-				vector3df position = Universe::instance->render->MouseCoordToWorldCoord();
-				int x, y;
-				x = (int)(position.X / CELL_SIZE);
-				y = (int)(position.Z / CELL_SIZE);
-				CreatePacket(outPacket, Move, "%i%i", x, y);
-				Universe::instance->connectSocket->Send(outPacket);
-				Universe::instance->currentCharacter->setAnimation(EMAT_RUN);
+				vector2d<s32> clickPos = Universe::instance->render->MouseCoordToWorldCoord();
+				if (clickPos.X > 0 && clickPos.X < Universe::instance->currentLocation->width && clickPos.Y > 0 && clickPos.Y < Universe::instance->currentLocation->height)
+					if (Universe::instance->currentLocation->mask[clickPos.Y][clickPos.X] == Free) //TODO: see 'void Location::SpawnStatic(CurrentStatic* currentStatic)'
+					{
+						CreatePacket(outPacket, Move, "%i%i", clickPos.X, clickPos.Y);
+						Universe::instance->connectSocket->Send(outPacket);
+					}
 			}
 		}
 		else if (Mouse[EMIE_MOUSE_WHEEL])
@@ -153,6 +174,10 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 					}
 					case IconTableSkillButton:
 					{
+						((IGUIIconTable*)eventCaller->getParent()->getParent())->selectedButton = (CGUIButton*)eventCaller;
+						
+						//rightMouseBind = eventCaller;
+						/*
 						char outPacket[256];
 						CurrentMapObject<MapObject>* targetCurrentMapObject;
 						int currentMapObjectId;
@@ -176,6 +201,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 
 						CreatePacket(outPacket, SkillUse, "%i%b%i", ((CGUIButton*)eventCaller)->currentGameObject->id, targetType, currentMapObjectId);
 						Universe::instance->connectSocket->Send(outPacket);
+						*/
 						break;
 					}
 					case InventoryToggleButton:
@@ -222,6 +248,18 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 					}
 					case ChatInputEditBox:
 						Universe::instance->guienv->getRootGUIElement()->getElementFromId(ChatInputEditBox)->setText(L"");
+						break;
+					default:
+						if (eventCallerId > DialogElement) //Dialog button
+						{
+							char outPacket[256];
+							int currentNPCId;
+
+							swscanf(eventCaller->getParent()->getText(), L"[%d]", &currentNPCId);
+							eventCaller->getParent()->remove();
+							CreatePacket(outPacket, DialogOpen, "%i%i", currentNPCId, eventCallerId - DialogElement);
+							Universe::instance->connectSocket->Send(outPacket);
+						}
 						break;
 				}
 				break;

@@ -6,17 +6,18 @@
 
 Universe* Universe::instance;
 
-Universe::Universe(void)
+Universe::Universe(char *serverAddress, char *serverPort)
 {
 	instance = this;
+
+	strcpy(this->serverAddress, serverAddress);
+	strcpy(this->serverPort, serverPort);
 	
-	render = new Render(1366, 768, fullscreen, L"Client");
+	render = new Render(1366, 768, true, L"Client");
 
 	guienv = render->device->getGUIEnvironment();
-	menuEventReceiver = new MenuEventReceiver();
-	clientEventReceiver = new ClientEventReceiver();
 
-	gui::IGUIFont* font2 = guienv->getFont("res/font.bmp");
+	gui::IGUIFont* font2 = guienv->getFont("res/font.xml");
 	guienv->getSkin()->setFont(font2);
 
 	SColor color;
@@ -97,7 +98,7 @@ bool Universe::Run()
 
 	continueFlag = true;
 
-	connectSocket = new ClientSocket("127.0.0.1", "3127");
+	connectSocket = new ClientSocket(serverAddress, serverPort);
 	printf("Connected to the server\n");
 	CreatePacket(outPacket, LogIn, "%s%s", login, password);
 	connectSocket->Send(outPacket);
@@ -114,7 +115,7 @@ bool Universe::Run()
 	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
 
 	scene::ISceneNode* lnode; 
-	lnode = render->smgr->addLightSceneNode(0,vector3df(0,30,0),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
+	lnode = render->smgr->addLightSceneNode(0,camPos->getPosition(),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
 	render->smgr->setAmbientLight(video::SColor(0,60,60,60));
 	
 	state = Continue;
@@ -214,6 +215,7 @@ bool Universe::Run()
 					case CharacterMoving:
 					{
 						//printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
+						Universe::instance->currentCharacter->setAnimation(EMAT_RUN);
 						render->moveNode(currentLocation->GetCharacter(PacketGetInt(inPacket,1))->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
 						//TEST
 						currentCharacter->x = PacketGetInt(inPacket, 5);
@@ -268,47 +270,78 @@ bool Universe::Run()
 						wchar_t wstr[512];
 
 						//npcID = PacketGetInt(inPacket, 1);
-						strcpy(title, PacketGetString(inPacket, 5));
-						strcpy(text, PacketGetString(inPacket, strlen(title) + 5 + 1));
+						//strcpy(title, PacketGetString(inPacket, 5));
+						sprintf(title, "[%d] %s", PacketGetInt(inPacket, 1), PacketGetString(inPacket, 5));
+						strcpy(text, PacketGetString(inPacket, strlen(PacketGetString(inPacket, 5)) + 5 + 1));
 
 						mbstowcs(wstr, title, 255);
 						IGUIWindow* wnd = guienv->addWindow(rect<s32>(256, 128, 256 + 256, 128 + 320), false, wstr, NULL, -1);
 						
-						std::vector<HTMLElement> guiElements = HTML2GUI(text);
-						for (std::vector<HTMLElement>::iterator i = guiElements.begin(); i != guiElements.end(); i++)
+						char patterns[][256] = {
+							"<p\\s+rect\\s*=\\s*\\\"(.*?);(.*?);(.*?);(.*?)\\\">(.*?)</p>",
+							"<button\\s+rect\\s*=\\s*\\\"(.*?);(.*?);(.*?);(.*?)\\\"\\s+onclick\\s*=\\s*\\\"(.*?)\\\">(.*?)</button>",
+							/*
+							"<p>(.*?)</p>",
+							"<p>(.*?)</p>",
+							"<p>(.*?)</p>",*/
+							};
+						char** result;
+						int patternsCount = 2;
+						const char *error;
+						int erroffset;
+						int count;
+						int ovector[30];
+						
+						const unsigned char *tables = NULL;
+						tables = pcre_maketables();
+
+						for (int i = 0; i < patternsCount; i++)
 						{
-							int elementRectInt[4];
-							int elementId;
-							elementRectInt[0] = atoi((*i).args["left"].c_str());
-							elementRectInt[1] = atoi((*i).args["top"].c_str());
-							elementRectInt[2] = elementRectInt[0] + atoi((*i).args["width"].c_str());
-							elementRectInt[3] = elementRectInt[1] + atoi((*i).args["height"].c_str());
-							rect<s32> elementRect(elementRectInt[0], elementRectInt[1], elementRectInt[2], elementRectInt[3]);
-							elementId = atoi((*i).args["id"].c_str());
-							
-							if ((*i).name == "input")
+							pcre *re = pcre_compile ((char*)patterns[i], 0, &error, &erroffset, NULL);
+							count = pcre_exec(re, NULL, (char*)text, strlen(text), 0, NULL, ovector, 30);
+							if (count > 0)
 							{
-								if ((*i).args["type"] == "button")
+								result = new char*[count];
+								for (int c = 0; c < 2 * count; c += 2)
 								{
-									wchar_t wstr[256];
-									mbstowcs(wstr, (*i).args["value"].c_str(), 255);
-									guienv->addButton(elementRect, wnd, elementId, wstr, NULL);
+									if (ovector[c] >= 0)
+									{
+										result[c / 2] = new char[ovector[c + 1] - ovector[c] + 1];
+										memcpy(result[c / 2], text + ovector[c], ovector[c + 1] - ovector[c]);
+										result[c / 2][ovector[c + 1] - ovector[c]] = '\0';
+										//printf("%d, %d\n", ovector[c], ovector[c + 1]);
+										//printf("%s\n", result[c / 2]);
+									}
+									else
+									{
+										result[c / 2] = NULL;
+									}
 								}
-								else if ((*i).args["type"] == "text" || (*i).args["type"] == "hidden" || (*i).args["type"] == "password")
+
+								switch (i)
 								{
-									wchar_t wstr[256];
-									mbstowcs(wstr, (*i).args["value"].c_str(), 255);
-									IGUIEditBox* eb = guienv->addEditBox(wstr, elementRect, true, wnd, elementId);
-									if ((*i).args["type"] == "hidden")
-										eb->setVisible(false);
-									else if ((*i).args["type"] == "password")
-										eb->setPasswordBox(true);
+									case 0: //p
+									{
+										wchar_t wstr[1024];
+										mbstowcs(wstr, result[5], 1023);
+										guienv->addStaticText(wstr, rect<s32>(atoi(result[1]), atoi(result[2]), atoi(result[1]) + atoi(result[3]), atoi(result[2]) + atoi(result[4])), false, true, wnd, DialogElement, false);
+										break;
+									}
+									case 1: //button
+									{
+										wchar_t wstr[256];
+										mbstowcs(wstr, result[6], 255);
+										guienv->addButton(rect<s32>(atoi(result[1]), atoi(result[2]), atoi(result[1]) + atoi(result[3]), atoi(result[2]) + atoi(result[4])), wnd, DialogElement + atoi(result[5]), wstr, NULL);
+										break;
+									}
 								}
+								
+								for (int j = 0; j < count; j++)
+									if (result[j])
+										delete result[j];
+								delete result;
 							}
 						}
-
-						mbstowcs(wstr, text, 4095);
-						guienv->addStaticText(wstr, rect<s32>(16, 32, 256 - 16, 320 - 16), false, true, wnd, -1, false);
 						break;
 					}
 					case PlayEffect:
@@ -367,9 +400,15 @@ bool Universe::Run()
 
 					camera->setPosition(Km);
 					camera->setTarget(render->Kt);
+
+					//vector3df lPos = camera->getPosition();
+					vector3df lPos = currentCharacter->node->getPosition();
+					lPos.Y = 15;
+					//lPos.Z += 20;
+					lnode->setPosition(lPos);
 				}
 				
-				lnode->setPosition(camera->getPosition());
+				
 
 				render->driver->beginScene(true, true, SColor(255,100,101,140));
 					render->smgr->drawAll();
@@ -391,13 +430,6 @@ bool Universe::Run()
 	if (state == NextLevel)
 		return false;
 	return true;
-}
-
-std::vector<HTMLElement> Universe::HTML2GUI(char* text)
-{
-	std::vector<HTMLElement> elements;
-
-	return elements;
 }
 
 void Universe::MenuGUIInit()

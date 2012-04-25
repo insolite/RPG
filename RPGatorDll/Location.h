@@ -1,9 +1,11 @@
 #pragma once
 
+enum CellProperty { Free = 0, Locked, Transparment };
+
 class Location
 {
 public:
-	MapCell*** mask; //Not CurrentMapCell**
+	CellProperty** mask;
 	CurrentNPC** currentNPCs;
 	CurrentStatic** currentStatics;
 	CurrentItem** currentItems;

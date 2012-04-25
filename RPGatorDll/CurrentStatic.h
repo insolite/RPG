@@ -4,6 +4,8 @@ class CurrentStatic :
 	public CurrentMapObject<Static>
 {
 public:
+	__declspec(dllexport) void Update();
+
 	__declspec(dllexport) CurrentStatic(SqliteResult sqliteResult, Location* location);
 	__declspec(dllexport) CurrentStatic(char* currentMapObjectSpawnedPacket);
 	__declspec(dllexport) ~CurrentStatic(void);

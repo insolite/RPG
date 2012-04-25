@@ -45,9 +45,6 @@
     <ClInclude Include="Game.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="utilities.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="Item.h">
       <Filter>Заголовочные файлы\Resources</Filter>
     </ClInclude>
@@ -145,6 +142,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="FlyStraightWCallBackAnimator.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="utilities.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,7 +12,8 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border,
 	Operator(0), BlinkStartTime(0), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
 	WordWrap(false), MultiLine(false), AutoScroll(true), PasswordBox(false),
 	PasswordChar(L'*'), HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER),
-	CurrentTextRect(0,0,1,1), FrameRect(rectangle)
+	CurrentTextRect(0,0,1,1), FrameRect(rectangle),
+	IsEditable(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIEditBox");
@@ -402,6 +403,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		}
 		break;
 	case KEY_RETURN:
+		if (!this->IsEditable)
+			break;
 		if (MultiLine)
 		{
 			inputChar(L'\n');
@@ -518,7 +521,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		break;
 
 	case KEY_BACK:
-		if ( !this->IsEnabled )
+		if ( !this->IsEnabled || !this->IsEditable )
 			break;
 
 		if (Text.size())
@@ -558,7 +561,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		}
 		break;
 	case KEY_DELETE:
-		if ( !this->IsEnabled )
+		if ( !this->IsEnabled || !this->IsEditable )
 			break;
 
 		if (Text.size() != 0)
@@ -626,6 +629,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		return false;
 
 	default:
+		if (!this->IsEditable)
+			break;
 		inputChar(event.KeyInput.Char);
 		return true;
 	}
@@ -1480,4 +1485,9 @@ void CGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 			(EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
 
 	// setOverrideFont(in->getAttributeAsFont("OverrideFont"));
+}
+
+void CGUIEditBox::setEditable(bool editable)
+{
+	this->IsEditable = editable;
 }

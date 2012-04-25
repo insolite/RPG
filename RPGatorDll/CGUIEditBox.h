@@ -4,6 +4,8 @@ class CGUIEditBox :
 	public IGUIEditBox
 {
 public:
+	bool IsEditable;
+	void setEditable(bool editable = true);
 
 	//! constructor
 	CGUIEditBox(const wchar_t* text, bool border, IGUIEnvironment* environment,

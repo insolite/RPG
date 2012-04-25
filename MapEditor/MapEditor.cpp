@@ -40,6 +40,8 @@ int main(int argc, char* argv[])
 {
 	//FILTERKEYS originalFilterKeys = InitKeySettings();
 
+	setlocale(LC_CTYPE, "Russian_Russia.1251");
+
 	Universe* universe = universe = new Universe();
 	while (!universe->Menu())
 		if (universe->Run())

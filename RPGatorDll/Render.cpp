@@ -19,10 +19,17 @@ Render* Render::instance = NULL;
 
 Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* windowTitle)
 {
-	this->screenWidth = screenWidth;
-	this->screenHeight = screenHeight;
-	//device = createDevice(video::EDT_OPENGL, dimension2d<u32>(screenWidth, screenHeight), 32, fullscreen, false, false, NULL);
-	device = createDevice(video::EDT_OPENGL, GetDesktopRes(), 32, false, false, false, NULL);
+	dimension2d<u32> screenRes;
+
+	screenRes = GetDesktopRes();
+	this->screenWidth = screenRes.Width;
+	this->screenHeight = screenRes.Height;
+
+	//this->screenWidth = screenWidth;
+	//this->screenHeight = screenHeight;
+	//screenRes = dimension2d<u32>(screenWidth, screenHeight);
+
+	device = createDevice(video::EDT_DIRECT3D9, screenRes, 32, false, false, false, NULL);
 	device->setResizable(true);
 	if (!device)
 		return;
@@ -102,15 +109,11 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 		selector = smgr->createTriangleSelector(node);
 		node->setTriangleSelector(selector);
 		selector->drop();
-
+		
 		//Autoscale
-		vector3df extent = node->getBoundingBox().getExtent(); 
-		if(extent.Y != 0) 
-		{
-			f32 scale = 10.0f / extent.Y; 
-			node->setScale(vector3df(scale,scale,scale)); 
-		}
-
+		//f32 scale = 0.25f;
+		node->setScale(scale);
+		
 		if (texture)
 		{
 			//node->setMaterialFlag(EMF_LIGHTING, false);
@@ -154,15 +157,17 @@ int Render::GetAngle(int x1, int y1, int x2, int y2)
 	return -(int)angle;
 }
 
-vector3df Render::MouseCoordToWorldCoord()
+vector2d<s32> Render::MouseCoordToWorldCoord()
 {
 	core::vector3df pos;
 
 	line3df ray2 = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(device->getCursorControl()->getPosition(), smgr->getActiveCamera());
-	core::plane3df plane = plane3df(vector3df(0, -15, 0), vector3df(0, -1, 0));
+	core::plane3df plane = plane3df(vector3df(0, 0, 0), vector3df(0, -1, 0));
     if (!plane.getIntersectionWithLine(ray2.start, ray2.getVector(), pos))
 		printf("ray does not intersect the plane!");
-	return pos;
+	int x = (int)((pos.X + CELL_SIZE / 2) / CELL_SIZE);
+	int y = (int)((pos.Z + CELL_SIZE / 2) / CELL_SIZE);
+	return vector2d<s32>(x, y);
 }
 
 dimension2d<u32> Render::GetDesktopRes()
@@ -197,4 +202,46 @@ void Render::PlayEffect(ISceneNode* p, core::array< video::ITexture* > textures)
 			 
              glow->drop();
         }
+}
+
+void Render::Effect2(core::vector3df s,  core::vector3df f)
+{
+        scene::ISceneNode* light2 =
+                smgr->addLightSceneNode(0, core::vector3df(0,0,0),
+                video::SColorf(1.0f, 0.2f, 0.2f, 0.0f), 800.0f);
+
+        scene::ISceneNodeAnimator* anim =
+                        smgr->createFlyStraightAnimator(s, f, 3500, true);
+        light2->addAnimator(anim);
+        anim->drop();
+
+        scene::ISceneNode* bill = smgr->addBillboardSceneNode(light2, core::dimension2d< f32 >(120, 120));
+        bill->setMaterialFlag(video::EMF_LIGHTING, false);
+        bill->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+        bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+        bill->setMaterialTexture(0, driver->getTexture("particlewhite.bmp"));
+
+        scene::IParticleSystemSceneNode* ps =
+                smgr->addParticleSystemSceneNode(false, light2);
+
+        scene::IParticleEmitter* em = ps->createBoxEmitter(
+                core::aabbox3d< f32 >(-3,0,-3,3,1,3),
+                core::vector3df(0.0f,0.03f,0.0f),
+                80,100,
+                video::SColor(0,255,255,255), video::SColor(0,255,255,255),
+                400,1100);
+        em->setMinStartSize(core::dimension2d< f32 >(30.0f, 40.0f));
+        em->setMaxStartSize(core::dimension2d< f32 >(30.0f, 40.0f));
+
+        ps->setEmitter(em);
+        em->drop();
+
+        scene::IParticleAffector* paf = ps->createFadeOutParticleAffector();
+        ps->addAffector(paf);
+        paf->drop();
+
+        ps->setMaterialFlag(video::EMF_LIGHTING, false);
+        ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+        ps->setMaterialTexture(0, driver->getTexture("fireball.bmp"));
+        ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
 }

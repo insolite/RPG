@@ -17,6 +17,8 @@ template class __declspec(dllexport) CurrentMapObject<Static>;
 template class __declspec(dllexport) CurrentMapObject<Item>;
 template class __declspec(dllexport) CurrentMapObject<Character>;
 
+template class __declspec(dllexport) CurrentMapObject<MapObject>;
+
 template<class T>
 CurrentMapObject<T>::CurrentMapObject( SqliteResult sqliteResult, T** mapObjects, int mapObjectsCount, Location* location ) :
 CurrentGameObject<T>::CurrentGameObject(sqliteResult, mapObjects, mapObjectsCount)
@@ -26,7 +28,7 @@ CurrentGameObject<T>::CurrentGameObject(sqliteResult, mapObjects, mapObjectsCoun
 	currentLocation = location;
 	if (base->mesh)
 	{
-		node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df((f32)x * CELL_SIZE, 0.0f, (f32)y * CELL_SIZE));
+		node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(base->scale / 10.0f, base->scale / 10.0f, base->scale / 10.0f), vector3df((f32)x * CELL_SIZE, 0.0f, (f32)y * CELL_SIZE));
 	}
 	else
 		node = NULL;
@@ -42,7 +44,7 @@ CurrentGameObject<T>::CurrentGameObject(currentMapObjectSpawnedPacket, mapObject
 	currentLocation = NULL; //Client does not use it. It uses Universe->currentLocation
 	if (base->mesh)
 	{
-		node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(0.2, 0.2, 0.2), vector3df((f32)x * CELL_SIZE, 0.0f, (f32)y * CELL_SIZE));
+		node = Render::instance->createNode(false, base->mesh, base->texture, false, vector3df(base->scale / 10.0f, base->scale / 10.0f, base->scale / 10.0f), vector3df((f32)x * CELL_SIZE, 0.0f, (f32)y * CELL_SIZE));
 	}
 	else
 		node = NULL;
@@ -54,8 +56,7 @@ CurrentMapObject<T>::~CurrentMapObject( void )
 {
 	if (node)
 		node->remove();
-	if (title)
-		title->remove();
+	//Title removes as child to 'node'
 }
 
 template<class T>
@@ -65,7 +66,7 @@ void CurrentMapObject<T>::setTitle( char* text )
 		title->remove();
 	wchar_t wstr[256];
 	mbstowcs(wstr, text, 255);
-	IBillboardTextSceneNode* title = Render::instance->smgr->addBillboardTextSceneNode(Render::instance->device->getGUIEnvironment()->getSkin()->getFont(), wstr, node, dimension2df(strlen(text) / 1.5f,1.5f), vector3df(0,60,0));
+	title = Render::instance->smgr->addBillboardTextSceneNode(Render::instance->device->getGUIEnvironment()->getSkin()->getFont(), wstr, node, dimension2df(strlen(text) / 1.25f,1.5f), vector3df(0,40,0));
 }
 
 template<class T>

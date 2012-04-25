@@ -39,12 +39,11 @@ enum EditorGUIElements
 	LocationWidthEditBox,
 	LocationHeightEditBox,
 
-	MapObjectEditButton,
 	MapObjectAddButton,
+	MapObjectSelectWindowToggleButton,
+	MapObjectTabPreview,
 
 	//Select
-
-	MapObjectSelectWindowToggleButton,
 
 	MapCellSelectWindow,
 	NPCSelectWindow,
@@ -54,10 +53,11 @@ enum EditorGUIElements
 
 	MapObjectSelectWindowListBox,
 	MapObjectMeshViever,
+	MapObjectEditButton,
 	MapObjectSelectWindowOKButton,
 
 	//Edit
-
+	
 	MapCellEditWindow,
 	NPCEditWindow,
 	StaticEditWindow,
@@ -66,6 +66,8 @@ enum EditorGUIElements
 
 	MapObjectEditWindowName,
 	MapObjectEditWindowTags,
+	MapObjectEditWindowScale,
+	MapObjectEditWindowScaleStaticText,
 	MapObjectEditWindowPreview,
 	MapObjectEditWindowImportModelButton,
 	MapObjectEditWindowFileOpenDialog,
@@ -79,8 +81,11 @@ enum EditorGUIElements
 	CurrentItemEditWindow,
 	CurrentCharacterEditWindow,
 
-	//CurrentMapObjectEditWindowPreview,
 	CurrentMapObjectEditWindowOKButton,
+
+	//CurrentCharacter
+	CurrentMapObjectEditWindowLoginEditBox,
+	CurrentMapObjectEditWindowPasswordEditBox,
 
 	//Add
 
@@ -95,7 +100,6 @@ public:
 	Game* game;
 	int cameraX, cameraY; //pixels
 	int cursorX, cursorY; //points
-	bool fullscreen;
 	int toolbarWidth; //pixels
 	int cameraMoveZoneWidth; //pixels
 	int toolbarLeftMargin; //pixels
@@ -135,7 +139,6 @@ public:
 	bool Menu();
 	bool Run();
 	void CameraMove(int x, int y);
-	void PaintMapCell();
 	
 	Universe(void);
 	~Universe(void);

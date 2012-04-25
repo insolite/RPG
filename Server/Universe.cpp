@@ -221,13 +221,29 @@ void Universe::Run(char* gameName)
 						{
 							char* login;
 							char* password;
-							login = PacketGetString(inPacket, 5);
-							password = PacketGetString(inPacket, 5 + strlen(login) + 1);
-							//TODO: default location, coordinates
-							//TODO: without UnSpawnCharacter
-							game->data->locations[0]->UnSpawnCharacter(game->data->locations[0]->AddCharacter(game->resources->GetCharacter(PacketGetInt(inPacket, 1)), 0, 0, login, password));
-							CreatePacket(outPacket, RegisterOK, "");
-							clients[ci]->Send(outPacket);
+							Character *character;
+							if (character = game->resources->GetCharacter(PacketGetInt(inPacket, 1)))
+							{
+								char query[256];
+								
+								login = PacketGetString(inPacket, 5);
+								password = PacketGetString(inPacket, 5 + strlen(login) + 1);
+
+								sprintf(query, "SELECT * FROM CurrentCharacter WHERE login='%s';", login);
+								if (SqliteGetRows(game->db, query).size() == 0)
+								{
+									//TODO: default location, coordinates
+									//TODO: without UnSpawnCharacter
+									//TODO: password check
+									game->data->locations[0]->UnSpawnCharacter(game->data->locations[0]->AddCharacter(character, 16, 16, login, password));
+									CreatePacket(outPacket, RegisterOK, "");
+								}
+								else
+								{
+									CreatePacket(outPacket, RegisterFail, "%b", AccountAlreadyExists);
+								}
+								clients[ci]->Send(outPacket);
+							}
 							break;
 						}
 						case Say:
@@ -260,26 +276,29 @@ void Universe::Run(char* gameName)
 						{
 							//TEST!
 							//TODO: changing x and y in time
-
 							int newX = PacketGetInt(inPacket, 1);
 							int newY = PacketGetInt(inPacket, 5);
-
-							clients[ci]->character->floatX = (float)clients[ci]->character->x;
-							clients[ci]->character->floatY = (float)clients[ci]->character->y;
-							
-							clients[ci]->character->moveDuration = 
-								(int)(30 * sqrt(pow((float)(clients[ci]->character->x - newX), 2) + pow((float)(clients[ci]->character->y - newY), 2))) * 10;
-
-							clients[ci]->character->x = newX;
-							clients[ci]->character->y = newY;
-
-							CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, newX, newY);
-							for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
+							if (newX > 0 && newX < clients[ci]->character->currentLocation->width //TODO: x >= 0
+							 && newY > 0 && newY < clients[ci]->character->currentLocation->height) //TODO: x >= 0
 							{
-								clients[i]->Send(outPacket);
-							}
+								clients[ci]->character->floatX = (float)clients[ci]->character->x;
+								clients[ci]->character->floatY = (float)clients[ci]->character->y;
+							
+								clients[ci]->character->moveDuration = 
+									(int)(30 * sqrt(pow((float)(clients[ci]->character->x - newX), 2) + pow((float)(clients[ci]->character->y - newY), 2))) * 10;
 
-							currTick = GetTickCount();
+								clients[ci]->character->x = newX;
+								clients[ci]->character->y = newY;
+
+								CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, newX, newY);
+									for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
+									{
+										clients[i]->Send(outPacket);
+									}
+
+								currTick = GetTickCount();
+								clients[ci]->character->Update();
+							}
 							break;
 						}
 						case SkillUse:
@@ -381,30 +400,38 @@ void Universe::Run(char* gameName)
 							CurrentNPC* currentNPC = clients[ci]->character->currentLocation->GetNPC(PacketGetInt(inPacket, 1));
 							if (currentNPC)
 							{
-								//TODO: check distance from NPC to Character
-								char str[512]; //For init script variables
+								int distanceX = abs(currentNPC->x - clients[ci]->character->x);
+								int distanceY = abs(currentNPC->y - clients[ci]->character->y);
+								if (distanceX < 2 && distanceY < 2)
+								{
+									//TODO: check distance from NPC to Character
+									char str[512]; //For init script variables
 
-								sprintf(str, "\
-									EVENT_TYPE=%d;\
-									DIALOG_ID=%d;\
-									NPC_ID=%d;\
-									CHARACTER_ID=%d;\
-									CHARACTER_BID=%d;\
-									CHARACTER_X=%d;\
-									CHARACTER_Y=%d;\
-									CHARACTER_LOCATION_ID=%d;\
-									",
-									Dialog,
-									PacketGetInt(inPacket, 5),
-									currentNPC->id,
-									clients[ci]->character->id,
-									clients[ci]->character->base->id,
-									clients[ci]->character->x,
-									clients[ci]->character->y,
-									clients[ci]->character->currentLocation->id
-									);
-								luaL_dostring(luaState, str);
-								luaL_dofile(luaState, currentNPC->base->path);
+									sprintf(str, "\
+										EVENT_TYPE=%d;\
+										EVENT_TYPE_ATTACK=0;\
+										EVENT_TYPE_KILL=1;\
+										EVENT_TYPE_DIALOG=2;\
+										DIALOG_ID=%d;\
+										NPC_ID=%d;\
+										CHARACTER_ID=%d;\
+										CHARACTER_BID=%d;\
+										CHARACTER_X=%d;\
+										CHARACTER_Y=%d;\
+										CHARACTER_LOCATION_ID=%d;\
+										",
+										Dialog, //EVENT_TYPE
+										PacketGetInt(inPacket, 5), //DIALOG_ID
+										currentNPC->id, //NPC_ID
+										clients[ci]->character->id,
+										clients[ci]->character->base->id,
+										clients[ci]->character->x,
+										clients[ci]->character->y,
+										clients[ci]->character->currentLocation->id
+										);
+									luaL_dostring(luaState, str);
+									luaL_dofile(luaState, currentNPC->base->path);
+								}
 							}
 							else
 							{
@@ -412,6 +439,43 @@ void Universe::Run(char* gameName)
 							}
 							break;
 						}
+						case ItemPickUp:
+							CurrentItem* currentItem = clients[ci]->character->currentLocation->GetItem(PacketGetInt(inPacket, 1));
+							if (currentItem)
+							{
+								int distanceX = abs(currentItem->x - clients[ci]->character->x);
+								int distanceY = abs(currentItem->y - clients[ci]->character->y);
+								if (distanceX < 2 && distanceY < 2)
+								{
+									CurrentItem* currentItemClone = new CurrentItem(*currentItem);
+
+									CreatePacket(outPacket, ItemUnspawned, "%i%b",
+										currentItem->id,
+										Ground
+										);
+									clients[ci]->character->connectSocket->Send(outPacket);
+									clients[ci]->character->currentLocation->UnSpawnItem(currentItem);
+									
+									currentItemClone->owner = clients[ci]->character;
+									currentItemClone->currentLocation = NULL;
+									currentItemClone->x = 0;
+									currentItemClone->y = 0;
+
+									clients[ci]->character->SpawnItem(currentItemClone);
+									CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
+										currentItemClone->id,
+										currentItemClone->base->id,
+										0,
+										0,
+										Inventory,
+										currentItemClone->count
+										);
+									clients[ci]->character->connectSocket->Send(outPacket);
+
+									currentItemClone->Update(); //TODO:
+								}
+							}
+							break;
 					}
 				}
 				else if (iResult == -1)

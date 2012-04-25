@@ -30,3 +30,11 @@ Skill::Skill(SqliteResult sqliteResult, char* iconPath) :
 Skill::~Skill(void)
 {
 }
+
+void Skill::Update()
+{
+	char sql[256];
+	sprintf(sql, "UPDATE Skill SET name='%s' WHERE id=%d;", name, id);
+	//TODO: Tags update //tags='%s', 
+	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
+}

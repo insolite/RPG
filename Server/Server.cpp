@@ -9,8 +9,7 @@ typedef unsigned char byte;
 int main(int argc, char* argv[])
 {
 	SetConsoleTitle("Server");
-	//TEST
-	system("color 80");
+	setlocale(LC_CTYPE, "Russian_Russia.1251");
 
 	Universe* universe;
 

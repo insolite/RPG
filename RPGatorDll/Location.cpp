@@ -30,15 +30,15 @@ Location::Location(SqliteResult sqliteResult, InitializationType initializationT
 	name = new char[sqliteResult.strings["name"].length() + 1];
 	strcpy(name, sqliteResult.strings["name"].c_str());
 
-	mask = new MapCell**[height];
+	mask = new CellProperty*[height];
 	for (i = 0; i < height; i++)
 	{
-		mask[i] = new MapCell*[width];
+		mask[i] = new CellProperty[width];
 		for (j = 0; j < width; j++)
 		{
 			//TODO:
 			//Warning! getMapCellById instead of fgetc(f) - 1
-			mask[i][j] = Game::instance->resources->mapCells[sqliteResult.strings["mask"][height * i + j] - 1];
+			mask[i][j] = Free;
 		}
 	}
 
@@ -99,7 +99,7 @@ Location::~Location(void)
 	id = id;
 	delete name;
 	for (int i = 0; i < height; i++)
-		delete[] mask[i];
+		delete mask[i];
 	//delete[] mask; //TODO: array of array
 	//delete mask;
 	delete mask;
@@ -114,6 +114,27 @@ void Location::SpawnNPC(CurrentNPC* currentNPC)
 void Location::SpawnStatic(CurrentStatic* currentStatic)
 {
 	SpawnCurrentMapObject<CurrentStatic>(currentStatics, currentStaticsCount, currentStatic);
+	if (currentStatic->node) //TODO: checking by mask on server (important!)
+	{
+		//GOVNOCODE
+		vector3d<f32> nodeSize, nodePos;
+		nodeSize = currentStatic->node->getBoundingBox().MaxEdge;
+		nodePos = currentStatic->node->getPosition();
+
+		int x = nodePos.X / CELL_SIZE;
+		int y = nodePos.Z / CELL_SIZE;
+		mask[y][x] = Locked;
+		/*
+		int width = (nodeSize.Z + CELL_SIZE / 2) / CELL_SIZE; //CELL_SIZE / 2 - TEST
+		int height = (nodeSize.X + CELL_SIZE / 2) / CELL_SIZE; //CELL_SIZE / 2 - TEST
+		int x = nodePos.X / CELL_SIZE;
+		int y = nodePos.Z / CELL_SIZE;
+		for (int i = y - height / 2; i < (y + height / 2); i++)
+			for (int j = x - width / 2; j < (x + width / 2); j++)
+				if (i >= 0 && j >= 0)
+					mask[i][j] = Locked;
+		*/
+	}
 }
 
 void Location::SpawnItem(CurrentItem* currentItem)
@@ -216,7 +237,7 @@ CurrentItem* Location::AddItem(Item* base, int x, int y, int count)
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES(%d, %d, %d, %d, NULL, %d)", base->id, x, y, this->id, count);
+	sprintf(query, "INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES(%d, %d, %d, %d, 0, %d)", base->id, x, y, this->id, count);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 	sprintf(query, "SELECT * FROM CurrentItem WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
 	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];

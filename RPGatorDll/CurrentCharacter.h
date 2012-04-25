@@ -4,8 +4,8 @@ class CurrentCharacter :
 	public CurrentMapObject<Character>
 {
 public:
-	char* login; //Also character's name
-	char* password;
+	char login[64]; //Also character's name
+	char password[32];
 	CurrentItem** currentItems; //Inventory
 	CurrentQuest** currentQuests; //Accepted quests
 	CurrentSkill** currentSkills; //Learned skills
@@ -34,6 +34,8 @@ public:
 	__declspec(dllexport) CurrentItem* AddItem(Item* base, int count);
 	__declspec(dllexport) CurrentSkill* AddSkill(Skill* base);
 	
+	__declspec(dllexport) void Update();
+
 	__declspec(dllexport) CurrentCharacter(SqliteResult sqliteResult, Location* location);
 	__declspec(dllexport) CurrentCharacter(char* currentMapObjectSpawnedPacket);
 	__declspec(dllexport) ~CurrentCharacter(void);

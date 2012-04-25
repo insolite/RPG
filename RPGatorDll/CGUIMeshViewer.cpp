@@ -130,9 +130,20 @@ void CGUIMeshViewer::draw()
 		//CameraControl->calculateProjectionMatrix(mat);
 		//driver->setTransform(video::TS_PROJECTION, mat);
 
+		//begin of changes by CGUIMeshViewer...
 		mat.makeIdentity();
-		//mat.setTranslation(core::vector3df(0,0,0));
-		mat.setTranslation(core::vector3df(Render::instance->Kt.X,Render::instance->Kt.Y,Render::instance->Kt.Z)); //Changes by CGUIMeshViewer
+		core::matrix4 mat2;
+		mat2.makeIdentity();
+
+		mat.setRotationDegrees(vector3df(45, 0, 0));
+		mat2.setRotationDegrees(vector3df(0, 90, 0));
+		mat.setScale(vector3df(4.0f, 1.0f, 1.0f));
+		mat *= mat2;
+		
+		mat.setTranslation(vector3df(Render::instance->Kt.X,Render::instance->Kt.Y,Render::instance->Kt.Z - 5.0f));
+		//...end of changes by CGUIMeshViewer
+
+		//mat.setror
 		driver->setTransform(video::ETS_WORLD, mat);
 
 		//CameraControl->calculateViewMatrix(mat);

@@ -38,14 +38,9 @@ enum ClientGUIElements
 	SkillsWindow,
 	QuestsWindow,
 	IconTableItemButton,
-	IconTableSkillButton
-};
+	IconTableSkillButton,
 
-struct HTMLElement
-{
-	std::string name; //tag name
-	std::string content; //tag content
-	std::map<std::string, std::string> args; //tag arguments (type="text", src="img.png", etc.)
+	DialogElement //Must be the last
 };
 
 class Universe
@@ -58,13 +53,14 @@ public:
 	Game* game; //Current game, that server is running
 	CurrentCharacter* currentCharacter; //Current character, attached to the current client
 	Location* currentLocation; //Current location of the current character
-	bool fullscreen;
 	
 	//GUI, input
 	IGUIEnvironment* guienv;
 	MenuEventReceiver* menuEventReceiver;
 	ClientEventReceiver* clientEventReceiver;
 
+	char serverAddress[64];
+	char serverPort[8];
 	char* login; //Buffer between menu and editor
 	char* password; //Buffer between menu and editor
 	ProgramState state;
@@ -79,8 +75,7 @@ public:
 	void MenuGUIDestroy();
 	void ClientGUIDestroy();
 	void DrawScene(); //TEST
-	std::vector<HTMLElement> HTML2GUI(char* text);
 
-	Universe(void); //Initializes the instance
+	Universe(char *serverAddress, char *serverPort); //Initializes the instance
 	~Universe(void); //Finalizes the instance
 };

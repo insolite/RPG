@@ -9,6 +9,7 @@
 #include "CurrentSkill.h"
 #include "CurrentCharacter.h"
 #include "ConnectSocket.h"
+#include "IGUIIconTable.h"
 #include "CGUIButton.h"
 
 CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, CurrentGameObject<GameObject>* currentGameObject, bool noclip) :
@@ -164,58 +165,53 @@ bool CGUIButton::OnEvent(const SEvent& event)
 	case EET_MOUSE_INPUT_EVENT:
 		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 		{
-			if (event.MouseInput.Control)
+			if (Environment->hasFocus(this) &&
+				!AbsoluteClippingRect.isPointInside(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
 			{
-				DragStart.X = event.MouseInput.X;
-				DragStart.Y = event.MouseInput.Y;
-				StartDragging();
+					Environment->removeFocus(this);
+					return false;
 			}
-			else
+
+			if (!IsPushButton)
+				setPressed(true);
+
+			Environment->setFocus(this);
+			
+			DragStart.X = event.MouseInput.X;
+			DragStart.Y = event.MouseInput.Y;
+			if (Parent)
 			{
-				if (Environment->hasFocus(this) &&
-					!AbsoluteClippingRect.isPointInside(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
-				{
-						Environment->removeFocus(this);
-						return false;
-				}
-
-				if (!IsPushButton)
-					setPressed(true);
-
-				Environment->setFocus(this);
-
-				if (Parent)
-				{
-					Parent->bringToFront(this);
-				}
+				Parent->bringToFront(this);
+				StartDragging();
 			}
 			return true;
 		}
 		else
 		if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
 		{
+			bool wasPressed = Pressed;
+			//Environment->removeFocus(this);
+
+			if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ) ) )
+			{
+				if (!IsPushButton)
+					setPressed(false);
+				return true;
+			}
+
+			if (!IsPushButton)
+				setPressed(false);
+			else
+			{
+				setPressed(!Pressed);
+			}
+
 			if (Dragging)
 			{
 				StopDragging();
-			}
+			}/*
+			else
 			{
-				bool wasPressed = Pressed;
-				//Environment->removeFocus(this);
-
-				if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ) ) )
-				{
-					if (!IsPushButton)
-						setPressed(false);
-					return true;
-				}
-
-				if (!IsPushButton)
-					setPressed(false);
-				else
-				{
-					setPressed(!Pressed);
-				}
-
 				if ((!IsPushButton && wasPressed && Parent) ||
 					(IsPushButton && wasPressed != Pressed))
 				{
@@ -226,7 +222,7 @@ bool CGUIButton::OnEvent(const SEvent& event)
 					newEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
 					Parent->OnEvent(newEvent);
 				}
-			}
+			}*/
 			return true;
 		}
 		else if (event.MouseInput.Event == EMIE_MOUSE_MOVED)
@@ -278,6 +274,17 @@ void CGUIButton::draw()
 
 	if (!Pressed)
 	{
+		if (((IGUIIconTable*)this->getParent()->getParent())->selectedButton == this)
+		{
+			rect<s32> r(AbsoluteRect);
+			r.UpperLeftCorner.X -= 4;
+			r.UpperLeftCorner.Y -= 4;
+			r.LowerRightCorner.X += 4;
+			r.LowerRightCorner.Y += 4;
+			skin->draw2DRectangle(this, SColor(255, 251, 209, 75), r);
+			//skin->draw3DButtonPaneStandard(this, r, &r);
+		}
+
 		if (DrawBorder)
 			skin->draw3DButtonPaneStandard(this, AbsoluteRect, &AbsoluteClippingRect);
 

@@ -8,6 +8,8 @@
 #include "Item.h"
 #include "CurrentGameObject.h"
 #include "CurrentMapObject.h"
+#include "CurrentCharacter.h"
+#include "Location.h"
 #include "GameResources.h"
 #include "Game.h"
 #include "CurrentItem.h"
@@ -30,4 +32,18 @@ CurrentItem::CurrentItem(char* currentMapObjectSpawnedPacket) :
 
 CurrentItem::~CurrentItem(void)
 {
+}
+
+void CurrentItem::Update()
+{
+	char sql[256];
+	sprintf(sql, "UPDATE CurrentItem SET x=%d, y=%d, locationId=%d, currentCharacterId=%d, count=%d WHERE id=%d;",
+		currentLocation ? x : 0,
+		currentLocation ? y : 0,
+		currentLocation ? currentLocation->id : 0,
+		owner ? owner->id : 0,
+		count,
+		id
+		);
+	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
 }
