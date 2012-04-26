@@ -58,7 +58,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			{
 				int targetType;
 				char outPacket[256];
-
+				
 				if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentNPC>(Universe::instance->currentLocation->currentNPCs, Universe::instance->currentLocation->currentNPCsCount))
 				{
 					targetType = 0;

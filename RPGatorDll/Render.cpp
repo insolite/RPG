@@ -133,6 +133,7 @@ void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 	vector3df oldPosition = node->getPosition();
 	node->setID(5678);
 	int duration = (int)(30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2)));
+	printf("duration: %d\n", duration);
 	//scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
 	scene::ISceneNodeAnimator* anim = new FlyStraightWCallBackAnimator(node->getPosition(), nextpos, duration, false, device->getTimer()->getTime());
 	((FlyStraightWCallBackAnimator*)anim)->setAnimatorEndCallBack(Render::instance->animationEndCallBack);

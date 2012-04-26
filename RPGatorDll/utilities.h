@@ -1,4 +1,5 @@
 #pragma once
+#include "Render.h"
 
 
 enum Packet
@@ -33,6 +34,9 @@ enum Packet
 	ItemPickUp,
 	PlayEffect,
 	PlayAdvancedEffect //TEST
+	HpChanged,
+	CharacterMoved,
+	CharacterDied
 };
 
 enum NPCEvent
@@ -89,6 +93,7 @@ extern "C" __declspec(dllexport) void SetPacketType(char* packet, Packet type);
 extern "C" __declspec(dllexport) Packet GetPacketType(char* packet);
 
 extern "C++" __declspec(dllexport) void CreatePacket(char* packet, Packet packetType, char* formatStr, ...);
+extern "C++" __declspec(dllexport) void ScanPacket(char* packet, char* formatStr, ...);
 
 extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlite3* db, char* query);
 
@@ -98,3 +103,5 @@ extern "C++" __declspec(dllexport) int PixRound(int pos);
 
 extern "C++" __declspec(dllexport) bool FileExists(char* path);
 extern "C++" __declspec(dllexport) void ImportModel(char* source, char* destination, int id); //TODO: move this function into editor
+
+extern "C++" __declspec(dllexport) u32 GetCurentTime();

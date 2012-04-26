@@ -2,6 +2,8 @@
 #include "ForwardDeclaration.h"
 #include "SqliteResult.h"
 #include "utilities.h"
+#include "Render.h"
+
 
 extern "C" __declspec(dllexport) int ReadDir(const char* path, char** &elements, bool directoriesOnly)
 	/************************************************************************/
@@ -189,6 +191,55 @@ void CreatePacket( char* packet, Packet packetType, char* formatStr, ... )
 	va_end(params);
 }
 
+
+void ScanPacket( char* packet, char* formatStr, ... )
+{
+	va_list params;
+
+	va_start(params, formatStr);
+	
+	char tmp[256];
+	strcpy(tmp, formatStr);
+	char* token;
+	char* nextToken;
+	token = strtok_s(tmp,"% ", &nextToken);
+	int currentPosition = 1;
+
+	while(token != NULL)
+	{
+		if (!strcmp(token,"i")) 
+		{
+			*(va_arg(params, int*)) = PacketGetInt(packet, currentPosition);
+			currentPosition += 4;
+		}
+		else if (!strcmp(token,"b"))
+		{
+			*(va_arg(params, char*)) = PacketGetByte(packet, currentPosition);
+			currentPosition += 1;
+		}
+		else if (!strcmp(token,"s"))
+		{
+			currentPosition += strlen(strcpy(va_arg(params, char*), PacketGetString(packet, currentPosition))) + 1;
+		}
+		else if (!strcmp(token,"si"))
+		{
+			*(va_arg(params, short*)) = PacketGetShortInt(packet, currentPosition);
+			currentPosition += 2;
+		}
+		else if (!strcmp(token,"ws")) 
+		{
+			//Warning! It only converts wchar_t* to char*. Does not insert wide string.
+			char *str = PacketGetString(packet, currentPosition);
+
+			currentPosition += mbstowcs(va_arg(params, wchar_t*), str, strlen(str) + 1) + 1;
+		}
+		token = strtok_s(NULL, "% ", &nextToken);
+	}
+
+	va_end(params);
+}
+
+
 extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlite3* db, char* query)
 {
 	int result, i, columnsCount, rowsCount;
@@ -303,4 +354,9 @@ void ImportModel(char* source, char* destination, int id) //TODO: move this func
 	if (FileExists(path))
 		DeleteFile(path);
 	CopyFile(tPath, path, false);
+}
+
+u32 GetCurentTime(  )
+{
+	return 0;
 }

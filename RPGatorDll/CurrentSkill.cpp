@@ -17,6 +17,8 @@
 CurrentSkill::CurrentSkill(SqliteResult sqliteResult, CurrentCharacter* currentCharacter) :
 	CurrentGameObject<Skill>::CurrentGameObject(sqliteResult, Game::instance->resources->skills, Game::instance->resources->skillsCount)
 {
+	this->base->useDelay = 1000;
+	lastUse = 0;
 	owner = currentCharacter;
 }
 
@@ -24,6 +26,7 @@ CurrentSkill::CurrentSkill(SqliteResult sqliteResult, CurrentCharacter* currentC
 CurrentSkill::CurrentSkill(char* currentSkillInfoPacket) :
 	CurrentGameObject<Skill>::CurrentGameObject(currentSkillInfoPacket, Game::instance->resources->skills, Game::instance->resources->skillsCount)
 {
+	//lastUse = 0;
 	owner = NULL; //Client does not use it. It uses Universe->currentCharacter
 }
 

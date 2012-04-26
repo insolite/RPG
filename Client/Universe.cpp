@@ -215,11 +215,53 @@ bool Universe::Run()
 					case CharacterMoving:
 					{
 						//printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
-						Universe::instance->currentCharacter->setAnimation(EMAT_RUN);
-						render->moveNode(currentLocation->GetCharacter(PacketGetInt(inPacket,1))->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
+						CurrentCharacter* movingCurrentCharacter = currentLocation->GetCharacter(PacketGetInt(inPacket,1));
+						movingCurrentCharacter->setAnimation(EMAT_RUN);
+						render->moveNode(movingCurrentCharacter->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
 						//TEST
-						currentCharacter->x = PacketGetInt(inPacket, 5);
-						currentCharacter->y = PacketGetInt(inPacket, 9);
+						movingCurrentCharacter->x = PacketGetInt(inPacket, 5);
+						movingCurrentCharacter->y = PacketGetInt(inPacket, 9);
+						break;
+					}
+					case HpChanged:
+					{
+						int characterId, changedHp;
+						CurrentCharacter *character;
+						ScanPacket(inPacket, "%i%i", &characterId, &changedHp);
+
+						if (character = currentLocation->GetCharacter(characterId))
+							character->hp = changedHp;
+						
+						break;
+
+					}
+					case CharacterDied:
+					{
+						//okay	
+						break;
+					}
+					case CharacterMoved:
+					{
+						int characterId, whereX, whereY;
+
+						
+						ScanPacket(inPacket, "%i%i%i", &characterId, &whereX, &whereY);
+
+						printf("CLIENT CHAR ID: %d\n", characterId);
+						printf("CLIENT WHERE X: %d\n", whereX);
+						printf("CLIENT WHERE Y: %d\n", whereY);
+						CurrentCharacter *character = currentLocation->GetCharacter(characterId);
+
+						if (character)
+						{
+							printf("CLIENT TEST 1\n");
+							character->node->setPosition(vector3df(whereX * CELL_SIZE, 0, whereY * CELL_SIZE));
+							character->node->updateAbsolutePosition();
+							printf("CLIENT TEST 2\n");
+							character->x = whereX;
+							character->y = whereY;
+						}
+
 						break;
 					}
 					case DialogOpened:
@@ -326,7 +368,7 @@ bool Universe::Run()
 						int yStart = PacketGetInt(inPacket, 9) * CELL_SIZE;
 						int xEnd = PacketGetInt(inPacket, 13) * CELL_SIZE;
 						int yEnd = PacketGetInt(inPacket, 17) * CELL_SIZE;
-						render->Effect2(vector3df(xStart, 0, yStart), vector3df(xEnd, 0, yEnd)); //TEST
+						render->Effect2(vector3df(xStart, 5.0f, yStart), vector3df(xEnd, 5.0f, yEnd)); //TEST
 						break;
 				}
 			}
