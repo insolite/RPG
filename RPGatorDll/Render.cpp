@@ -131,7 +131,7 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 {
 	vector3df oldPosition = node->getPosition();
-	node->setID(5678);
+	node->setID(100003);
 	int duration = (int)(30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2)));
 	printf("duration: %d\n", duration);
 	//scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
@@ -212,12 +212,12 @@ void Render::Effect2(core::vector3df s,  core::vector3df f)
 {
         scene::ISceneNode* light2 =
                 smgr->addLightSceneNode(0, core::vector3df(0,0,0),
-                video::SColorf(1.0f, 0.2f, 0.2f, 0.0f), 800.0f, 1234);
+                video::SColorf(1.0f, 0.2f, 0.2f, 0.0f), 800.0f, 100002);
 		
 		int duration = (int)(15 * sqrt(pow(s.X - f.X, 2) + pow(s.Z - f.Z, 2)));
         scene::ISceneNodeAnimator* anim =
-                        smgr->createFlyStraightAnimator(s, f, duration, false);
-						//new FlyStraightWCallBackAnimator(s, f, duration, false, device->getTimer()->getTime());
+                        //smgr->createFlyStraightAnimator(s, f, duration, false);
+						new FlyStraightWCallBackAnimator(s, f, duration, false, device->getTimer()->getTime());
 		((FlyStraightWCallBackAnimator*)anim)->setAnimatorEndCallBack(Render::instance->animationEndCallBack);
         light2->addAnimator(anim);
         anim->drop();

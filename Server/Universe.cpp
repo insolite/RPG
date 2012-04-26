@@ -319,43 +319,46 @@ void Universe::Run(char* gameName)
 									switch (targetType)
 									{
 										case 0:
-										targetMapObject = (CurrentMapObject<MapObject>*)clients[ci]->character->currentLocation->GetNPC(targetMapObjectId);
+											targetMapObject = (CurrentMapObject<MapObject>*)clients[ci]->character->currentLocation->GetNPC(targetMapObjectId);
 											break;
 										case 3:
-										targetMapObject = (CurrentMapObject<MapObject>*)clients[ci]->character->currentLocation->GetCharacter(targetMapObjectId);
+											targetMapObject = (CurrentMapObject<MapObject>*)clients[ci]->character->currentLocation->GetCharacter(targetMapObjectId);
 											break;
 										default:
-										targetMapObject = NULL;
+											targetMapObject = NULL;
 											targetType = -1;
 											targetMapObjectId = 0;
 											Log(Warning, "Client requested bad target type");
 											break;
 									}
 
-									sprintf(str, "\
-										CHARACTER_ID=%d;\
-										CHARACTER_BID=%d;\
-										CHARACTER_X=%d;\
-										CHARACTER_Y=%d;\
-										CHARACTER_LOCATION_ID=%d;\
-										TARGET_TYPE=%d;\
-										TARGET_ID=%d;\
-									TARGET_X=%d;\
-									TARGET_Y=%d;\
-										",
-										clients[ci]->character->id,
-										clients[ci]->character->base->id,
-										clients[ci]->character->x,
-										clients[ci]->character->y,
-										clients[ci]->character->currentLocation->id,
-										targetType,
-									targetMapObject ? targetMapObjectId : 0,
-									targetMapObject ? targetMapObject->x : -1, //TODO: floatX
-									targetMapObject ? targetMapObject->y : -1 //TODO: floatY
-										);
-									luaL_dostring(luaState, str);
-									luaL_dofile(luaState, currentSkill->base->scriptPath);
-									currentSkill->lastUse = GetTickCount();
+									if (targetType == 3)
+									{
+										sprintf(str, "\
+											CHARACTER_ID=%d;\
+											CHARACTER_BID=%d;\
+											CHARACTER_X=%.0f;\
+											CHARACTER_Y=%.0f;\
+											CHARACTER_LOCATION_ID=%d;\
+											TARGET_TYPE=%d;\
+											TARGET_ID=%d;\
+											TARGET_X=%.0f;\
+											TARGET_Y=%.0f;\
+											",
+											clients[ci]->character->id,
+											clients[ci]->character->base->id,
+											clients[ci]->character->floatX,
+											clients[ci]->character->floatY,
+											clients[ci]->character->currentLocation->id,
+											targetType,
+											targetMapObject ? targetMapObjectId : 0,
+											targetMapObject ? ((CurrentCharacter*)targetMapObject)->floatX : 1000,
+											targetMapObject ? ((CurrentCharacter*)targetMapObject)->floatY : 1000
+											);
+										luaL_dostring(luaState, str);
+										luaL_dofile(luaState, currentSkill->base->scriptPath);
+										currentSkill->lastUse = GetTickCount();
+									}
 								}
 							}
 							else
@@ -414,8 +417,8 @@ void Universe::Run(char* gameName)
 										NPC_ID=%d;\
 										CHARACTER_ID=%d;\
 										CHARACTER_BID=%d;\
-										CHARACTER_X=%d;\
-										CHARACTER_Y=%d;\
+										CHARACTER_X=%.0f;\
+										CHARACTER_Y=%.0f;\
 										CHARACTER_LOCATION_ID=%d;\
 										",
 										Dialog, //EVENT_TYPE
@@ -423,8 +426,8 @@ void Universe::Run(char* gameName)
 										currentNPC->id, //NPC_ID
 										clients[ci]->character->id,
 										clients[ci]->character->base->id,
-										clients[ci]->character->x,
-										clients[ci]->character->y,
+										clients[ci]->character->floatX,
+										clients[ci]->character->floatY,
 										clients[ci]->character->currentLocation->id
 										);
 									luaL_dostring(luaState, str);
@@ -517,7 +520,7 @@ void Universe::Run(char* gameName)
 
 				clients[ci]->character->moveDuration -= deltaTick;
 
-				printf("%f\t%f\t%d\t%d\n", clients[ci]->character->floatX, clients[ci]->character->floatY, clients[ci]->character->moveDuration, deltaTick);
+				//printf("%f\t%f\t%d\t%d\n", clients[ci]->character->floatX, clients[ci]->character->floatY, clients[ci]->character->moveDuration, deltaTick);
 
 				currTick = GetTickCount();
 			}

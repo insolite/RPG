@@ -33,7 +33,7 @@ enum Packet
 	DialogOpened,
 	ItemPickUp,
 	PlayEffect,
-	PlayAdvancedEffect //TEST
+	PlayAdvancedEffect, //TEST
 	HpChanged,
 	CharacterMoved,
 	CharacterDied

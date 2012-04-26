@@ -213,17 +213,35 @@ int LuaFunctions::PlayEffect(lua_State* lua) //targetType, currentMapObjectId, s
 	return 0;
 }
 
-int LuaFunctions::ChangeHp( lua_State *lua )
-{
-	char outPacket[256];
-	int currentCharacterId;
-	int changedHp;
 //TEST
 int LuaFunctions::PlayAdvancedEffect(lua_State* lua) //currentLocationId, skillId, xStart, yStart, xEnd, yEnd
 {
 	int currentLocationId, skillId, xStart, yStart, xEnd, yEnd;
 	char outPacket[256];
 
+	currentLocationId = lua_tointeger(lua, 1);
+	skillId = lua_tointeger(lua, 2);
+	xStart = lua_tointeger(lua, 3);
+	yStart = lua_tointeger(lua, 4);
+	xEnd = lua_tointeger(lua, 5);
+	yEnd = lua_tointeger(lua, 6);
+	//printf("%d %d %d %d\n", xStart, yStart, xEnd, yEnd);
+
+	CreatePacket(outPacket, Packet::PlayAdvancedEffect, "%i%i%i%i%i", skillId, xStart, yStart, xEnd, yEnd);
+	
+	Location* currentLocation = Universe::instance->game->data->GetLocation(currentLocationId);
+	
+	for (int i = 0; i < currentLocation->currentCharactersCount; i++)
+		currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
+
+	return 0;
+}
+
+int LuaFunctions::ChangeHp( lua_State *lua )
+{
+	char outPacket[256];
+	int currentCharacterId;
+	int changedHp;
 	currentCharacterId = lua_tointeger(lua, 1);
 	changedHp = lua_tointeger(lua, 2);
 

@@ -28,6 +28,9 @@ CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location
 
 	hp = 100;
 
+	floatX = x;
+	floatY = y;
+
 	char query[256];
 	int rowsCount;
 	std::vector<SqliteResult> sqliteResultsChildren;
