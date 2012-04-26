@@ -252,7 +252,14 @@ CurrentCharacter* Location::AddCharacter(Character* base, int x, int y, char* lo
 
 	sprintf(query, "INSERT INTO CurrentCharacter(baseId, x, y, locationId, login, password) VALUES(%d, %d, %d, %d, '%s', '%s')", base->id, x, y, this->id, login, password);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
-	sprintf(query, "SELECT * FROM CurrentCharacter WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
+	
+	//sprintf(query, "SELECT * FROM CurrentCharacter WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
+	//TEST (every new CurrentCharacter has skill (id=1))
+	int cid = sqlite3_last_insert_rowid(Game::instance->db);
+	sprintf(query, "INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, %d);", cid);
+	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
+	sprintf(query, "SELECT * FROM CurrentCharacter WHERE id=%d", cid);
+
 	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
 	CurrentCharacter* currentCharacter = new CurrentCharacter(sqliteResult, this);
 	SpawnCharacter(currentCharacter);

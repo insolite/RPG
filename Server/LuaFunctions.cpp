@@ -10,6 +10,7 @@ void LuaFunctions::RegisterFunctions(lua_State* luaState)
 	lua_register(luaState, "AddItem", AddItem);
 	lua_register(luaState, "SendDialog", SendDialog);
 	lua_register(luaState, "PlayEffect", PlayEffect);
+	lua_register(luaState, "PlayAdvancedEffect", PlayAdvancedEffect);
 }
 
 int LuaFunctions::SayHello(lua_State* lua) //str
@@ -207,6 +208,30 @@ int LuaFunctions::PlayEffect(lua_State* lua) //targetType, currentMapObjectId, s
 	
 	for (int i = 0; i < currentMapObject->currentLocation->currentCharactersCount; i++)
 		currentMapObject->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
+
+	return 0;
+}
+
+//TEST
+int LuaFunctions::PlayAdvancedEffect(lua_State* lua) //currentLocationId, skillId, xStart, yStart, xEnd, yEnd
+{
+	int currentLocationId, skillId, xStart, yStart, xEnd, yEnd;
+	char outPacket[256];
+
+	currentLocationId = lua_tointeger(lua, 1);
+	skillId = lua_tointeger(lua, 2);
+	xStart = lua_tointeger(lua, 3);
+	yStart = lua_tointeger(lua, 4);
+	xEnd = lua_tointeger(lua, 5);
+	yEnd = lua_tointeger(lua, 6);
+	printf("%d %d %d %d\n", xStart, yStart, xEnd, yEnd);
+
+	CreatePacket(outPacket, Packet::PlayAdvancedEffect, "%i%i%i%i%i", skillId, xStart, yStart, xEnd, yEnd);
+	
+	Location* currentLocation = Universe::instance->game->data->GetLocation(currentLocationId);
+	
+	for (int i = 0; i < currentLocation->currentCharactersCount; i++)
+		currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
 
 	return 0;
 }

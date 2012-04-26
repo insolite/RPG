@@ -287,6 +287,7 @@ void Universe::Run(char* gameName)
 							CurrentSkill* currentSkill = clients[ci]->character->GetSkill(PacketGetInt(inPacket, 1));
 							int targetType;
 							int targetMapObjectId;
+							CurrentMapObject<MapObject>* targetMapObject;
 
 							if (currentSkill)
 							{
@@ -297,20 +298,13 @@ void Universe::Run(char* gameName)
 								switch (targetType)
 								{
 									case 0:
-										if (!clients[ci]->character->currentLocation->GetNPC(targetMapObjectId))
-										{
-											targetType = -1;
-											targetMapObjectId = 0;
-										}
+										targetMapObject = (CurrentMapObject<MapObject>*)clients[ci]->character->currentLocation->GetNPC(targetMapObjectId);
 										break;
 									case 3:
-										if (!clients[ci]->character->currentLocation->GetCharacter(targetMapObjectId))
-										{
-											targetType = -1;
-											targetMapObjectId = 0;
-										}
+										targetMapObject = (CurrentMapObject<MapObject>*)clients[ci]->character->currentLocation->GetCharacter(targetMapObjectId);
 										break;
 									default:
+										targetMapObject = NULL;
 										targetType = -1;
 										targetMapObjectId = 0;
 										Log(Warning, "Client requested bad target type");
@@ -325,6 +319,8 @@ void Universe::Run(char* gameName)
 									CHARACTER_LOCATION_ID=%d;\
 									TARGET_TYPE=%d;\
 									TARGET_ID=%d;\
+									TARGET_X=%d;\
+									TARGET_Y=%d;\
 									",
 									clients[ci]->character->id,
 									clients[ci]->character->base->id,
@@ -332,7 +328,9 @@ void Universe::Run(char* gameName)
 									clients[ci]->character->y,
 									clients[ci]->character->currentLocation->id,
 									targetType,
-									targetMapObjectId
+									targetMapObject ? targetMapObjectId : 0,
+									targetMapObject ? targetMapObject->x : -1, //TODO: floatX
+									targetMapObject ? targetMapObject->y : -1 //TODO: floatY
 									);
 								luaL_dostring(luaState, str);
 								luaL_dofile(luaState, currentSkill->base->scriptPath);

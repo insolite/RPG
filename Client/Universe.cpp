@@ -320,6 +320,14 @@ bool Universe::Run()
 						render->PlayEffect(currentMapObject->node, game->resources->GetSkill(skillId)->effectTextures);
 						break;
 					}
+					case PlayAdvancedEffect:
+						int skillId = PacketGetInt(inPacket, 1);
+						int xStart = PacketGetInt(inPacket, 5) * CELL_SIZE;
+						int yStart = PacketGetInt(inPacket, 9) * CELL_SIZE;
+						int xEnd = PacketGetInt(inPacket, 13) * CELL_SIZE;
+						int yEnd = PacketGetInt(inPacket, 17) * CELL_SIZE;
+						render->Effect2(vector3df(xStart, 0, yStart), vector3df(xEnd, 0, yEnd)); //TEST
+						break;
 				}
 			}
 			else if (iResult == -1)

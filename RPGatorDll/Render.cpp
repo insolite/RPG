@@ -22,6 +22,8 @@ Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* wind
 	dimension2d<u32> screenRes;
 
 	screenRes = GetDesktopRes();
+	screenRes.Width = 800;
+	screenRes.Height = 600;
 	this->screenWidth = screenRes.Width;
 	this->screenHeight = screenRes.Height;
 
@@ -129,6 +131,7 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 {
 	vector3df oldPosition = node->getPosition();
+	node->setID(5678);
 	int duration = (int)(30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2)));
 	//scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
 	scene::ISceneNodeAnimator* anim = new FlyStraightWCallBackAnimator(node->getPosition(), nextpos, duration, false, device->getTimer()->getTime());
@@ -203,18 +206,22 @@ void Render::PlayEffect(ISceneNode* p, core::array< video::ITexture* > textures)
         }
 }
 
+//TEST
 void Render::Effect2(core::vector3df s,  core::vector3df f)
 {
         scene::ISceneNode* light2 =
                 smgr->addLightSceneNode(0, core::vector3df(0,0,0),
-                video::SColorf(1.0f, 0.2f, 0.2f, 0.0f), 800.0f);
-
+                video::SColorf(1.0f, 0.2f, 0.2f, 0.0f), 800.0f, 1234);
+		
+		int duration = (int)(15 * sqrt(pow(s.X - f.X, 2) + pow(s.Z - f.Z, 2)));
         scene::ISceneNodeAnimator* anim =
-                        smgr->createFlyStraightAnimator(s, f, 3500, true);
+                        smgr->createFlyStraightAnimator(s, f, duration, false);
+						//new FlyStraightWCallBackAnimator(s, f, duration, false, device->getTimer()->getTime());
+		((FlyStraightWCallBackAnimator*)anim)->setAnimatorEndCallBack(Render::instance->animationEndCallBack);
         light2->addAnimator(anim);
         anim->drop();
 
-        scene::ISceneNode* bill = smgr->addBillboardSceneNode(light2, core::dimension2d< f32 >(120, 120));
+        scene::ISceneNode* bill = smgr->addBillboardSceneNode(light2, core::dimension2d< f32 >(20, 20));
         bill->setMaterialFlag(video::EMF_LIGHTING, false);
         bill->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
         bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
@@ -229,8 +236,8 @@ void Render::Effect2(core::vector3df s,  core::vector3df f)
                 80,100,
                 video::SColor(0,255,255,255), video::SColor(0,255,255,255),
                 400,1100);
-        em->setMinStartSize(core::dimension2d< f32 >(30.0f, 40.0f));
-        em->setMaxStartSize(core::dimension2d< f32 >(30.0f, 40.0f));
+        em->setMinStartSize(core::dimension2d< f32 >(4.0f, 8.0f));
+        em->setMaxStartSize(core::dimension2d< f32 >(4.0f, 8.0f));
 
         ps->setEmitter(em);
         em->drop();

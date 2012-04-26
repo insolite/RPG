@@ -31,7 +31,8 @@ enum Packet
 	DialogOpen,
 	DialogOpened,
 	ItemPickUp,
-	PlayEffect
+	PlayEffect,
+	PlayAdvancedEffect //TEST
 };
 
 enum NPCEvent

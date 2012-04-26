@@ -207,7 +207,7 @@ NPC* GameResources::AddNPC(char* name, char* tags, char* modelPath, char* textur
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO NPC(name, tags) VALUES('%s', '%s')", name, tags);
+	sprintf(query, "INSERT INTO NPC(name, tags, scale) VALUES('%s', '%s', 3)", name, tags);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 
 	return AddMapObject<NPC>(npcs, npcsCount, "NPC", modelPath);
@@ -217,7 +217,7 @@ Static* GameResources::AddStatic(char* name, char* tags, char* modelPath, char* 
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO Static(name, tags) VALUES('%s', '%s')", name, tags);
+	sprintf(query, "INSERT INTO Static(name, tags, scale) VALUES('%s', '%s', 3)", name, tags);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 
 	return AddMapObject<Static>(statics, staticsCount, "Static", modelPath);
@@ -227,7 +227,7 @@ Item* GameResources::AddItem(char* name, char* tags, char* modelPath, char* text
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO Item(name, tags) VALUES('%s', '%s')", name, tags);
+	sprintf(query, "INSERT INTO Item(name, tags, scale) VALUES('%s', '%s', 3)", name, tags);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 
 	return AddMapObject<Item>(items, itemsCount, "Item", modelPath);
@@ -237,7 +237,7 @@ Character* GameResources::AddCharacter(char* name, char* tags, char* modelPath, 
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO Character(name, tags) VALUES('%s', '%s')", name, tags);
+	sprintf(query, "INSERT INTO Character(name, tags, scale) VALUES('%s', '%s', 3)", name, tags);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 
 	return AddMapObject<Character>(characters, charactersCount, "Character", modelPath);

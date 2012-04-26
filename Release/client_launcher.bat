@@ -1,0 +1,1 @@
+start Client.exe -s 77.47.199.147 -p 3127

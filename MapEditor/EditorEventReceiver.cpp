@@ -373,6 +373,8 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						
 						//Scale
 						f32 scale = ((IGUIScrollBar*)wnd->getElementFromId(MapObjectEditWindowScale))->getPos();
+						if (scale == 0)
+							break;
 
 						switch (wnd->getID())
 						{
@@ -412,8 +414,6 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								Character* character = (Character*)mapObject;
 								for (int i = 0; i < Universe::instance->currentLocation->currentCharactersCount; i++)
 									Universe::instance->currentLocation->currentCharacters[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
-								for (int i = 0; i < Universe::instance->currentLocation->currentCharactersCount; i++)
-									Universe::instance->currentLocation->currentCharacters[i]->setTitle(character->name);
 								break;
 							}
 						}
