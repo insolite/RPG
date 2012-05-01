@@ -126,24 +126,29 @@ void CGUIMeshViewer::draw()
 		driver->setViewPort(viewPort);
 
 		core::matrix4 mat;
+		core::matrix4 mat2;
 
 		//CameraControl->calculateProjectionMatrix(mat);
 		//driver->setTransform(video::TS_PROJECTION, mat);
 
 		//begin of changes by CGUIMeshViewer...
 		mat.makeIdentity();
-		core::matrix4 mat2;
 		mat2.makeIdentity();
-
-		mat.setRotationDegrees(vector3df(45, 0, 0));
+		/*
+		f32 rAngle = atan(fabs(Render::instance->Kt.Z - Render::instance->Km.Z) / fabs(Render::instance->Km.Y - Render::instance->Kt.Y));
+		rAngle *= 180 / M_PI;
+		rAngle -= 45;
+		*/
+		mat.setRotationDegrees(vector3df(45/* + rAngle*/, 0, 0));
 		mat2.setRotationDegrees(vector3df(0, 90, 0));
 		mat.setScale(vector3df(4.0f, 1.0f, 1.0f));
 		mat *= mat2;
-		
-		mat.setTranslation(vector3df(Render::instance->Kt.X,Render::instance->Kt.Y,Render::instance->Kt.Z - 5.0f));
-		//...end of changes by CGUIMeshViewer
 
+		mat.setTranslation(vector3df(Render::instance->Kt.X,Render::instance->Km.Y - 50.0f,Render::instance->Kt.Z - 5.0f));
+		//...end of changes by CGUIMeshViewer
+		
 		//mat.setror
+		//driver->setTransform(video::ETS_VIEW, vector3df(0,Render::instance->Km.Y - 50.0f,0));
 		driver->setTransform(video::ETS_WORLD, mat);
 
 		//CameraControl->calculateViewMatrix(mat);

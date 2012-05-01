@@ -253,7 +253,7 @@ int LuaFunctions::ChangeHp( lua_State *lua )
 		if (currentCharacter = Universe::instance->game->data->locations[i]->GetCharacter(currentCharacterId))
 			break;
 
-	printf("---!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!---\n", currentCharacter->id);
+	//printf("---!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!---\n", currentCharacter->id);
 	printf("ID: %d\n", currentCharacter->id);
 	printf("HP: %d\n", currentCharacter->hp);
 
@@ -281,6 +281,8 @@ int LuaFunctions::ChangeHp( lua_State *lua )
 
 		currentCharacter->x = 16;
 		currentCharacter->y = 16;
+		currentCharacter->floatX = 16.0f;
+		currentCharacter->floatY = 16.0f;
 		currentCharacter->hp = 100;
 	}
 	

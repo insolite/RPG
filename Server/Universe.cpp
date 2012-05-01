@@ -401,9 +401,9 @@ void Universe::Run(char* gameName)
 							CurrentNPC* currentNPC = clients[ci]->character->currentLocation->GetNPC(PacketGetInt(inPacket, 1));
 							if (currentNPC)
 							{
-								int distanceX = abs(currentNPC->x - clients[ci]->character->x);
-								int distanceY = abs(currentNPC->y - clients[ci]->character->y);
-								if (distanceX < 2 && distanceY < 2)
+								int distanceX = abs(currentNPC->x - clients[ci]->character->floatX);
+								int distanceY = abs(currentNPC->y - clients[ci]->character->floatY);
+								if (distanceX < 3 && distanceY < 3)
 								{
 									//TODO: check distance from NPC to Character
 									char str[512]; //For init script variables

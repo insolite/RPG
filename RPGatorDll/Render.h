@@ -23,6 +23,7 @@ public:
     ISceneManager* smgr;
 	int screenWidth, screenHeight; //pixels
 	core::vector3df Kt;
+	core::vector3df Km;
 	CAnimationEndCallBack* animationEndCallBack;
 
 	__declspec(dllexport) void drawKub(f32 xPos,f32 yPos,f32 zPos,int Wid, int Hei);

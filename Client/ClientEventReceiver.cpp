@@ -105,7 +105,9 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 		}
 		else if (Mouse[EMIE_MOUSE_WHEEL])
 		{
-			Universe::instance->cameraY += (int)event.MouseInput.Wheel * 5;
+			int cameraNextY = Universe::instance->cameraY + (int)event.MouseInput.Wheel * 5;
+			if (cameraNextY > 5.0f && cameraNextY < 200.0f)
+				Universe::instance->cameraY = cameraNextY;
 		}
 	}
 	else if (event.EventType == EET_GUI_EVENT)

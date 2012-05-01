@@ -2,8 +2,8 @@
 #include "Render.h"
 #include "CGUIFileOpenDialog.h"
 
-const s32 FOD_WIDTH = 350;
-const s32 FOD_HEIGHT = 250;
+const s32 FOD_WIDTH = 420;
+const s32 FOD_HEIGHT = 380;
 
 
 //! constructor
@@ -61,7 +61,7 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 	CancelButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	CancelButton->grab();
 
-	FileBox = Environment->addListBox(core::rect<s32>(10, 55, RelativeRect.getWidth()-90, 230), this, -1, true);
+	FileBox = Environment->addListBox(core::rect<s32>(10, 55, RelativeRect.getWidth()-90, RelativeRect.getHeight() - 20), this, -1, true);
 	FileBox->setSubElement(true);
 	FileBox->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	FileBox->grab();

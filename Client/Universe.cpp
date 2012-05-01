@@ -143,8 +143,14 @@ bool Universe::Run()
 						currentLocation->SpawnNPC(new CurrentNPC(inPacket));
 						break;
 					case StaticSpawned:
-						currentLocation->SpawnStatic(new CurrentStatic(inPacket));
+					{
+						CurrentStatic* currentStatic = new CurrentStatic(inPacket);
+						currentLocation->SpawnStatic(currentStatic);
+						//vector3df pos = currentStatic->node->getPosition();
+						//pos.Y -= 5.0f;
+						//currentStatic->node->setPosition(pos);
 						break;
+					}
 					case ItemSpawned:
 						switch(PacketGetByte(inPacket, 17))
 						{
@@ -256,10 +262,12 @@ bool Universe::Run()
 						{
 							printf("CLIENT TEST 1\n");
 							character->node->setPosition(vector3df(whereX * CELL_SIZE, 0, whereY * CELL_SIZE));
-							character->node->updateAbsolutePosition();
+							//character->node->updateAbsolutePosition();
 							printf("CLIENT TEST 2\n");
 							character->x = whereX;
 							character->y = whereY;
+							character->floatX = whereX;
+							character->floatY = whereY;
 						}
 
 						break;
@@ -396,18 +404,18 @@ bool Universe::Run()
 			{
 				if (currentCharacter)
 				{
-					core::vector3df Km = camPos->getPosition();
+					render->Km = camPos->getPosition();
 					render->Kt = camera->getTarget();
 					//Kt.X = currentCharacter->x * CELL_SIZE;
 					//Kt.Z = currentCharacter->y * CELL_SIZE;
 					vector3df pos = currentCharacter->node->getPosition();
 					render->Kt.X = pos.X;
 					render->Kt.Z = pos.Z;
-					Km.X = render->Kt.X;
-					Km.Z = render->Kt.Z - 30;
-					Km.Y = cameraY;
+					render->Km.X = render->Kt.X;
+					render->Km.Z = render->Kt.Z - 30;
+					render->Km.Y = cameraY;
 
-					camera->setPosition(Km);
+					camera->setPosition(render->Km);
 					camera->setTarget(render->Kt);
 
 					//vector3df lPos = camera->getPosition();

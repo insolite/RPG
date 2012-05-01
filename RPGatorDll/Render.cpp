@@ -22,8 +22,6 @@ Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* wind
 	dimension2d<u32> screenRes;
 
 	screenRes = GetDesktopRes();
-	screenRes.Width = 800;
-	screenRes.Height = 600;
 	this->screenWidth = screenRes.Width;
 	this->screenHeight = screenRes.Height;
 
@@ -103,6 +101,7 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 	
 	if(node)
 	{
+		pos.Y += -node->getBoundingBox().MinEdge.Y * scale.Y;
 		node->setPosition(pos);
 		node->setRotation(rotation);
 		node->setScale(scale);
@@ -134,6 +133,7 @@ void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 	node->setID(100003);
 	int duration = (int)(30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2)));
 	printf("duration: %d\n", duration);
+	nextpos.Y = oldPosition.Y; //While terrain is in 2D...
 	//scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
 	scene::ISceneNodeAnimator* anim = new FlyStraightWCallBackAnimator(node->getPosition(), nextpos, duration, false, device->getTimer()->getTime());
 	((FlyStraightWCallBackAnimator*)anim)->setAnimatorEndCallBack(Render::instance->animationEndCallBack);

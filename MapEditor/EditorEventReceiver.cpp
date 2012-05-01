@@ -64,142 +64,66 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 		vector2d<s32> clickPos = Universe::instance->render->MouseCoordToWorldCoord();
 		if (Mouse[EMIE_LMOUSE_PRESSED_DOWN])
 		{ //Add CurrentMapObject
-			if (clickPos.X > 0 && clickPos.X < Universe::instance->currentLocation->width && clickPos.Y > 0 && clickPos.Y < Universe::instance->currentLocation->height)
+			if (!Universe::instance->guienv->getRootGUIElement()->getElementFromId(CurrentMapObjectContextMenu))
 			{
-				switch (Universe::instance->brushIndex)
+				if (clickPos.X > 0 && clickPos.X < Universe::instance->currentLocation->width && clickPos.Y > 0 && clickPos.Y < Universe::instance->currentLocation->height)
 				{
-					case 0: //MapCell
-						//Universe::instance->currentLocation->mask[y][x] = (MapCell*)Universe::instance->brush[0];
-						//TODO: Save location before exit
-						break;
-					case 1: //NPC
-						Universe::instance->currentLocation->AddNPC((NPC*)Universe::instance->brush[1], clickPos.X, clickPos.Y);
-						break;
-					case 2: //Static
-						Universe::instance->currentLocation->AddStatic((Static*)Universe::instance->brush[2], clickPos.X, clickPos.Y);
-						break;
-					case 3: //Item
-						Universe::instance->currentLocation->AddItem((Item*)Universe::instance->brush[3], clickPos.X, clickPos.Y, 1);
-						break;
-					case 4: //Character
-						Universe::instance->currentLocation->AddCharacter((Character*)Universe::instance->brush[4], clickPos.X, clickPos.Y, "", "");
-						break;
+					switch (Universe::instance->brushIndex)
+					{
+						case 0: //MapCell
+							//Universe::instance->currentLocation->mask[y][x] = (MapCell*)Universe::instance->brush[0];
+							//TODO: Save location before exit
+							break;
+						case 1: //NPC
+							Universe::instance->currentLocation->AddNPC((NPC*)Universe::instance->brush[1], clickPos.X, clickPos.Y);
+							break;
+						case 2: //Static
+							Universe::instance->currentLocation->AddStatic((Static*)Universe::instance->brush[2], clickPos.X, clickPos.Y);
+							break;
+						case 3: //Item
+							Universe::instance->currentLocation->AddItem((Item*)Universe::instance->brush[3], clickPos.X, clickPos.Y, 1);
+							break;
+						case 4: //Character
+							Universe::instance->currentLocation->AddCharacter((Character*)Universe::instance->brush[4], clickPos.X, clickPos.Y, "", "");
+							break;
+					}
 				}
 			}
 		}
 		else if (Mouse[EMIE_RMOUSE_PRESSED_DOWN])
 		{ //Delete CurrentMapObject
-			CurrentMapObject<MapObject>* deletingCurrentMapObject;
-			if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentNPC>(Universe::instance->currentLocation->currentNPCs, Universe::instance->currentLocation->currentNPCsCount))
-				Universe::instance->currentLocation->DeleteNPC((CurrentNPC*)deletingCurrentMapObject);
-			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentStatic>(Universe::instance->currentLocation->currentStatics, Universe::instance->currentLocation->currentStaticsCount))
-				Universe::instance->currentLocation->DeleteStatic((CurrentStatic*)deletingCurrentMapObject);
-			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentItem>(Universe::instance->currentLocation->currentItems, Universe::instance->currentLocation->currentItemsCount))
-				Universe::instance->currentLocation->DeleteItem((CurrentItem*)deletingCurrentMapObject);
-			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentCharacter>(Universe::instance->currentLocation->currentCharacters, Universe::instance->currentLocation->currentCharactersCount))
-				Universe::instance->currentLocation->DeleteCharacter((CurrentCharacter*)deletingCurrentMapObject);
-			/* //Selection by cell
-			CurrentMapObject<MapObject>* deletingCurrentMapObject;
-			if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetNPCAt(x, y))
-				Universe::instance->currentLocation->DeleteNPC((CurrentNPC*)deletingCurrentMapObject);
-			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetStaticAt(x, y))
-				Universe::instance->currentLocation->DeleteStatic((CurrentStatic*)deletingCurrentMapObject);
-			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetItemAt(x, y))
-				Universe::instance->currentLocation->DeleteItem((CurrentItem*)deletingCurrentMapObject);
-			else if (deletingCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetCharacterAt(x, y))
-				Universe::instance->currentLocation->DeleteCharacter((CurrentCharacter*)deletingCurrentMapObject);
-			*/
-		}
-		else if (Mouse[EMIE_MMOUSE_PRESSED_DOWN])
-		{
-			wchar_t wstr[512];
+			CurrentMapObject<MapObject>* targetCurrentMapObject;
 			int index;
-			CurrentMapObject<MapObject>* currentMapObject;
 
-			if (currentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentNPC>(Universe::instance->currentLocation->currentNPCs, Universe::instance->currentLocation->currentNPCsCount))
+			if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentNPC>(Universe::instance->currentLocation->currentNPCs, Universe::instance->currentLocation->currentNPCsCount))
+				index = 0x10000;
+			else if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentStatic>(Universe::instance->currentLocation->currentStatics, Universe::instance->currentLocation->currentStaticsCount))
+				index = 0x20000;
+			else if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentItem>(Universe::instance->currentLocation->currentItems, Universe::instance->currentLocation->currentItemsCount))
+				index = 0x30000;
+			else if (targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentCharacter>(Universe::instance->currentLocation->currentCharacters, Universe::instance->currentLocation->currentCharactersCount))
+				index = 0x40000;
+			
+			IGUIContextMenu* cm;
+			if (targetCurrentMapObject)
 			{
-				index = 1;
+				cm = Universe::instance->guienv->addContextMenu(rect<s32>(event.MouseInput.X, event.MouseInput.Y, event.MouseInput.X + 64, event.MouseInput.Y + 128), NULL, CurrentMapObjectContextMenu);
+				wchar_t wstr[256];
+				swprintf(wstr, L"[%d] Edit", targetCurrentMapObject->id);
+				cm->addItem(wstr, index + 1, true, false, false, false);
+				swprintf(wstr, L"[%d] Delete", targetCurrentMapObject->id);
+				cm->addItem(wstr, index + 2, true, false, false, false);
 			}
-			else if (currentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentStatic>(Universe::instance->currentLocation->currentStatics, Universe::instance->currentLocation->currentStaticsCount))
+			else if (cm = (IGUIContextMenu*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(CurrentMapObjectContextMenu))
 			{
-				index = 2;
+				cm->remove();
 			}
-			else if (currentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentItem>(Universe::instance->currentLocation->currentItems, Universe::instance->currentLocation->currentItemsCount))
-			{
-				index = 3;
-			}
-			else if (currentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->render->GetCurrentMapObjectUnderCursor<CurrentCharacter>(Universe::instance->currentLocation->currentCharacters, Universe::instance->currentLocation->currentCharactersCount))
-			{
-				index = 4;
-			}
-
-			if (currentMapObject)
-			{
-				//Window
-				wchar_t wstr2[256];
-				mbstowcs(wstr2, currentMapObject->base->name, 255);
-				swprintf(wstr, L"[%d] ([%d] %s) - editing", currentMapObject->id, currentMapObject->base->id, wstr2);
-				IGUIWindow* wnd = Universe::instance->guienv->addWindow(rect< s32 >(224 + 32, 64 + 32, 760 + 32, 536 + 32), true, wstr, NULL, CurrentMapCellEditWindow + index);
-				/*
-				//Name
-				mbstowcs(wstr, mapObject->name, 255);
-				IGUIEditBox* neb = Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32, 32 + 128, 32 + 24), true, wnd, MapObjectEditWindowName);
-				Universe::instance->guienv->setFocus(neb);
-
-				//Tags
-				if (mapObject->tagsCount < 1)
-					wcscpy(wstr, L"");
-				else
-					mbstowcs(wstr, mapObject->tags[0], 31);
-				for (int i = 1; i < mapObject->tagsCount; i++)
-				{
-					wcscat(wstr, L",");
-					mbstowcs(wstr + wcslen(wstr), mapObject->tags[i], 31);
-				}
-				IGUIEditBox* teb = Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32 + 24 + 8, 32 + 128, 32 + 24 + 24 + 8), true, wnd, MapObjectEditWindowTags);
-				*/
-				/*
-				//Preview
-				CGUIMeshViewer* mv = new CGUIMeshViewer(Universe::instance->guienv, wnd, MapObjectEditWindowPreview, rect< s32 >(32 + 128 + 8, 32, 32 + 128 + 8 + 256, 32 + 320));
-				SMaterial* sm = new SMaterial();
-				sm->setTexture(0, currentMapObject->texture);
-				sm->setFlag(EMF_LIGHTING, false);
-				mv->setMesh(currentMapObject->mesh);
-				mv->setMaterial(*sm);
-				*/
-				switch (index)
-				{
-					case 1:
-					{
-						CurrentNPC* currentNPC = (CurrentNPC*)currentMapObject;
-						break;
-					}
-					case 2:
-					{
-						CurrentStatic* currentStatic = (CurrentStatic*)currentMapObject;
-						break;
-					}
-					case 3:
-					{
-						CurrentItem* currentItem = (CurrentItem*)currentMapObject;
-						break;
-					}
-					case 4:
-					{
-						CurrentCharacter* currentCharacter = (CurrentCharacter*)currentMapObject;
-						wchar_t wstr[256];
-
-						mbstowcs(wstr, currentCharacter->login, 255);
-						Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32, 32 + 128, 32 + 24), true, wnd, CurrentMapObjectEditWindowLoginEditBox);
-						mbstowcs(wstr, currentCharacter->password, 255);
-						Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32 + 24 + 8, 32 + 128, 32 + 24 + 24 + 8), true, wnd, CurrentMapObjectEditWindowPasswordEditBox);
-						break;
-					}
-				}
-
-				//OK
-				Universe::instance->guienv->addButton(rect< s32 >(536 - 20 - 92, 472 - 20 - 32, 536 - 20, 472 - 20), wnd, CurrentMapObjectEditWindowOKButton, L"OK", L"Add element and close the window");
-			}
+		}
+		else if (Mouse[EMIE_MOUSE_WHEEL])
+		{
+			int cameraNextY = Universe::instance->cameraY + (int)event.MouseInput.Wheel * 5;
+			if (cameraNextY > 5.0f && cameraNextY < 200.0f)
+				Universe::instance->cameraY = cameraNextY;
 		}
 	}
 	else if (event.EventType == EET_GUI_EVENT)
@@ -252,11 +176,105 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						((IGUIButton*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditButton, true))->setPressed(false);
 						break;
 				}
-				/*
-				if (eventCallerId >= MapCellSelectWindow && eventCallerId <= CharacterSelectWindow)
+				break;
+			case EGET_MENU_ITEM_SELECTED:
+				switch (eventCallerId)
 				{
-					Universe::instance->render->smgr->setActiveCamera(Universe::instance->camera);
+					case CurrentMapObjectContextMenu:
+						IGUIContextMenu* cm = (IGUIContextMenu*)eventCaller;
+						int commandId = cm->getItemCommandId(cm->getSelectedItem());
+						CurrentMapObject<MapObject>* targetCurrentMapObject;
+						int index = commandId / 0x10000;
+						int currentMapObjectId;
+						swscanf(cm->getItemText(cm->getSelectedItem()), L"[%d] ", &currentMapObjectId);
+						switch (index)
+						{
+							case 1:
+								targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetNPC(currentMapObjectId);
+								break;
+							case 2:
+								targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetStatic(currentMapObjectId);
+								break;
+							case 3:
+								targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetItem(currentMapObjectId);
+								break;
+							case 4:
+								targetCurrentMapObject = (CurrentMapObject<MapObject>*)Universe::instance->currentLocation->GetCharacter(currentMapObjectId);
+								break;
+						}
+						switch (commandId % 0x10000) //index
+						{
+							case 1:
+							{
+								wchar_t wstr[512];
+								
+								if (targetCurrentMapObject)
+								{
+									//Window
+									wchar_t wstr2[256];
+									mbstowcs(wstr2, targetCurrentMapObject->base->name, 255);
+									swprintf(wstr, L"[%d] ([%d] %s) - editing", targetCurrentMapObject->id, targetCurrentMapObject->base->id, wstr2);
+									IGUIWindow* wnd = Universe::instance->guienv->addWindow(rect< s32 >(224 + 32, 64 + 32, 760 + 32, 536 + 32), true, wstr, NULL, CurrentMapCellEditWindow + index);
+									
+									switch (index)
+									{
+										case 1:
+										{
+											CurrentNPC* currentNPC = (CurrentNPC*)targetCurrentMapObject;
+											break;
+										}
+										case 2:
+										{
+											CurrentStatic* currentStatic = (CurrentStatic*)targetCurrentMapObject;
+											break;
+										}
+										case 3:
+										{
+											CurrentItem* currentItem = (CurrentItem*)targetCurrentMapObject;
+											break;
+										}
+										case 4:
+										{
+											CurrentCharacter* currentCharacter = (CurrentCharacter*)targetCurrentMapObject;
+											wchar_t wstr[256];
+
+											mbstowcs(wstr, currentCharacter->login, 255);
+											Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32, 32 + 128, 32 + 24), true, wnd, CurrentMapObjectEditWindowLoginEditBox);
+											mbstowcs(wstr, currentCharacter->password, 255);
+											Universe::instance->guienv->addEditBox(wstr, rect< s32 >(32, 32 + 24 + 8, 32 + 128, 32 + 24 + 24 + 8), true, wnd, CurrentMapObjectEditWindowPasswordEditBox);
+											break;
+										}
+									}
+
+									//OK
+									Universe::instance->guienv->addButton(rect< s32 >(536 - 20 - 92, 472 - 20 - 32, 536 - 20, 472 - 20), wnd, CurrentMapObjectEditWindowOKButton, L"OK", L"Add element and close the window");
+								}
+								break;
+							}
+							case 2:
+							{
+								switch (index)
+								{
+									case 1:
+										Universe::instance->currentLocation->DeleteNPC((CurrentNPC*)targetCurrentMapObject);
+										break;
+									case 2:
+										Universe::instance->currentLocation->DeleteStatic((CurrentStatic*)targetCurrentMapObject);
+										break;
+									case 3:
+										Universe::instance->currentLocation->DeleteItem((CurrentItem*)targetCurrentMapObject);
+										break;
+									case 4:
+										Universe::instance->currentLocation->DeleteCharacter((CurrentCharacter*)targetCurrentMapObject);
+										break;
+								}
+								break;
+							}
+						}
+						break;
 				}
+				
+				/*
 				*/
 				break;
 			case EGET_FILE_SELECTED:
@@ -389,7 +407,13 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								mapObject = Universe::instance->game->resources->GetNPC(mapObjectId);
 								NPC* npc = (NPC*)mapObject;
 								for (int i = 0; i < Universe::instance->currentLocation->currentNPCsCount; i++)
-									Universe::instance->currentLocation->currentNPCs[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+									if (Universe::instance->currentLocation->currentNPCs[i]->base->id == npc->id)
+									{
+										vector3df pos = Universe::instance->currentLocation->currentNPCs[i]->node->getPosition();
+										pos.Y = -Universe::instance->currentLocation->currentNPCs[i]->node->getBoundingBox().MinEdge.Y * scale / 10.0f;
+										Universe::instance->currentLocation->currentNPCs[i]->node->setPosition(pos);
+										Universe::instance->currentLocation->currentNPCs[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+									}
 								break;
 							}
 							case StaticEditWindow:
@@ -397,7 +421,13 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								mapObject = Universe::instance->game->resources->GetStatic(mapObjectId);
 								Static* _static = (Static*)mapObject;
 								for (int i = 0; i < Universe::instance->currentLocation->currentStaticsCount; i++)
-									Universe::instance->currentLocation->currentStatics[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+									if (Universe::instance->currentLocation->currentStatics[i]->base->id == _static->id)
+									{
+										vector3df pos = Universe::instance->currentLocation->currentStatics[i]->node->getPosition();
+										pos.Y = -Universe::instance->currentLocation->currentStatics[i]->node->getBoundingBox().MinEdge.Y * scale / 10.0f;
+										Universe::instance->currentLocation->currentStatics[i]->node->setPosition(pos);
+										Universe::instance->currentLocation->currentStatics[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+									}
 								break;
 							}
 							case ItemEditWindow:
@@ -405,7 +435,13 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								mapObject = Universe::instance->game->resources->GetItem(mapObjectId);
 								Item* item = (Item*)mapObject;
 								for (int i = 0; i < Universe::instance->currentLocation->currentItemsCount; i++)
-									Universe::instance->currentLocation->currentItems[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+									if (Universe::instance->currentLocation->currentItems[i]->base->id == item->id)
+									{
+										vector3df pos = Universe::instance->currentLocation->currentItems[i]->node->getPosition();
+										pos.Y = -Universe::instance->currentLocation->currentItems[i]->node->getBoundingBox().MinEdge.Y * scale / 10.0f;
+										Universe::instance->currentLocation->currentItems[i]->node->setPosition(pos);
+										Universe::instance->currentLocation->currentItems[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+									}
 								break;
 							}
 							case CharacterEditWindow:
@@ -413,7 +449,13 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								mapObject = Universe::instance->game->resources->GetCharacter(mapObjectId);
 								Character* character = (Character*)mapObject;
 								for (int i = 0; i < Universe::instance->currentLocation->currentCharactersCount; i++)
-									Universe::instance->currentLocation->currentCharacters[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+									if (Universe::instance->currentLocation->currentCharacters[i]->base->id == character->id)
+									{
+										vector3df pos = Universe::instance->currentLocation->currentCharacters[i]->node->getPosition();
+										pos.Y = -Universe::instance->currentLocation->currentCharacters[i]->node->getBoundingBox().MinEdge.Y * scale / 10.0f;
+										Universe::instance->currentLocation->currentCharacters[i]->node->setPosition(pos);
+										Universe::instance->currentLocation->currentCharacters[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+									}
 								break;
 							}
 						}

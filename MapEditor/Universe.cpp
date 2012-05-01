@@ -228,40 +228,45 @@ bool Universe::Run()
 	camPos->setID(ID_IsNotPickable);
 	camera->setID(ID_IsNotPickable);
 	
+	cameraY = 50;
+
 	state = Continue;
 
 	int lastUpdate = render->device->getTimer()->getTime();
 
 	while (render->device->run() && state == Continue)
 	{
-		core::vector3df Km = camPos->getPosition();
+		render->Km = camPos->getPosition();
 		render->Kt = camera->getTarget();
 			
 		if (editorEventReceiver->IsKeyDown(KEY_LEFT))
 		{
 			render->Kt.X -= CAMERA_STEP;
-			Km.X -= CAMERA_STEP;
-			camPos->setPosition(Km);
+			render->Km.X -= CAMERA_STEP;
+			camPos->setPosition(render->Km);
 		}
 		if (editorEventReceiver->IsKeyDown(KEY_RIGHT))
 		{
 			render->Kt.X += CAMERA_STEP;
-			Km.X += CAMERA_STEP;
-			camPos->setPosition(Km);
+			render->Km.X += CAMERA_STEP;
+			camPos->setPosition(render->Km);
 		}
 		if (editorEventReceiver->IsKeyDown(KEY_UP))
 		{
 			render->Kt.Z += CAMERA_STEP;
-			Km.Z += CAMERA_STEP;
-			camPos->setPosition(Km);
+			render->Km.Z += CAMERA_STEP;
+			camPos->setPosition(render->Km);
 		}
 		if (editorEventReceiver->IsKeyDown(KEY_DOWN))
 		{
 			render->Kt.Z -= CAMERA_STEP;
-			Km.Z -= CAMERA_STEP;
-			camPos->setPosition(Km);
+			render->Km.Z -= CAMERA_STEP;
+			camPos->setPosition(render->Km);
 		}
-		camera->setPosition(Km);
+
+		render->Km.Y = cameraY;
+
+		camera->setPosition(render->Km);
 		camera->setTarget(render->Kt);
 		
 		//vector3df lPos = camera->getPosition();

@@ -39,6 +39,8 @@ enum EditorGUIElements
 	LocationWidthEditBox,
 	LocationHeightEditBox,
 
+	CurrentMapObjectContextMenu,
+
 	MapObjectAddButton,
 	MapObjectSelectWindowToggleButton,
 	MapObjectTabPreview,
