@@ -43,8 +43,10 @@ CurrentGameObject<T>::CurrentGameObject( SqliteResult sqliteResult, T** mapObjec
 template<class T>
 CurrentGameObject<T>::CurrentGameObject( char* currentMapObjectSpawnedPacket, T** mapObjects, int mapObjectsCount )
 {
-	id = PacketGetInt(currentMapObjectSpawnedPacket, 1);
-	base = Game::instance->resources->GetMapObject<T>(mapObjects, mapObjectsCount, PacketGetInt(currentMapObjectSpawnedPacket, 5));
+	int baseId;
+
+	ScanPacket(currentMapObjectSpawnedPacket, "%i%i", &id, &baseId);
+	base = Game::instance->resources->GetMapObject<T>(mapObjects, mapObjectsCount, baseId);
 }
 
 template<class T>

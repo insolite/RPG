@@ -75,6 +75,14 @@ void Location::Update()
 	char sql[256];
 	sprintf(sql, "UPDATE Location SET name='%s' WHERE id=%d;", name, id);
 	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
+	for (int i = 0; i < currentNPCsCount; i++)
+		currentNPCs[i]->Update();
+	for (int i = 0; i < currentStaticsCount; i++)
+		currentStatics[i]->Update();
+	for (int i = 0; i < currentItemsCount; i++)
+		currentItems[i]->Update();
+	for (int i = 0; i < currentCharactersCount; i++)
+		currentCharacters[i]->Update();
 }
 
 template<class T>
@@ -186,7 +194,7 @@ void Location::DeleteCharacter(CurrentCharacter* currentCharacter)
 {
 	DeleteCurrentMapObject<CurrentCharacter>(currentCharacters, currentCharactersCount, "CurrentCharacter", currentCharacter);
 }
-
+/*
 CurrentNPC* Location::GetNPCAt(int x, int y)
 {
 	return GetCurrentMapObjectAt<CurrentNPC>(currentNPCs, currentNPCsCount, x, y);
@@ -206,12 +214,12 @@ CurrentCharacter* Location::GetCharacterAt(int x, int y)
 {
 	return GetCurrentMapObjectAt<CurrentCharacter>(currentCharacters, currentCharactersCount, x, y);
 }
-
-CurrentNPC* Location::AddNPC(NPC* base, int x, int y)
+*/
+CurrentNPC* Location::AddNPC(NPC* base, double x, double y)
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO CurrentNPC(baseId, x, y, locationId) VALUES(%d, %d, %d, %d)", base->id, x, y, this->id);
+	sprintf(query, "INSERT INTO CurrentNPC(baseId, x, y, locationId) VALUES(%d, %.f, %.f, %d)", base->id, x, y, this->id);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 	sprintf(query, "SELECT * FROM CurrentNPC WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
 	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
@@ -220,11 +228,11 @@ CurrentNPC* Location::AddNPC(NPC* base, int x, int y)
 	return currentNPC;
 }
 
-CurrentStatic* Location::AddStatic(Static* base, int x, int y)
+CurrentStatic* Location::AddStatic(Static* base, double x, double y)
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO CurrentStatic(baseId, x, y, locationId) VALUES(%d, %d, %d, %d)", base->id, x, y, this->id);
+	sprintf(query, "INSERT INTO CurrentStatic(baseId, x, y, locationId) VALUES(%d, %.f, %.f, %d)", base->id, x, y, this->id);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 	sprintf(query, "SELECT * FROM CurrentStatic WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
 	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
@@ -233,11 +241,11 @@ CurrentStatic* Location::AddStatic(Static* base, int x, int y)
 	return currentStatic;
 }
 
-CurrentItem* Location::AddItem(Item* base, int x, int y, int count)
+CurrentItem* Location::AddItem(Item* base, double x, double y, int count)
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES(%d, %d, %d, %d, 0, %d)", base->id, x, y, this->id, count);
+	sprintf(query, "INSERT INTO CurrentItem(baseId, x, y, locationId, currentCharacterId, `count`) VALUES(%d, %.f, %.f, %d, 0, %d)", base->id, x, y, this->id, count);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 	sprintf(query, "SELECT * FROM CurrentItem WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
 	SqliteResult sqliteResult = SqliteGetRows(Game::instance->db, query)[0];
@@ -246,11 +254,11 @@ CurrentItem* Location::AddItem(Item* base, int x, int y, int count)
 	return currentItem;
 }
 
-CurrentCharacter* Location::AddCharacter(Character* base, int x, int y, char* login, char* password)
+CurrentCharacter* Location::AddCharacter(Character* base, double x, double y, char* login, char* password)
 {
 	char query[256];
 
-	sprintf(query, "INSERT INTO CurrentCharacter(baseId, x, y, locationId, login, password) VALUES(%d, %d, %d, %d, '%s', '%s')", base->id, x, y, this->id, login, password);
+	sprintf(query, "INSERT INTO CurrentCharacter(baseId, x, y, locationId, login, password) VALUES(%d, %.f, %.f, %d, '%s', '%s')", base->id, x+0.01, y, this->id, login, password);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 	
 	//sprintf(query, "SELECT * FROM CurrentCharacter WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));

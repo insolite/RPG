@@ -27,7 +27,7 @@ CurrentItem::CurrentItem(char* currentMapObjectSpawnedPacket) :
 	CurrentMapObject<Item>::CurrentMapObject(currentMapObjectSpawnedPacket, Game::instance->resources->items, Game::instance->resources->itemsCount)
 {
 	owner = NULL;
-	count = PacketGetInt(currentMapObjectSpawnedPacket, 18);
+	ScanPacket(currentMapObjectSpawnedPacket, "%i%i%f%f%b%i", NULL, NULL, NULL, NULL, NULL, &count);
 }
 
 CurrentItem::~CurrentItem(void)
@@ -37,7 +37,7 @@ CurrentItem::~CurrentItem(void)
 void CurrentItem::Update()
 {
 	char sql[256];
-	sprintf(sql, "UPDATE CurrentItem SET x=%d, y=%d, locationId=%d, currentCharacterId=%d, count=%d WHERE id=%d;",
+	sprintf(sql, "UPDATE CurrentItem SET x=%.f, y=%.f, locationId=%d, currentCharacterId=%d, count=%d WHERE id=%d;",
 		currentLocation ? x : 0,
 		currentLocation ? y : 0,
 		currentLocation ? currentLocation->id : 0,

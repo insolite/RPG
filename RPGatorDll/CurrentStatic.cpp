@@ -32,6 +32,6 @@ CurrentStatic::~CurrentStatic(void)
 void CurrentStatic::Update()
 {
 	char sql[256];
-	sprintf(sql, "UPDATE CurrentStatic SET x=%d, y=%d, locationId=%d WHERE id=%d;", x, y, currentLocation->id, id);
+	sprintf(sql, "UPDATE CurrentStatic SET x=%.f, y=%.f, locationId=%d WHERE id=%d;", x, y, currentLocation->id, id);
 	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
 }

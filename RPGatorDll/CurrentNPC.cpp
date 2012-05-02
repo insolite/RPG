@@ -36,7 +36,7 @@ CurrentNPC::~CurrentNPC(void)
 void CurrentNPC::Update()
 {
 	char sql[256];
-	sprintf(sql, "UPDATE CurrentNPC SET x=%d, y=%d, locationId=%d WHERE id=%d;", x, y, currentLocation->id, id);
+	sprintf(sql, "UPDATE CurrentNPC SET x=%.f, y=%.f, locationId=%d WHERE id=%d;", x, y, currentLocation->id, id);
 	//sprintf(sql, "UPDATE CurrentCharacter SET HP=%d, MP=%d WHERE id=%d;", HP, MP, id);
 	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
 }

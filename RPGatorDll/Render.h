@@ -28,8 +28,8 @@ public:
 
 	__declspec(dllexport) void drawKub(f32 xPos,f32 yPos,f32 zPos,int Wid, int Hei);
 	__declspec(dllexport) ISceneNode* createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* material = NULL, bool light=false, core::vector3df scale=core::vector3df(1, 1, 1), core::vector3df pos=core::vector3df(0, 0, 0), core::vector3df rotation=core::vector3df(0, 90, 0));
-	__declspec(dllexport) void moveNode(ISceneNode* node,core::vector3df nextpos);
-	__declspec(dllexport) vector2d<s32> MouseCoordToWorldCoord();
+	__declspec(dllexport) void moveNode(ISceneNode* node,core::vector3df nextpos, f32 speed);
+	__declspec(dllexport) vector2d<f32> MouseCoordToWorldCoord();
  	template<class T>
 	__declspec(dllexport) T* GetCurrentMapObjectUnderCursor(T** currentMapObjects, int currentMapObjectsCount)
 	{
@@ -55,7 +55,7 @@ public:
 		return NULL;
 	}
 
-	__declspec(dllexport) int GetAngle(int x1, int y1, int x2, int y2);
+	__declspec(dllexport) double GetAngle(double x1, double y1, double x2, double y2);
 	__declspec(dllexport) dimension2d<u32> GetDesktopRes();
 
 	__declspec(dllexport) void PlayEffect(ISceneNode* p, core::array< video::ITexture* > textures);

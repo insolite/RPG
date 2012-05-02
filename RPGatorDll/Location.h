@@ -32,14 +32,16 @@ public:
 	__declspec(dllexport) void DeleteStatic(CurrentStatic* currentStatic);
 	__declspec(dllexport) void DeleteItem(CurrentItem* currentItem);
 	__declspec(dllexport) void DeleteCharacter(CurrentCharacter* currentCharacter);
-	__declspec(dllexport) CurrentNPC* AddNPC(NPC* base, int x, int y);
-	__declspec(dllexport) CurrentStatic* AddStatic(Static* base, int x, int y);
-	__declspec(dllexport) CurrentItem* AddItem(Item* base, int x, int y, int count);
-	__declspec(dllexport) CurrentCharacter* AddCharacter(Character* base, int x, int y, char* login, char* password);
+	__declspec(dllexport) CurrentNPC* AddNPC(NPC* base, double x, double y);
+	__declspec(dllexport) CurrentStatic* AddStatic(Static* base, double x, double y);
+	__declspec(dllexport) CurrentItem* AddItem(Item* base, double x, double y, int count);
+	__declspec(dllexport) CurrentCharacter* AddCharacter(Character* base, double x, double y, char* login, char* password);
+	/*
 	__declspec(dllexport) CurrentNPC* GetNPCAt(int x, int y);
 	__declspec(dllexport) CurrentStatic* GetStaticAt(int x, int y);
 	__declspec(dllexport) CurrentItem* GetItemAt(int x, int y);
 	__declspec(dllexport) CurrentCharacter* GetCharacterAt(int x, int y);
+	*/
 	__declspec(dllexport) CurrentNPC* GetNPC(int id);
 	__declspec(dllexport) CurrentStatic* GetStatic(int id);
 	__declspec(dllexport) CurrentItem* GetItem(int id);

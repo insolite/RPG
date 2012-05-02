@@ -163,7 +163,15 @@ bool MenuEventReceiver::OnEvent(const SEvent& event)
 				}
 				break;
 			case EGET_COMBO_BOX_CHANGED:
-				((CGUIMeshViewer*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow)->getElementFromId(CharacterPreviewMeshViewer))->setMesh(game->resources->characters[((IGUIComboBox*)event.GUIEvent.Caller)->getSelected()]->mesh);
+				CGUIMeshViewer* mv = (CGUIMeshViewer*)Universe::instance->guienv->getRootGUIElement()->getElementFromId(RegisterWindow, true)->getElementFromId(CharacterPreviewMeshViewer);
+				Character* character = game->resources->characters[((IGUIComboBox*)event.GUIEvent.Caller)->getSelected()]; //TODO: get by id
+
+				IAnimatedMesh* mesh = character->mesh;
+				SMaterial* sm = new SMaterial();
+				sm->setTexture(0, character->texture);
+				sm->setFlag(EMF_LIGHTING, false);
+				mv->setMesh(mesh);
+				mv->setMaterial(*sm);
 				break;
 		}
 	}

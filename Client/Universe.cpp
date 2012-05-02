@@ -130,13 +130,15 @@ bool Universe::Run()
 		{
 			if (iResult > 0)
 			{ //Packet received
-				printf("Packet received: '%s'; Length: %d; Ping: %d;\n", inPacket + 2, GetPacketLength(inPacket), 0);
 				switch (GetPacketType(inPacket))
 				{
 					case LoggedIn:
-						game = new Game(inPacket + 3, Client);
+						char gameName[256];
+						int locationId;
+						ScanPacket(inPacket, "%s%i", gameName, &locationId);
+						game = new Game(gameName, Client);
 						printf("Game %s initialized\n", game->name);
-						currentLocation = game->data->GetLocation(PacketGetInt(inPacket, 1 + strlen(inPacket + 3) + 1));
+						currentLocation = game->data->GetLocation(locationId);
 						DrawScene();
 						break;
 					case NPCSpawned:
@@ -146,13 +148,12 @@ bool Universe::Run()
 					{
 						CurrentStatic* currentStatic = new CurrentStatic(inPacket);
 						currentLocation->SpawnStatic(currentStatic);
-						//vector3df pos = currentStatic->node->getPosition();
-						//pos.Y -= 5.0f;
-						//currentStatic->node->setPosition(pos);
 						break;
 					}
 					case ItemSpawned:
-						switch(PacketGetByte(inPacket, 17))
+						char spawnType; //TODO: SpawnType as char
+						ScanPacket(inPacket, "%i%i%f%f%b", NULL, NULL, NULL, NULL, &spawnType);
+						switch(spawnType)
 						{
 							case Ground:
 								currentLocation->SpawnItem(new CurrentItem(inPacket));
@@ -198,35 +199,39 @@ bool Universe::Run()
 						break;
 					case Say:
 					{
-						//GOVNOCODE
 						IGUIElement* eb = guienv->getRootGUIElement()->getElementFromId(ChatBox)->getElementFromId(ChatEditBox);
-						char* str;
-						if (PacketGetByte(inPacket, 1) == Private)
-							str = PacketGetString(inPacket, 10);
-						else
-							str = PacketGetString(inPacket, 6);
-						//TODO: data->GetCharacter;
-						//for (int i = 0; i < game->data->locationsCount; i++)
-						CurrentCharacter* sender = currentLocation->GetCharacter(PacketGetInt(inPacket, 2));
-						wchar_t* wstr = new wchar_t[wcslen(eb->getText()) + strlen(str) + strlen(sender->login) + 4];
-						wcscpy(wstr, eb->getText());
-						wcscat(wstr, L"\n");
-						mbstowcs(wstr + wcslen(wstr), sender->login, 2 * strlen(sender->login));
-						wcscat(wstr, L": ");
-						mbstowcs(wstr + wcslen(wstr), str, 2 * strlen(str));
+						char messageType; //TODO: MessageType as char
+						int senderCurrentCharacterId;
+						wchar_t messageText[CHAT_MESSAGE_MAX_LENGTH];
+						ScanPacket(inPacket, "%b%i%ws", &messageType, &senderCurrentCharacterId, messageText);
+						CurrentCharacter* sender = game->data->GetCharacter(senderCurrentCharacterId);
+						
+						wchar_t wLogin[64];
+						mbstowcs(wLogin, sender->login, 63);
+						
+						int offset = wcslen(eb->getText()) + wcslen(wLogin) + wcslen(messageText) + 3 - (CHAT_MAX_LENGTH - 1);
+						if (offset < 0)
+							offset = 0;
+						else if (offset >= CHAT_MAX_LENGTH)
+							offset = CHAT_MAX_LENGTH - 1;
+
+						wchar_t wstr[CHAT_MAX_LENGTH];
+						swprintf(wstr, L"%ls\n%ls: %ls", eb->getText() + offset, wLogin, messageText);
 						eb->setText(wstr);
 						//delete wstr;
 						break;
 					}
 					case CharacterMoving:
 					{
-						//printf("Character #%d is moving to %d %d\n",PacketGetInt(inPacket,1),PacketGetInt(inPacket,5),PacketGetInt(inPacket,9));
-						CurrentCharacter* movingCurrentCharacter = currentLocation->GetCharacter(PacketGetInt(inPacket,1));
+						int currentCharacterId;
+						double x, y;
+						ScanPacket(inPacket, "%i%f%f", &currentCharacterId, &x, &y);
+						CurrentCharacter* movingCurrentCharacter = currentLocation->GetCharacter(currentCharacterId);
 						movingCurrentCharacter->setAnimation(EMAT_RUN);
-						render->moveNode(movingCurrentCharacter->node, vector3df(PacketGetInt(inPacket,5) * CELL_SIZE, 0, PacketGetInt(inPacket,9) * CELL_SIZE));
+						render->moveNode(movingCurrentCharacter->node, vector3df(x * CELL_SIZE, 0, y * CELL_SIZE), movingCurrentCharacter->base->speed);
 						//TEST
-						movingCurrentCharacter->x = PacketGetInt(inPacket, 5);
-						movingCurrentCharacter->y = PacketGetInt(inPacket, 9);
+						movingCurrentCharacter->x = x;
+						movingCurrentCharacter->y = y;
 						break;
 					}
 					case HpChanged:
@@ -248,26 +253,26 @@ bool Universe::Run()
 					}
 					case CharacterMoved:
 					{
-						int characterId, whereX, whereY;
+						int characterId;
+						double whereX, whereY;
 
-						
-						ScanPacket(inPacket, "%i%i%i", &characterId, &whereX, &whereY);
+						ScanPacket(inPacket, "%i%f%f", &characterId, &whereX, &whereY);
 
 						printf("CLIENT CHAR ID: %d\n", characterId);
-						printf("CLIENT WHERE X: %d\n", whereX);
-						printf("CLIENT WHERE Y: %d\n", whereY);
+						printf("CLIENT WHERE X: %.f\n", whereX);
+						printf("CLIENT WHERE Y: %.f\n", whereY);
 						CurrentCharacter *character = currentLocation->GetCharacter(characterId);
 
 						if (character)
 						{
 							printf("CLIENT TEST 1\n");
-							character->node->setPosition(vector3df(whereX * CELL_SIZE, 0, whereY * CELL_SIZE));
-							//character->node->updateAbsolutePosition();
+							
+							//character->node->setPosition(vector3df(whereX * CELL_SIZE, character->node->getPosition().Y, whereY * CELL_SIZE)); //TODO: Why setPosition is not working?!!
+							render->moveNode(character->node, vector3df(whereX * CELL_SIZE, character->node->getPosition().Y, whereY * CELL_SIZE), 1000000.0f);
+
 							printf("CLIENT TEST 2\n");
 							character->x = whereX;
 							character->y = whereY;
-							character->floatX = whereX;
-							character->floatY = whereY;
 						}
 
 						break;

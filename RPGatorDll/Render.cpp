@@ -22,6 +22,10 @@ Render::Render(int screenWidth, int screenHeight, bool fullscreen, wchar_t* wind
 	dimension2d<u32> screenRes;
 
 	screenRes = GetDesktopRes();
+
+	screenRes.Width = 800;
+	screenRes.Height = 600;
+
 	this->screenWidth = screenRes.Width;
 	this->screenHeight = screenRes.Height;
 
@@ -127,13 +131,12 @@ ISceneNode* Render::createNode(bool isMD2, IAnimatedMesh* mesh, ITexture* textur
 	return node;
 }
 
-void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
+void Render::moveNode(ISceneNode* node, core::vector3df nextpos, f32 speed)
 {
 	vector3df oldPosition = node->getPosition();
 	node->setID(100003);
-	int duration = (int)(30 * sqrt(pow(oldPosition.X - nextpos.X, 2) + pow(oldPosition.Z - nextpos.Z, 2)));
-	printf("duration: %d\n", duration);
 	nextpos.Y = oldPosition.Y; //While terrain is in 2D...
+	int duration = 100 * (int)(oldPosition.getDistanceFrom(nextpos) / speed / CELL_SIZE);
 	//scene::ISceneNodeAnimator* anim = smgr->createFlyStraightAnimator(node->getPosition(), nextpos, duration);
 	scene::ISceneNodeAnimator* anim = new FlyStraightWCallBackAnimator(node->getPosition(), nextpos, duration, false, device->getTimer()->getTime());
 	((FlyStraightWCallBackAnimator*)anim)->setAnimatorEndCallBack(Render::instance->animationEndCallBack);
@@ -146,21 +149,21 @@ void Render::moveNode(ISceneNode* node, core::vector3df nextpos)
 	}
 }
 
-int Render::GetAngle(int x1, int y1, int x2, int y2)
+double Render::GetAngle(double x1, double y1, double x2, double y2)
 {
-	int dx = x2 - x1;
-	int dy = y2 - y1;
-	double angle = atan((double)dy / (double)dx);
+	double dx = x2 - x1;
+	double dy = y2 - y1;
+	double angle = atan(dy / dx);
 	
-	angle *= 180 / M_PI;
+	angle *= 180.0f / M_PI;
 
 	if (dx < 0 && dy >= 0 || dx < 0 && dy <= 0)
-		angle += 180.0;
+		angle += 180.0f;
 	
-	return -(int)angle;
+	return -angle;
 }
 
-vector2d<s32> Render::MouseCoordToWorldCoord()
+vector2d<f32> Render::MouseCoordToWorldCoord()
 {
 	core::vector3df pos;
 
@@ -168,9 +171,9 @@ vector2d<s32> Render::MouseCoordToWorldCoord()
 	core::plane3df plane = plane3df(vector3df(0, 0, 0), vector3df(0, -1, 0));
     if (!plane.getIntersectionWithLine(ray2.start, ray2.getVector(), pos))
 		printf("ray does not intersect the plane!");
-	int x = (int)((pos.X + CELL_SIZE / 2) / CELL_SIZE);
-	int y = (int)((pos.Z + CELL_SIZE / 2) / CELL_SIZE);
-	return vector2d<s32>(x, y);
+	double x = (pos.X + CELL_SIZE / 2) / CELL_SIZE;
+	double y = (pos.Z + CELL_SIZE / 2) / CELL_SIZE;
+	return vector2d<f32>(x, y);
 }
 
 dimension2d<u32> Render::GetDesktopRes()

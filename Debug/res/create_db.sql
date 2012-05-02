@@ -37,7 +37,8 @@ CREATE TABLE `Character` (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(64),
 	tags VARCHAR(1024),
-	scale INTEGER
+	scale INTEGER,
+	speed REAL
 );
 
 CREATE TABLE Quest (
@@ -69,8 +70,8 @@ CREATE TABLE CurrentMapCell (
 CREATE TABLE CurrentNPC (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
-	x INTEGER,
-	y INTEGER,
+	x REAL,
+	y REAL,
 	locationId INTEGER,
 	
 	FOREIGN KEY(baseId) REFERENCES NPC(id),
@@ -80,8 +81,8 @@ CREATE TABLE CurrentNPC (
 CREATE TABLE CurrentItem (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
-	x INTEGER,
-	y INTEGER,
+	x REAL,
+	y REAL,
 	locationId INTEGER,
 	
 	currentCharacterId INTEGER,
@@ -95,8 +96,8 @@ CREATE TABLE CurrentItem (
 CREATE TABLE CurrentStatic (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
-	x INTEGER,
-	y INTEGER,
+	x REAL,
+	y REAL,
 	locationId INTEGER,
 	
 	FOREIGN KEY(baseId) REFERENCES `Static`(id),
@@ -106,8 +107,8 @@ CREATE TABLE CurrentStatic (
 CREATE TABLE `CurrentCharacter` (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	baseId INTEGER,
-	x INTEGER,
-	y INTEGER,
+	x REAL,
+	y REAL,
 	locationId INTEGER,
 	
 	login VARCHAR(32),
@@ -146,7 +147,7 @@ INSERT INTO MapCell(name, tags, cellProperty) VALUES ('Red grass', 'grass', 1);
 INSERT INTO NPC(name, tags, scale) VALUES ('Test NPC', '', 3);
 INSERT INTO `Static`(name, tags, scale) VALUES ('Test Static', '', 3);
 INSERT INTO Item(name, tags, scale) VALUES ('Test Item', '', 3);
-INSERT INTO `Character`(name, tags, scale) VALUES ('Dwarf', '', 3);
+INSERT INTO `Character`(name, tags, scale, speed) VALUES ('Dwarf', '', 3, 0.75);
 
 INSERT INTO Skill(name, tags) VALUES ('SayHello', '');
 INSERT INTO Skill(name, tags) VALUES ('Spawn 4 NPCs', '');

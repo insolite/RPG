@@ -88,17 +88,30 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			{
 				char outPacket[256];
 
-				CreatePacket(outPacket, ItemPickUp, "%i", targetCurrentMapObject->id);
+				int distance = vector2d<f32>(targetCurrentMapObject->x, targetCurrentMapObject->y).getDistanceFrom(vector2d<f32>(Universe::instance->currentCharacter->x, Universe::instance->currentCharacter->y));
+				if (distance < 3.0f)
+				{
+					CreatePacket(outPacket, ItemPickUp, "%i", targetCurrentMapObject->id);
+				}
+				else
+				{ //Emulate character's move request to this item
+					double targetX, targetY;
+					//TODO: other angles
+					targetX = targetCurrentMapObject->x + (targetCurrentMapObject->x < Universe::instance->currentCharacter->x ? 1.0f : -1.0f);
+					targetY = targetCurrentMapObject->y + (targetCurrentMapObject->y < Universe::instance->currentCharacter->y ? 1.0f : -1.0f);
+					CreatePacket(outPacket, Move, "%f%f", targetX, targetY);
+				}
+
 				Universe::instance->connectSocket->Send(outPacket);
 			}
 			else
 			{ //Move
 				char outPacket[256];
-				vector2d<s32> clickPos = Universe::instance->render->MouseCoordToWorldCoord();
+				vector2d<f32> clickPos = Universe::instance->render->MouseCoordToWorldCoord();
 				if (clickPos.X > 0 && clickPos.X < Universe::instance->currentLocation->width && clickPos.Y > 0 && clickPos.Y < Universe::instance->currentLocation->height)
-					if (Universe::instance->currentLocation->mask[clickPos.Y][clickPos.X] == Free) //TODO: see 'void Location::SpawnStatic(CurrentStatic* currentStatic)'
+					if (Universe::instance->currentLocation->mask[(int)clickPos.Y][(int)clickPos.X] == Free) //TODO: see 'void Location::SpawnStatic(CurrentStatic* currentStatic)'
 					{
-						CreatePacket(outPacket, Move, "%i%i", clickPos.X, clickPos.Y);
+						CreatePacket(outPacket, Move, "%f%f", clickPos.X, clickPos.Y);
 						Universe::instance->connectSocket->Send(outPacket);
 					}
 			}

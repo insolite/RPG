@@ -81,12 +81,12 @@ extern "C" __declspec(dllexport) void IncreasePacketLength(char* packet, int len
 
 extern "C" __declspec(dllexport) void PacketAddString(char* packet, char* str);
 extern "C" __declspec(dllexport) void PacketAddInt(char* packet, int n);
-extern "C" __declspec(dllexport) void PacketAddShortInt(char* packet, short int n);
+extern "C" __declspec(dllexport) void PacketAddDouble(char* packet, double n);
 extern "C" __declspec(dllexport) void PacketAddByte(char* packet, char n);
 
 extern "C" __declspec(dllexport) char* PacketGetString(char* packet, int pos);
 extern "C" __declspec(dllexport) int PacketGetInt(char* packet, int pos);
-extern "C" __declspec(dllexport) short int PacketGetShortInt(char* packet, int pos);
+extern "C" __declspec(dllexport) double PacketGetDouble(char* packet, int pos);
 extern "C" __declspec(dllexport) char PacketGetByte(char* packet, int pos);
 
 extern "C" __declspec(dllexport) void SetPacketType(char* packet, Packet type);

@@ -99,3 +99,39 @@ int GameData::AddLocation(char* name, int width, int height)
 
 	return (int)sqlite3_last_insert_rowid(Game::instance->db);
 }
+
+CurrentNPC* GameData::GetNPC( int id )
+{
+	CurrentNPC* currentNPC;
+	for (int i = 0; i < Game::instance->data->locationsCount; i++)
+		if (currentNPC = Game::instance->data->locations[i]->GetNPC(id))
+			return currentNPC;
+	return NULL;
+}
+
+CurrentStatic* GameData::GetStatic( int id )
+{
+	CurrentStatic* currentStatic;
+	for (int i = 0; i < Game::instance->data->locationsCount; i++)
+		if (currentStatic = Game::instance->data->locations[i]->GetStatic(id))
+			return currentStatic;
+	return NULL;
+}
+
+CurrentItem* GameData::GetItem( int id )
+{
+	CurrentItem* currentItem;
+	for (int i = 0; i < Game::instance->data->locationsCount; i++)
+		if (currentItem = Game::instance->data->locations[i]->GetItem(id))
+			return currentItem;
+	return NULL;
+}
+
+CurrentCharacter* GameData::GetCharacter( int id )
+{
+	CurrentCharacter* currentCharacter;
+	for (int i = 0; i < Game::instance->data->locationsCount; i++)
+		if (currentCharacter = Game::instance->data->locations[i]->GetCharacter(id))
+			return currentCharacter;
+	return NULL;
+}

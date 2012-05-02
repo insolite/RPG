@@ -1,6 +1,9 @@
 #pragma once
 #include "ClientSocket.h"
 
+#define CHAT_MAX_LENGTH 4096
+#define CHAT_MESSAGE_MAX_LENGTH 256 //Must be less than CHAT_MAX_LENGTH
+
 enum ProgramState
 {
 	Continue,

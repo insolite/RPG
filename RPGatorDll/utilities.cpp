@@ -108,10 +108,10 @@ extern "C" __declspec(dllexport) void PacketAddInt(char* packet, int n)
 	IncreasePacketLength(packet, 4);
 }
 
-extern "C" __declspec(dllexport) void PacketAddShortInt(char* packet, short int n)
+extern "C" __declspec(dllexport) void PacketAddDouble(char* packet, double n)
 {
-	memcpy(packet + GetPacketLength(packet) + 2, (char*)&n, 2);
-	IncreasePacketLength(packet, 2);
+	memcpy(packet + GetPacketLength(packet) + 2, (char*)&n, sizeof(double));
+	IncreasePacketLength(packet, sizeof(double));
 }
 
 extern "C" __declspec(dllexport) void PacketAddByte(char* packet, char n)
@@ -130,9 +130,9 @@ extern "C" __declspec(dllexport) int PacketGetInt(char* packet, int pos)
 	return *((int*)(packet + 2 + pos));
 }
 
-extern "C" __declspec(dllexport) short int PacketGetShortInt(char* packet, int pos)
+extern "C" __declspec(dllexport) double PacketGetDouble(char* packet, int pos)
 {
-	return *((short int*)(packet + 2 + pos));
+	return *((double*)(packet + 2 + pos));
 }
 
 extern "C" __declspec(dllexport) char PacketGetByte(char* packet, int pos)
@@ -173,8 +173,8 @@ void CreatePacket( char* packet, Packet packetType, char* formatStr, ... )
 			PacketAddByte(packet, va_arg(params, char));
 		else if (!strcmp(token,"s")) 
 			PacketAddString(packet, va_arg(params, char*));
-		else if (!strcmp(token,"si")) 
-			PacketAddShortInt(packet, va_arg(params, short));
+		else if (!strcmp(token,"f")) 
+			PacketAddDouble(packet, va_arg(params, double));
 		else if (!strcmp(token,"ws")) 
 		{
 			//Warning! It only converts wchar_t* to char*. Does not insert wide string.
@@ -209,29 +209,42 @@ void ScanPacket( char* packet, char* formatStr, ... )
 	{
 		if (!strcmp(token,"i")) 
 		{
-			*(va_arg(params, int*)) = PacketGetInt(packet, currentPosition);
+			int * p = va_arg(params, int*);
+			if (p)
+				*p = PacketGetInt(packet, currentPosition);
 			currentPosition += 4;
 		}
 		else if (!strcmp(token,"b"))
 		{
-			*(va_arg(params, char*)) = PacketGetByte(packet, currentPosition);
+			char* p = va_arg(params, char*);
+			if (p)
+				*p = PacketGetByte(packet, currentPosition);
 			currentPosition += 1;
 		}
 		else if (!strcmp(token,"s"))
 		{
-			currentPosition += strlen(strcpy(va_arg(params, char*), PacketGetString(packet, currentPosition))) + 1;
+			char* str = PacketGetString(packet, currentPosition);
+
+			char* p = va_arg(params, char*);
+			if (p)
+				strcpy(p, str);
+			currentPosition += strlen(str) + 1;
 		}
-		else if (!strcmp(token,"si"))
+		else if (!strcmp(token,"f"))
 		{
-			*(va_arg(params, short*)) = PacketGetShortInt(packet, currentPosition);
-			currentPosition += 2;
+			double* p = va_arg(params, double*);
+			if (p)
+				*p = PacketGetDouble(packet, currentPosition);
+			currentPosition += sizeof(double);
 		}
 		else if (!strcmp(token,"ws")) 
 		{
-			//Warning! It only converts wchar_t* to char*. Does not insert wide string.
 			char *str = PacketGetString(packet, currentPosition);
 
-			currentPosition += mbstowcs(va_arg(params, wchar_t*), str, strlen(str) + 1) + 1;
+			wchar_t* p = va_arg(params, wchar_t*);
+			if (p)
+				mbstowcs(p, str, strlen(str) + 1);
+			currentPosition += strlen(str) + 1;
 		}
 		token = strtok_s(NULL, "% ", &nextToken);
 	}
@@ -268,11 +281,15 @@ extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlit
 				{
 					case SQLITE_BLOB:
 						sqliteResults[rowsCount].strings[columnName] = (std::string)(char*)sqlite3_column_blob(stmt, i);
+						break;
 					case SQLITE_TEXT:
 						sqliteResults[rowsCount].strings[columnName] = (std::string)(char*)sqlite3_column_text(stmt, i);
 						break;
 					case SQLITE_INTEGER:
 						sqliteResults[rowsCount].integers[columnName] = sqlite3_column_int(stmt, i);
+						break;
+					case SQLITE_FLOAT:
+						sqliteResults[rowsCount].doubles[columnName] = sqlite3_column_double(stmt, i);
 						break;
 				}
 			}

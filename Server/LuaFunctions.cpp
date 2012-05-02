@@ -37,20 +37,17 @@ int LuaFunctions::GetQuestState(lua_State* lua) //currentCharacterId, questId
 {
 	int currentCharacterId, questId;
 	CurrentCharacter* currentCharacter;
-	CurrentQuest* currentQuest;
 
 	currentCharacterId = lua_tointeger(lua, 1);
 	questId = lua_tointeger(lua, 2);
-	//TODO: data->GetCharacter
-	for (int i = 0; i < Universe::instance->game->data->locationsCount; i++)
-		if (currentCharacter = Universe::instance->game->data->locations[i]->GetCharacter(currentCharacterId))
-		{
-			currentQuest = currentCharacter->GetQuest(questId); //TODO: method for baseId
-			if (currentQuest)
-				return currentQuest->state;
-			else
-				return 0; //No current quest
-		}
+	currentCharacter = Universe::instance->game->data->GetCharacter(currentCharacterId);
+	if (currentCharacter)
+	{
+		CurrentQuest* currentQuest = currentCharacter->GetQuest(questId); //TODO: method for baseId
+		if (currentQuest)
+			return currentQuest->state;
+		return 0; //No current quest
+	}
 	return -1; //No current character
 }
 
@@ -125,11 +122,7 @@ int LuaFunctions::AddItem(lua_State* lua) //baseId, spawnType, [x, y, locationId
 			characterId = lua_tointeger(lua, 3);
 			count = lua_tointeger(lua, 4);
 
-			//TODO: data->GetCharacter
-			currentCharacter = NULL;
-			for (int i = 0; i < Universe::instance->game->data->locationsCount; i++)
-				if (currentCharacter = Universe::instance->game->data->locations[i]->GetCharacter(characterId))
-					break;
+			currentCharacter = Universe::instance->game->data->GetCharacter(characterId);
 			currentItem = currentCharacter->AddItem(Universe::instance->game->resources->GetItem(baseId), count);
 			CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
 				currentItem->id,
@@ -160,12 +153,8 @@ int LuaFunctions::SendDialog(lua_State* lua) //currentNPCId, title, text, curren
 	strcpy(text, lua_tostring(lua, 3));
 	currentCharacterId = lua_tointeger(lua, 4);
 
-	//TODO: data->GetCharacter
-	currentCharacter = NULL;
-	for (int i = 0; i < Universe::instance->game->data->locationsCount; i++)
-		if (currentCharacter = Universe::instance->game->data->locations[i]->GetCharacter(currentCharacterId))
-			break;
-
+	currentCharacter = Universe::instance->game->data->GetCharacter(currentCharacterId);
+	
 	if (currentCharacter)
 	{
 		char outPacket[256];
@@ -270,7 +259,13 @@ int LuaFunctions::ChangeHp( lua_State *lua )
 			printf("TEST8\n");
 		}
 
-		CreatePacket(outPacket, Packet::CharacterMoved, "%i%i%i", currentCharacterId, 16, 16);
+		currentCharacter->x = 16.0f;
+		currentCharacter->y = 16.0f;
+		currentCharacter->movingX = 16.0f;
+		currentCharacter->movingY = 16.0f;
+		currentCharacter->hp = 100;
+
+		CreatePacket(outPacket, Packet::CharacterMoved, "%i%f%f", currentCharacterId, currentCharacter->x, currentCharacter->y);
 
 		for (int i = 0; i < currentCharacter->currentLocation->currentCharactersCount; i++)
 		{
@@ -278,12 +273,6 @@ int LuaFunctions::ChangeHp( lua_State *lua )
 			currentCharacter->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
 			printf("TEST10\n");
 		}
-
-		currentCharacter->x = 16;
-		currentCharacter->y = 16;
-		currentCharacter->floatX = 16.0f;
-		currentCharacter->floatY = 16.0f;
-		currentCharacter->hp = 100;
 	}
 	
 	printf("TEST3\n");

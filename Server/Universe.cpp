@@ -35,9 +35,10 @@ void Universe::Run(char* gameName)
 	char testStr[10];
 	char testChar;
 	wchar_t testwStr[10];
-	int currTick = 0;
+	int lastStepTime;
+	int currentTime;
 
-
+	lastStepTime = 0;
 	continueFlag = true;
 	clientsCount = 0;
 	clients = NULL;
@@ -61,9 +62,6 @@ void Universe::Run(char* gameName)
 		//Receiving packets from connected clients
 		for (ci = 0; ci < clientsCount; ci++)
 		{
-			int startTick = GetTickCount();
-
-
 			iResult = clients[ci]->Receive(inPacket);
 			if (iResult)
 			{
@@ -126,7 +124,7 @@ void Universe::Run(char* gameName)
 								printf("Character %s logged in\n", newCurrentCharacter->login);
 								CreatePacket(outPacket, LoggedIn, "%s%i", game->name, location->id);
 								clients[ci]->Send(outPacket);
-								CreatePacket(outPacket, CharacterSpawned, "%i%i%i%i%s",
+								CreatePacket(outPacket, CharacterSpawned, "%i%i%f%f%s",
 									newCurrentCharacter->id,
 									newCurrentCharacter->base->id,
 									newCurrentCharacter->x,
@@ -145,7 +143,7 @@ void Universe::Run(char* gameName)
 								{
 									if (newCurrentCharacter != newCurrentCharacter->currentLocation->currentCharacters[i])
 									{ //Not current client. We did it in the previous loop
-										CreatePacket(outPacket, CharacterSpawned, "%i%i%i%i%s",
+										CreatePacket(outPacket, CharacterSpawned, "%i%i%f%f%s",
 											newCurrentCharacter->currentLocation->currentCharacters[i]->id,
 											newCurrentCharacter->currentLocation->currentCharacters[i]->base->id,
 											newCurrentCharacter->currentLocation->currentCharacters[i]->x,
@@ -158,7 +156,7 @@ void Universe::Run(char* gameName)
 								//NPC
 								for (int i = 0; i < newCurrentCharacter->currentLocation->currentNPCsCount; i++)
 								{
-									CreatePacket(outPacket, NPCSpawned, "%i%i%i%i%i",
+									CreatePacket(outPacket, NPCSpawned, "%i%i%f%f",
 										newCurrentCharacter->currentLocation->currentNPCs[i]->id,
 										newCurrentCharacter->currentLocation->currentNPCs[i]->base->id,
 										newCurrentCharacter->currentLocation->currentNPCs[i]->x,
@@ -169,7 +167,7 @@ void Universe::Run(char* gameName)
 								//Statics
 								for (int i = 0; i < newCurrentCharacter->currentLocation->currentStaticsCount; i++)
 								{
-									CreatePacket(outPacket, StaticSpawned, "%i%i%i%i%i",
+									CreatePacket(outPacket, StaticSpawned, "%i%i%f%f",
 										newCurrentCharacter->currentLocation->currentStatics[i]->id,
 										newCurrentCharacter->currentLocation->currentStatics[i]->base->id,
 										newCurrentCharacter->currentLocation->currentStatics[i]->x,
@@ -180,7 +178,7 @@ void Universe::Run(char* gameName)
 								//Items
 								for (int i = 0; i < newCurrentCharacter->currentLocation->currentItemsCount; i++)
 								{
-									CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
+									CreatePacket(outPacket, ItemSpawned, "%i%i%f%f%b%i",
 										newCurrentCharacter->currentLocation->currentItems[i]->id,
 										newCurrentCharacter->currentLocation->currentItems[i]->base->id,
 										newCurrentCharacter->currentLocation->currentItems[i]->x,
@@ -193,7 +191,7 @@ void Universe::Run(char* gameName)
 								//Inventory
 								for (int i = 0; i < newCurrentCharacter->currentItemsCount; i++)
 								{
-									CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
+									CreatePacket(outPacket, ItemSpawned, "%i%i%f%f%b%i",
 										newCurrentCharacter->currentItems[i]->id,
 										newCurrentCharacter->currentItems[i]->base->id,
 										0,
@@ -254,13 +252,13 @@ void Universe::Run(char* gameName)
 								);
 							switch (PacketGetByte(inPacket, 1))
 							{
-								case Public: //%b%s
+								case Public: //%b%i%s
 									for (int i = 0; i < clientsCount; i++)
 									{
 										clients[i]->Send(outPacket);
 									}
 									break;
-								case Private: //%b%i%s
+								case Private: //%b%i%i%s
 									for (int i = 0; i < clientsCount; i++)
 									{
 										if (clients[i]->character->id == PacketGetInt(inPacket, 2))
@@ -274,30 +272,20 @@ void Universe::Run(char* gameName)
 							break;
 						case Move:
 						{
-							//TEST!
-							//TODO: changing x and y in time
-							int newX = PacketGetInt(inPacket, 1);
-							int newY = PacketGetInt(inPacket, 5);
+							double newX, newY;
+							ScanPacket(inPacket, "%f%f", &newX, &newY);
 							if (newX > 0 && newX < clients[ci]->character->currentLocation->width //TODO: x >= 0
 							 && newY > 0 && newY < clients[ci]->character->currentLocation->height) //TODO: x >= 0
 							{
-								clients[ci]->character->floatX = (float)clients[ci]->character->x;
-								clients[ci]->character->floatY = (float)clients[ci]->character->y;
-							
-								clients[ci]->character->moveDuration = 
-									(int)(30 * sqrt(pow((float)(clients[ci]->character->x - newX), 2) + pow((float)(clients[ci]->character->y - newY), 2))) * 10;
+								clients[ci]->character->movingX = newX;
+								clients[ci]->character->movingY = newY;
+								clients[ci]->character->RecalculateDelta();
 
-								clients[ci]->character->x = newX;
-								clients[ci]->character->y = newY;
-
-								CreatePacket(outPacket, CharacterMoving, "%i%i%i", clients[ci]->character->id, newX, newY);
-									for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
-									{
-										clients[i]->Send(outPacket);
-									}
-
-								currTick = GetTickCount();
-								clients[ci]->character->Update();
+								CreatePacket(outPacket, CharacterMoving, "%i%f%f", clients[ci]->character->id, newX, newY);
+								for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
+								{
+									clients[i]->Send(outPacket);
+								}
 							}
 							break;
 						}
@@ -347,13 +335,13 @@ void Universe::Run(char* gameName)
 											",
 											clients[ci]->character->id,
 											clients[ci]->character->base->id,
-											clients[ci]->character->floatX,
-											clients[ci]->character->floatY,
+											clients[ci]->character->x,
+											clients[ci]->character->y,
 											clients[ci]->character->currentLocation->id,
 											targetType,
 											targetMapObject ? targetMapObjectId : 0,
-											targetMapObject ? ((CurrentCharacter*)targetMapObject)->floatX : 1000,
-											targetMapObject ? ((CurrentCharacter*)targetMapObject)->floatY : 1000
+											targetMapObject ? ((CurrentCharacter*)targetMapObject)->x : -1,
+											targetMapObject ? ((CurrentCharacter*)targetMapObject)->y : -1
 											);
 										luaL_dostring(luaState, str);
 										luaL_dofile(luaState, currentSkill->base->scriptPath);
@@ -401,11 +389,9 @@ void Universe::Run(char* gameName)
 							CurrentNPC* currentNPC = clients[ci]->character->currentLocation->GetNPC(PacketGetInt(inPacket, 1));
 							if (currentNPC)
 							{
-								int distanceX = abs(currentNPC->x - clients[ci]->character->floatX);
-								int distanceY = abs(currentNPC->y - clients[ci]->character->floatY);
-								if (distanceX < 3 && distanceY < 3)
+								int distance = vector2d<f32>(currentNPC->x, currentNPC->y).getDistanceFrom(vector2d<f32>(clients[ci]->character->x, clients[ci]->character->y));
+								if (distance < 3.0f)
 								{
-									//TODO: check distance from NPC to Character
 									char str[512]; //For init script variables
 
 									sprintf(str, "\
@@ -426,8 +412,8 @@ void Universe::Run(char* gameName)
 										currentNPC->id, //NPC_ID
 										clients[ci]->character->id,
 										clients[ci]->character->base->id,
-										clients[ci]->character->floatX,
-										clients[ci]->character->floatY,
+										clients[ci]->character->x,
+										clients[ci]->character->y,
 										clients[ci]->character->currentLocation->id
 										);
 									luaL_dostring(luaState, str);
@@ -441,20 +427,22 @@ void Universe::Run(char* gameName)
 							break;
 						}
 						case ItemPickUp:
+						{
 							CurrentItem* currentItem = clients[ci]->character->currentLocation->GetItem(PacketGetInt(inPacket, 1));
 							if (currentItem)
 							{
-								int distanceX = abs(currentItem->x - clients[ci]->character->x);
-								int distanceY = abs(currentItem->y - clients[ci]->character->y);
-								if (distanceX < 2 && distanceY < 2)
+								int distance = vector2d<f32>(currentItem->x, currentItem->y).getDistanceFrom(vector2d<f32>(clients[ci]->character->x, clients[ci]->character->y));
+								if (distance < 3.0f)
 								{
 									CurrentItem* currentItemClone = new CurrentItem(*currentItem);
 
+									//Inform all CurrentCharacters that CurrentItem was unspawned
 									CreatePacket(outPacket, ItemUnspawned, "%i%b",
 										currentItem->id,
 										Ground
 										);
-									clients[ci]->character->connectSocket->Send(outPacket);
+									for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
+										clients[ci]->character->currentLocation->currentCharacters[i]->connectSocket->Send(outPacket);
 									clients[ci]->character->currentLocation->UnSpawnItem(currentItem);
 									
 									currentItemClone->owner = clients[ci]->character;
@@ -462,27 +450,30 @@ void Universe::Run(char* gameName)
 									currentItemClone->x = 0;
 									currentItemClone->y = 0;
 
+									//Inform CurrentCharacter that CurrentItem was spawned in his inventory
 									clients[ci]->character->SpawnItem(currentItemClone);
-									CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
+									CreatePacket(outPacket, ItemSpawned, "%i%i%f%f%b%i",
 										currentItemClone->id,
 										currentItemClone->base->id,
-										0,
-										0,
+										currentItemClone->x,
+										currentItemClone->y,
 										Inventory,
 										currentItemClone->count
 										);
 									clients[ci]->character->connectSocket->Send(outPacket);
-
-									currentItemClone->Update(); //TODO:
 								}
 							}
 							break;
+						}
 					}
 				}
 				else if (iResult == -1)
 				{ //Client disconnected
 					if (clients[ci]->character) //Client logged in
 					{
+						//Save CurrentCharacter's data to DB
+						clients[ci]->character->Update();
+						//Inform all CurrentCharacters that CurrentCharacter was unspawned
 						CreatePacket(outPacket, CharacterUnspawned, "%i", clients[ci]->character->id);
 						for (int i = 0; i < clients[ci]->character->currentLocation->currentCharactersCount; i++)
 							if (clients[ci]->character->currentLocation->currentCharacters[i] != clients[ci]->character)
@@ -506,26 +497,6 @@ void Universe::Run(char* gameName)
 				}
 			}
 
-			if ((iResult != -1) && (clients[ci]->character != NULL) && (clients[ci]->character->moveDuration > 0) && ((startTick - currTick) > 10))
-			{
-				float deltaX = ((float)clients[ci]->character->x - clients[ci]->character->floatX) / clients[ci]->character->moveDuration;
-				float deltaY = ((float)clients[ci]->character->y - clients[ci]->character->floatY) / clients[ci]->character->moveDuration;
-
-				
-
-				int deltaTick = ((startTick - currTick) < clients[ci]->character->moveDuration) ? (startTick - currTick) : clients[ci]->character->moveDuration;
-
-				clients[ci]->character->floatX += deltaX * deltaTick;
-				clients[ci]->character->floatY += deltaY * deltaTick;
-
-				clients[ci]->character->moveDuration -= deltaTick;
-
-				//printf("%f\t%f\t%d\t%d\n", clients[ci]->character->floatX, clients[ci]->character->floatY, clients[ci]->character->moveDuration, deltaTick);
-
-				currTick = GetTickCount();
-			}
-
-
 			//CreateItemSpawnedPacket(outPacket, Ground, 3, 5, 3, 4);
 			//clients[0]->Send(outPacket);
 		}
@@ -542,13 +513,33 @@ void Universe::Run(char* gameName)
 			}
 		}
 		*/
-		//TEST
-		for (ci = 0; ci < clientsCount; ci++)
+		
+		
+		currentTime = GetTickCount();
+		if ((currentTime - lastStepTime) > 100)
 		{
-			//outPacket[1] = '\0';
-			strcpy(outPacket + 2, "test packet");
-			SetPacketLength(outPacket, strlen(outPacket + 2) + 1);
-			//clients[cClient]->Send(outPacket);
+			lastStepTime = currentTime; // - ((currentTime - lastStepTime) - 100); //If server is slow
+			for (ci = 0; ci < clientsCount; ci++)
+			{
+				if (clients[ci]->character)
+				{
+					if (clients[ci]->character->x != clients[ci]->character->movingX || clients[ci]->character->y != clients[ci]->character->movingY)
+					{
+						if (vector2d<f32>(clients[ci]->character->x, clients[ci]->character->y).getDistanceFrom(vector2d<f32>(clients[ci]->character->movingX, clients[ci]->character->movingY)) > clients[ci]->character->base->speed)
+						{
+							clients[ci]->character->x += clients[ci]->character->deltaX;
+							clients[ci]->character->y += clients[ci]->character->deltaY;
+							//printf("%.3f    %.3f\n", clients[ci]->character->x, clients[ci]->character->y);
+						}
+						else
+						{
+							clients[ci]->character->x = clients[ci]->character->movingX;
+							clients[ci]->character->y = clients[ci]->character->movingY;
+							//printf("Came\n");
+						}
+					}
+				}
+			}
 		}
 	}
 	

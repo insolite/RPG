@@ -10,7 +10,7 @@
 
 Character::Character(SqliteResult sqliteResult, char* modelPath) : MapObject(sqliteResult, modelPath)
 {
-	
+	speed = sqliteResult.doubles["speed"];
 }
 
 Character::~Character(void)

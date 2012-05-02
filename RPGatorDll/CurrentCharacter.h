@@ -6,6 +6,7 @@ class CurrentCharacter :
 public:
 	char login[64]; //Also character's name
 	char password[32];
+	int hp;
 	CurrentItem** currentItems; //Inventory
 	CurrentQuest** currentQuests; //Accepted quests
 	CurrentSkill** currentSkills; //Learned skills
@@ -14,12 +15,10 @@ public:
 	int currentSkillsCount;
 	ConnectSocket* connectSocket;
 
-	int moveDuration;
-	float floatX;
-	float floatY;
-
-
-	int hp;
+	double movingX;
+	double movingY;
+	double deltaX;
+	double deltaY;
 
 	__declspec(dllexport) CurrentItem* GetItem(int id);
 	__declspec(dllexport) CurrentItem* GetItemByBase(int id);
@@ -35,7 +34,9 @@ public:
 	__declspec(dllexport) CurrentSkill* AddSkill(Skill* base);
 	
 	__declspec(dllexport) void Update();
-
+	
+	__declspec(dllexport) void RecalculateDelta();
+	
 	__declspec(dllexport) CurrentCharacter(SqliteResult sqliteResult, Location* location);
 	__declspec(dllexport) CurrentCharacter(char* currentMapObjectSpawnedPacket);
 	__declspec(dllexport) ~CurrentCharacter(void);

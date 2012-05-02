@@ -23,8 +23,8 @@ template<class T>
 CurrentMapObject<T>::CurrentMapObject( SqliteResult sqliteResult, T** mapObjects, int mapObjectsCount, Location* location ) :
 CurrentGameObject<T>::CurrentGameObject(sqliteResult, mapObjects, mapObjectsCount)
 {
-	x = sqliteResult.integers["x"];
-	y = sqliteResult.integers["y"];
+	x = sqliteResult.doubles["x"];
+	y = sqliteResult.doubles["y"];
 	currentLocation = location;
 	if (base->mesh)
 	{
@@ -39,8 +39,7 @@ template<class T>
 CurrentMapObject<T>::CurrentMapObject( char* currentMapObjectSpawnedPacket, T** mapObjects, int mapObjectsCount ) :
 CurrentGameObject<T>::CurrentGameObject(currentMapObjectSpawnedPacket, mapObjects, mapObjectsCount)
 {
-	x = PacketGetInt(currentMapObjectSpawnedPacket, 9);
-	y = PacketGetInt(currentMapObjectSpawnedPacket, 13);
+	ScanPacket(currentMapObjectSpawnedPacket, "%i%i%f%f", NULL, NULL, &x, &y); //'id' and 'baseId' also initialized in CurrentGameObject constructor
 	currentLocation = NULL; //Client does not use it. It uses Universe->currentLocation
 	if (base->mesh)
 	{

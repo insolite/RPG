@@ -23,13 +23,13 @@
 CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location) :
 	CurrentMapObject<Character>::CurrentMapObject(sqliteResult, Game::instance->resources->characters, Game::instance->resources->charactersCount, location)
 {
+	movingX = x;
+	movingY = y;
+
 	strcpy(login, sqliteResult.strings["login"].c_str());
 	strcpy(password, sqliteResult.strings["password"].c_str());
 
 	hp = 100;
-
-	floatX = x;
-	floatY = y;
 
 	char query[256];
 	int rowsCount;
@@ -78,8 +78,10 @@ CurrentCharacter::CurrentCharacter(SqliteResult sqliteResult, Location* location
 CurrentCharacter::CurrentCharacter(char* currentMapObjectSpawnedPacket) :
 	CurrentMapObject<Character>::CurrentMapObject(currentMapObjectSpawnedPacket, Game::instance->resources->characters, Game::instance->resources->charactersCount)
 {
-	//type(1) + id(4) + baseId(4) + x(4) + y(4) = 17
-	strcpy(login, PacketGetString(currentMapObjectSpawnedPacket, 17));
+	movingX = x;
+	movingY = y;
+
+	ScanPacket(currentMapObjectSpawnedPacket, "%i%i%f%f%s", NULL, NULL, NULL, NULL, login);
 	password[0] = '\0'; //strcpy(password, "");
 	
 	if (node)
@@ -166,6 +168,21 @@ CurrentSkill* CurrentCharacter::AddSkill(Skill* base)
 void CurrentCharacter::Update()
 {
 	char sql[256];
-	sprintf(sql, "UPDATE CurrentCharacter SET x=%d, y=%d, locationId=%d, login='%s', password='%s' WHERE id=%d;", x, y, currentLocation->id, login, password, id);
+	sprintf(sql, "UPDATE CurrentCharacter SET x=%.f, y=%.f, locationId=%d, login='%s', password='%s' WHERE id=%d;", x, y, currentLocation->id, login, password, id);
 	sqlite3_exec(Game::instance->db, sql, NULL, NULL, NULL);
+	for (int i = 0; i < currentItemsCount; i++)
+		currentItems[i]->Update();
+	for (int i = 0; i < currentQuestsCount; i++)
+		currentQuests[i]->Update();
+	for (int i = 0; i < currentSkillsCount; i++)
+		currentSkills[i]->Update();
+}
+
+void CurrentCharacter::RecalculateDelta()
+{
+	double distance = vector2d<f32>(x, y).getDistanceFrom(vector2d<f32>(movingX, movingY));
+	double cosL = -(x - movingX) / distance;
+	double sinL = -(y - movingY) / distance;
+	deltaX = base->speed * cosL;
+	deltaY = base->speed * sinL;
 }

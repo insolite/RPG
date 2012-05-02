@@ -61,7 +61,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 		}
 		else //Mouse is not in a window area
 			return false;
-		vector2d<s32> clickPos = Universe::instance->render->MouseCoordToWorldCoord();
+		vector2d<f32> clickPos = Universe::instance->render->MouseCoordToWorldCoord();
 		if (Mouse[EMIE_LMOUSE_PRESSED_DOWN])
 		{ //Add CurrentMapObject
 			if (!Universe::instance->guienv->getRootGUIElement()->getElementFromId(CurrentMapObjectContextMenu))
@@ -351,16 +351,16 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 								//mapObject = Universe::instance->game->resources->AddMapCell("default name", "", filename, NULL);//texturePath is not used yet
 								break;
 							case 1:
-								mapObject = Universe::instance->game->resources->AddNPC("default name", "", filename, NULL);//texturePath is not used yet
+								mapObject = Universe::instance->game->resources->AddNPC("unnamed", "", filename, NULL);//texturePath is not used yet
 								break;
 							case 2:
-								mapObject = Universe::instance->game->resources->AddStatic("default name", "", filename, NULL);//texturePath is not used yet
+								mapObject = Universe::instance->game->resources->AddStatic("unnamed", "", filename, NULL);//texturePath is not used yet
 								break;
 							case 3:
-								mapObject = Universe::instance->game->resources->AddItem("default name", "", filename, NULL);//texturePath is not used yet
+								mapObject = Universe::instance->game->resources->AddItem("unnamed", "", filename, NULL);//texturePath is not used yet
 								break;
 							case 4:
-								mapObject = Universe::instance->game->resources->AddCharacter("default name", "", filename, NULL);//texturePath is not used yet
+								mapObject = Universe::instance->game->resources->AddCharacter("unnamed", "", filename, NULL);//texturePath is not used yet
 								break;
 						}
 
@@ -385,6 +385,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						int mapObjectId;
 						MapObject* mapObject;
 						IGUIWindow* wnd;
+						char str[256];
 						
 						wnd = (IGUIWindow*)event.GUIEvent.Caller->getParent();
 						swscanf(wnd->getText(), L"[%d]", &mapObjectId);
@@ -393,6 +394,8 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						f32 scale = ((IGUIScrollBar*)wnd->getElementFromId(MapObjectEditWindowScale))->getPos();
 						if (scale == 0)
 							break;
+
+						wcstombs(str, wnd->getElementFromId(MapObjectEditWindowName)->getText(), 255);
 
 						switch (wnd->getID())
 						{
@@ -413,6 +416,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 										pos.Y = -Universe::instance->currentLocation->currentNPCs[i]->node->getBoundingBox().MinEdge.Y * scale / 10.0f;
 										Universe::instance->currentLocation->currentNPCs[i]->node->setPosition(pos);
 										Universe::instance->currentLocation->currentNPCs[i]->node->setScale(vector3df(scale / 10.0f, scale / 10.0f, scale / 10.0f));
+										Universe::instance->currentLocation->currentNPCs[i]->setTitle(str);
 									}
 								break;
 							}
@@ -461,7 +465,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						}
 
 						//Name
-						wcstombs(mapObject->name, wnd->getElementFromId(MapObjectEditWindowName)->getText(), 255);
+						strcpy(mapObject->name, str);
 
 						//TODO: tags update
 

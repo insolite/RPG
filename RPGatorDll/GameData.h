@@ -12,6 +12,10 @@ public:
 	__declspec(dllexport) void LocationSpawn(SqliteResult sqliteResult, InitializationType initializationType);
 	__declspec(dllexport) void LocationSpawn(int id, InitializationType initializationType);
 	__declspec(dllexport) void LocationDelete(int i);
+	__declspec(dllexport) CurrentNPC* GetNPC(int id);
+	__declspec(dllexport) CurrentStatic* GetStatic(int id);
+	__declspec(dllexport) CurrentItem* GetItem(int id);
+	__declspec(dllexport) CurrentCharacter* GetCharacter(int id);
 
 	__declspec(dllexport) GameData(InitializationType initializationType);
 	__declspec(dllexport) ~GameData(void);
