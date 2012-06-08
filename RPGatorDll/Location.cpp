@@ -129,8 +129,8 @@ void Location::SpawnStatic(CurrentStatic* currentStatic)
 		nodeSize = currentStatic->node->getBoundingBox().MaxEdge;
 		nodePos = currentStatic->node->getPosition();
 
-		int x = nodePos.X / CELL_SIZE;
-		int y = nodePos.Z / CELL_SIZE;
+		int x = (int)(nodePos.X / CELL_SIZE);
+		int y = (int)(nodePos.Z / CELL_SIZE);
 		mask[y][x] = Locked;
 		/*
 		int width = (nodeSize.Z + CELL_SIZE / 2) / CELL_SIZE; //CELL_SIZE / 2 - TEST
@@ -215,7 +215,7 @@ CurrentCharacter* Location::GetCharacterAt(int x, int y)
 	return GetCurrentMapObjectAt<CurrentCharacter>(currentCharacters, currentCharactersCount, x, y);
 }
 */
-CurrentNPC* Location::AddNPC(NPC* base, double x, double y)
+CurrentNPC* Location::AddNPC(NPC* base, f32 x, f32 y)
 {
 	char query[256];
 
@@ -228,7 +228,7 @@ CurrentNPC* Location::AddNPC(NPC* base, double x, double y)
 	return currentNPC;
 }
 
-CurrentStatic* Location::AddStatic(Static* base, double x, double y)
+CurrentStatic* Location::AddStatic(Static* base, f32 x, f32 y)
 {
 	char query[256];
 
@@ -241,7 +241,7 @@ CurrentStatic* Location::AddStatic(Static* base, double x, double y)
 	return currentStatic;
 }
 
-CurrentItem* Location::AddItem(Item* base, double x, double y, int count)
+CurrentItem* Location::AddItem(Item* base, f32 x, f32 y, int count)
 {
 	char query[256];
 
@@ -254,7 +254,7 @@ CurrentItem* Location::AddItem(Item* base, double x, double y, int count)
 	return currentItem;
 }
 
-CurrentCharacter* Location::AddCharacter(Character* base, double x, double y, char* login, char* password)
+CurrentCharacter* Location::AddCharacter(Character* base, f32 x, f32 y, char* login, char* password)
 {
 	char query[256];
 
@@ -263,7 +263,7 @@ CurrentCharacter* Location::AddCharacter(Character* base, double x, double y, ch
 	
 	//sprintf(query, "SELECT * FROM CurrentCharacter WHERE id=%d", sqlite3_last_insert_rowid(Game::instance->db));
 	//TEST (every new CurrentCharacter has skill (id=1))
-	int cid = sqlite3_last_insert_rowid(Game::instance->db);
+	int cid = (int)sqlite3_last_insert_rowid(Game::instance->db);
 	sprintf(query, "INSERT INTO CurrentSkill(baseId, currentCharacterId) VALUES (1, %d);", cid);
 	sqlite3_exec(Game::instance->db, query, NULL, NULL, NULL);
 	sprintf(query, "SELECT * FROM CurrentCharacter WHERE id=%d", cid);

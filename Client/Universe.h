@@ -69,7 +69,7 @@ public:
 	ProgramState state;
 	Render* render;
 	ICameraSceneNode *camera;
-	int cameraY;
+	f32 cameraY;
 
 	bool Run(); //Main loop
 	bool Menu();

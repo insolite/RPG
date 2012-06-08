@@ -2,7 +2,7 @@
 
 //http://code.google.com/p/clancy/source/browse/trunk/clancy_view2/FlyStraightWCallBackAnimator.h?r=106
 
-class FlyStraightWCallBackAnimator : public ISceneNodeAnimator
+class __declspec(dllexport) FlyStraightWCallBackAnimator : public ISceneNodeAnimator
 {
 public:
 

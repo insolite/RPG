@@ -1,6 +1,6 @@
 #pragma once
 
-class ConnectSocket
+class __declspec(dllexport) ConnectSocket
 {/*
 	Socket wrapper.
 	Inherited classes:
@@ -12,13 +12,13 @@ public:
 	//WSADATA wsaData;
 	SOCKET connectSocket;
 	
-	__declspec(dllexport) bool Send(char *packet); /*
+	bool Send(char *packet); /*
 							 Sends packet to the server. First two bytes defines the length of the packet (without this 2 bytes) as 'short int'.
 							 Return value:
 							 *	FALSE if successful
 							 *	TRUE if error happened
 							 */
-	__declspec(dllexport) int Receive(char *packet); /*
+	int Receive(char *packet); /*
 							   Receives packet from the server. First two bytes defines the length of the packet (without this 2 bytes) as 'short int'.
 							   Return value:
 							   *	Packet length if successful
@@ -29,6 +29,6 @@ public:
 							   *	-4 if actually received packet length does not match announced
 							   */
 
-	__declspec(dllexport) ConnectSocket(void); //Stub
-	__declspec(dllexport) ~ConnectSocket(void); //Stub
+	ConnectSocket(void); //Stub
+	~ConnectSocket(void); //Stub
 };

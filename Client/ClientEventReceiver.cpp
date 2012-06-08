@@ -88,7 +88,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 			{
 				char outPacket[256];
 
-				int distance = vector2d<f32>(targetCurrentMapObject->x, targetCurrentMapObject->y).getDistanceFrom(vector2d<f32>(Universe::instance->currentCharacter->x, Universe::instance->currentCharacter->y));
+				f32 distance = vector2d<f32>(targetCurrentMapObject->x, targetCurrentMapObject->y).getDistanceFrom(vector2d<f32>(Universe::instance->currentCharacter->x, Universe::instance->currentCharacter->y));
 				if (distance < 3.0f)
 				{
 					CreatePacket(outPacket, ItemPickUp, "%i", targetCurrentMapObject->id);
@@ -118,7 +118,7 @@ bool ClientEventReceiver::OnEvent(const SEvent& event)
 		}
 		else if (Mouse[EMIE_MOUSE_WHEEL])
 		{
-			int cameraNextY = Universe::instance->cameraY + (int)event.MouseInput.Wheel * 5;
+			f32 cameraNextY = Universe::instance->cameraY + event.MouseInput.Wheel * 5.0f;
 			if (cameraNextY > 5.0f && cameraNextY < 200.0f)
 				Universe::instance->cameraY = cameraNextY;
 		}

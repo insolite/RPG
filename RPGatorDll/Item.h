@@ -1,15 +1,15 @@
 #pragma once
 
-class Item :
+class __declspec(dllexport) Item :
 	public MapObject
 {
 public:
 	char path[256]; //Predefined path. Just to know path to the script and do not define it each time it executes
 
-	__declspec(dllexport) void Abstr(void) { }; //Abstract class inheritance
+	void Abstr(void) { }; //Abstract class inheritance
 
-	__declspec(dllexport) void Update();
+	void Update();
 
-	__declspec(dllexport) Item(SqliteResult sqliteResult, char* modelPath);
-	__declspec(dllexport) ~Item(void);
+	Item(SqliteResult sqliteResult, char* modelPath);
+	~Item(void);
 };

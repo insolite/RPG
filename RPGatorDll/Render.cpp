@@ -171,8 +171,8 @@ vector2d<f32> Render::MouseCoordToWorldCoord()
 	core::plane3df plane = plane3df(vector3df(0, 0, 0), vector3df(0, -1, 0));
     if (!plane.getIntersectionWithLine(ray2.start, ray2.getVector(), pos))
 		printf("ray does not intersect the plane!");
-	double x = (pos.X + CELL_SIZE / 2) / CELL_SIZE;
-	double y = (pos.Z + CELL_SIZE / 2) / CELL_SIZE;
+	f32 x = (pos.X + CELL_SIZE / 2) / CELL_SIZE;
+	f32 y = (pos.Z + CELL_SIZE / 2) / CELL_SIZE;
 	return vector2d<f32>(x, y);
 }
 

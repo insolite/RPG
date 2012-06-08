@@ -1,6 +1,6 @@
 #pragma once
 
-class CGUIEditBox :
+class __declspec(dllexport) CGUIEditBox :
 	public IGUIEditBox
 {
 public:

@@ -1,11 +1,11 @@
 #pragma once
 
-class CAnimationEndCallBack :
+class __declspec(dllexport) CAnimationEndCallBack :
 	public IAnimationEndCallBack
 {
 public:
-	__declspec(dllexport) void OnAnimationEnd(IAnimatedMeshSceneNode * node);
+	void OnAnimationEnd(IAnimatedMeshSceneNode * node);
 
-	__declspec(dllexport) CAnimationEndCallBack(void);
-	__declspec(dllexport) ~CAnimationEndCallBack(void);
+	CAnimationEndCallBack(void);
+	~CAnimationEndCallBack(void);
 };

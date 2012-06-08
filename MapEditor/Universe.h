@@ -100,8 +100,7 @@ public:
 	static Universe* instance;
 	Location* currentLocation;
 	Game* game;
-	int cameraX, cameraY; //pixels
-	int cursorX, cursorY; //points
+	
 	int toolbarWidth; //pixels
 	int cameraMoveZoneWidth; //pixels
 	int toolbarLeftMargin; //pixels
@@ -124,8 +123,8 @@ public:
 
 	Render* render;
 	ICameraSceneNode *camera;
-	ICameraSceneNode *camera2;
 	ISceneNode* camPos;
+	f32 cameraY;
 
 	void CreateBrushMask(int r);
 	void DeleteBrushMask();
@@ -140,7 +139,6 @@ public:
 	void DrawScene();
 	bool Menu();
 	bool Run();
-	void CameraMove(int x, int y);
 	
 	Universe(void);
 	~Universe(void);

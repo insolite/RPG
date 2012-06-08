@@ -1,12 +1,12 @@
 #pragma once
 
-class CurrentStatic :
+class __declspec(dllexport) CurrentStatic :
 	public CurrentMapObject<Static>
 {
 public:
-	__declspec(dllexport) void Update();
+	void Update();
 
-	__declspec(dllexport) CurrentStatic(SqliteResult sqliteResult, Location* location);
-	__declspec(dllexport) CurrentStatic(char* currentMapObjectSpawnedPacket);
-	__declspec(dllexport) ~CurrentStatic(void);
+	CurrentStatic(SqliteResult sqliteResult, Location* location);
+	CurrentStatic(char* currentMapObjectSpawnedPacket);
+	~CurrentStatic(void);
 };

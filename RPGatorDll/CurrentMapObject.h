@@ -6,8 +6,8 @@ class __declspec(dllexport) CurrentMapObject :
 	public CurrentGameObject<T>
 {
 public:
-	double x; //in "our" coordinates, not in pixels
-	double y; //in "our" coordinates, not in pixels
+	f32 x;
+	f32 y;
 	Location* currentLocation; //Cross-link. Client does not use it. It uses Universe->currentLocation
 	ISceneNode* node;
 	ISceneNode* title;

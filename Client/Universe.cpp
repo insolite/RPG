@@ -22,13 +22,13 @@ Universe::Universe(char *serverAddress, char *serverPort)
 
 	SColor color;
 
-	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE);
+	color = guienv->getSkin()->getColor(EGDC_3D_FACE);
 	color.setAlpha(192);
-	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_FACE, color);
+	guienv->getSkin()->setColor(EGDC_3D_FACE, color);
 	
-	color = guienv->getSkin()->getColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW);
+	color = guienv->getSkin()->getColor(EGDC_3D_SHADOW);
 	color.setAlpha(192);
-	guienv->getSkin()->setColor(EGUI_DEFAULT_COLOR::EGDC_3D_SHADOW, color);
+	guienv->getSkin()->setColor(EGDC_3D_SHADOW, color);
 }
 
 Universe::~Universe(void)
@@ -65,7 +65,6 @@ bool Universe::Menu()
 
 void Universe::DrawScene()
 {
-	int i, j, drawWidth, drawHeight;
 	/*
 	//for (i = 0; i < currentLocation->height; i++)
 	for (i = 0; i < currentLocation->height; i++)
@@ -109,14 +108,14 @@ bool Universe::Run()
 	ClientGUIInit();
 
 	//variables for camera
-	cameraY = 50;
+	cameraY = 50.0f;
 	ISceneNode* camPos=render->smgr->addEmptySceneNode();
-	camPos->setPosition(vector3df(50,cameraY,10));
-	camera=render->smgr->addCameraSceneNode(0, vector3df(50,50,10), vector3df(50,0,40));
+	camPos->setPosition(vector3df(50.0f,cameraY,10.0f));
+	camera=render->smgr->addCameraSceneNode(NULL, vector3df(50.0f, 50.0f, 10.0f), vector3df(50.0f, 0.0f, 40.0f));
 
 	scene::ISceneNode* lnode; 
-	lnode = render->smgr->addLightSceneNode(0,camPos->getPosition(),video::SColorf(1.0f, 1.0f, 1.0f, 1.0f),800.0F);
-	render->smgr->setAmbientLight(video::SColor(0,60,60,60));
+	lnode = render->smgr->addLightSceneNode(NULL, camPos->getPosition(), video::SColorf(1.0f, 1.0f, 1.0f, 1.0f), 800.0f);
+	render->smgr->setAmbientLight(video::SColor(0, 60, 60, 60));
 	
 	state = Continue;
 
@@ -224,7 +223,7 @@ bool Universe::Run()
 					case CharacterMoving:
 					{
 						int currentCharacterId;
-						double x, y;
+						f32 x, y;
 						ScanPacket(inPacket, "%i%f%f", &currentCharacterId, &x, &y);
 						CurrentCharacter* movingCurrentCharacter = currentLocation->GetCharacter(currentCharacterId);
 						movingCurrentCharacter->setAnimation(EMAT_RUN);
@@ -254,7 +253,7 @@ bool Universe::Run()
 					case CharacterMoved:
 					{
 						int characterId;
-						double whereX, whereY;
+						f32 whereX, whereY;
 
 						ScanPacket(inPacket, "%i%f%f", &characterId, &whereX, &whereY);
 
@@ -377,10 +376,10 @@ bool Universe::Run()
 					}
 					case PlayAdvancedEffect:
 						int skillId = PacketGetInt(inPacket, 1);
-						int xStart = PacketGetInt(inPacket, 5) * CELL_SIZE;
-						int yStart = PacketGetInt(inPacket, 9) * CELL_SIZE;
-						int xEnd = PacketGetInt(inPacket, 13) * CELL_SIZE;
-						int yEnd = PacketGetInt(inPacket, 17) * CELL_SIZE;
+						f32 xStart = PacketGetInt(inPacket, 5) * CELL_SIZE;
+						f32 yStart = PacketGetInt(inPacket, 9) * CELL_SIZE;
+						f32 xEnd = PacketGetInt(inPacket, 13) * CELL_SIZE;
+						f32 yEnd = PacketGetInt(inPacket, 17) * CELL_SIZE;
 						render->Effect2(vector3df(xStart, 5.0f, yStart), vector3df(xEnd, 5.0f, yEnd)); //TEST
 						break;
 				}

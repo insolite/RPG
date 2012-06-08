@@ -1,6 +1,6 @@
 #pragma once
 
-class CurrentCharacter :
+class __declspec(dllexport) CurrentCharacter :
 	public CurrentMapObject<Character>
 {
 public:
@@ -15,29 +15,30 @@ public:
 	int currentSkillsCount;
 	ConnectSocket* connectSocket;
 
-	double movingX;
-	double movingY;
-	double deltaX;
-	double deltaY;
+	f32 movingX; //target point
+	f32 movingY; //target point
+	//deltaX^2 + deltaY^2 == base->speed^2
+	f32 deltaX;
+	f32 deltaY;
 
-	__declspec(dllexport) CurrentItem* GetItem(int id);
-	__declspec(dllexport) CurrentItem* GetItemByBase(int id);
-	__declspec(dllexport) CurrentQuest* GetQuest(int id);
-	__declspec(dllexport) CurrentQuest* GetQuestByBase(int id);
-	__declspec(dllexport) CurrentSkill* GetSkill(int id);
-	__declspec(dllexport) CurrentSkill* GetSkillByBase(int id);
+	CurrentItem* GetItem(int id);
+	CurrentItem* GetItemByBase(int id);
+	CurrentQuest* GetQuest(int id);
+	CurrentQuest* GetQuestByBase(int id);
+	CurrentSkill* GetSkill(int id);
+	CurrentSkill* GetSkillByBase(int id);
 	
-	__declspec(dllexport) void SpawnItem(CurrentItem* currentItem);
-	__declspec(dllexport) void SpawnSkill(CurrentSkill* currentSkill);
+	void SpawnItem(CurrentItem* currentItem);
+	void SpawnSkill(CurrentSkill* currentSkill);
 	
-	__declspec(dllexport) CurrentItem* AddItem(Item* base, int count);
-	__declspec(dllexport) CurrentSkill* AddSkill(Skill* base);
+	CurrentItem* AddItem(Item* base, int count);
+	CurrentSkill* AddSkill(Skill* base);
 	
-	__declspec(dllexport) void Update();
+	void Update();
 	
-	__declspec(dllexport) void RecalculateDelta();
+	void RecalculateDelta();
 	
-	__declspec(dllexport) CurrentCharacter(SqliteResult sqliteResult, Location* location);
-	__declspec(dllexport) CurrentCharacter(char* currentMapObjectSpawnedPacket);
-	__declspec(dllexport) ~CurrentCharacter(void);
+	CurrentCharacter(SqliteResult sqliteResult, Location* location);
+	CurrentCharacter(char* currentMapObjectSpawnedPacket);
+	~CurrentCharacter(void);
 };

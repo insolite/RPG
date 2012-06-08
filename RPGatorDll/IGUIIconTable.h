@@ -1,6 +1,6 @@
 #pragma once
 
-class IGUIIconTable :
+class __declspec(dllexport) IGUIIconTable :
 	public IGUIElement
 {
 public:
@@ -11,23 +11,23 @@ public:
 	core::position2d<s32> DragStart;
 	CGUIButton *selectedButton;
 
-	__declspec(dllexport) void draw();
-	__declspec(dllexport) void addButton(CGUIButton* button);
-	__declspec(dllexport) void addButton(CurrentGameObject<GameObject>* gameObject, int id);
-	__declspec(dllexport) CGUIButton* IGUIIconTable::getButtonAt(int index);
-	__declspec(dllexport) void removeButton(IGUIButton* button, bool shift = true);
+	void draw();
+	void addButton(CGUIButton* button);
+	void addButton(CurrentGameObject<GameObject>* gameObject, int id);
+	CGUIButton* IGUIIconTable::getButtonAt(int index);
+	void removeButton(IGUIButton* button, bool shift = true);
 
-	__declspec(dllexport) IGUIIconTable(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, int width, int height);
-	__declspec(dllexport) ~IGUIIconTable(void);
+	IGUIIconTable(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, int width, int height);
+	~IGUIIconTable(void);
 
-	class IGUIIconTableContainer :
+	class __declspec(dllexport) IGUIIconTableContainer :
 		public IGUIElement
 	{
 	public:
-		__declspec(dllexport) void draw();
-		__declspec(dllexport) void setButton(CGUIButton* button);
+		void draw();
+		void setButton(CGUIButton* button);
 
-		__declspec(dllexport) IGUIIconTableContainer(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
-		__declspec(dllexport) ~IGUIIconTableContainer(void);
+		IGUIIconTableContainer(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
+		~IGUIIconTableContainer(void);
 	};
 };

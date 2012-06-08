@@ -1,6 +1,6 @@
 #pragma once
 
-class Game
+class __declspec(dllexport) Game
 {
 public:
 	char* name;
@@ -11,6 +11,6 @@ public:
 	GameResources* resources;
 	GameData* data;
 
-	__declspec(dllexport) Game(char* _name, InitializationType initializationType);
-	__declspec(dllexport) ~Game(void);
+	Game(char* _name, InitializationType initializationType);
+	~Game(void);
 };

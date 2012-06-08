@@ -108,10 +108,10 @@ extern "C" __declspec(dllexport) void PacketAddInt(char* packet, int n)
 	IncreasePacketLength(packet, 4);
 }
 
-extern "C" __declspec(dllexport) void PacketAddDouble(char* packet, double n)
+extern "C" __declspec(dllexport) void PacketAddDouble(char* packet, f32 n)
 {
-	memcpy(packet + GetPacketLength(packet) + 2, (char*)&n, sizeof(double));
-	IncreasePacketLength(packet, sizeof(double));
+	memcpy(packet + GetPacketLength(packet) + 2, (char*)&n, sizeof(f32));
+	IncreasePacketLength(packet, sizeof(f32));
 }
 
 extern "C" __declspec(dllexport) void PacketAddByte(char* packet, char n)
@@ -130,9 +130,9 @@ extern "C" __declspec(dllexport) int PacketGetInt(char* packet, int pos)
 	return *((int*)(packet + 2 + pos));
 }
 
-extern "C" __declspec(dllexport) double PacketGetDouble(char* packet, int pos)
+extern "C" __declspec(dllexport) f32 PacketGetDouble(char* packet, int pos)
 {
-	return *((double*)(packet + 2 + pos));
+	return *((f32*)(packet + 2 + pos));
 }
 
 extern "C" __declspec(dllexport) char PacketGetByte(char* packet, int pos)
@@ -174,7 +174,10 @@ void CreatePacket( char* packet, Packet packetType, char* formatStr, ... )
 		else if (!strcmp(token,"s")) 
 			PacketAddString(packet, va_arg(params, char*));
 		else if (!strcmp(token,"f")) 
-			PacketAddDouble(packet, va_arg(params, double));
+		{
+			PacketAddDouble(packet, (f32)va_arg(params, double));
+			//PacketAddDouble(packet, va_arg(params, f32)); //TODO: Why it's not working?
+		}
 		else if (!strcmp(token,"ws")) 
 		{
 			//Warning! It only converts wchar_t* to char*. Does not insert wide string.
@@ -232,10 +235,10 @@ void ScanPacket( char* packet, char* formatStr, ... )
 		}
 		else if (!strcmp(token,"f"))
 		{
-			double* p = va_arg(params, double*);
+			f32* p = va_arg(params, f32*);
 			if (p)
-				*p = PacketGetDouble(packet, currentPosition);
-			currentPosition += sizeof(double);
+				*p = (f32)PacketGetDouble(packet, currentPosition);
+			currentPosition += sizeof(f32);
 		}
 		else if (!strcmp(token,"ws")) 
 		{
@@ -289,7 +292,7 @@ extern "C++" __declspec(dllexport) std::vector<SqliteResult> SqliteGetRows(sqlit
 						sqliteResults[rowsCount].integers[columnName] = sqlite3_column_int(stmt, i);
 						break;
 					case SQLITE_FLOAT:
-						sqliteResults[rowsCount].doubles[columnName] = sqlite3_column_double(stmt, i);
+						sqliteResults[rowsCount].doubles[columnName] = (f32)sqlite3_column_double(stmt, i);
 						break;
 				}
 			}

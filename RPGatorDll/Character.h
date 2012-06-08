@@ -1,15 +1,15 @@
 #pragma once
 
-class Character :
+class __declspec(dllexport) Character :
 	public MapObject
 {
 public:
-	double speed;
+	f32 speed; //Distanse, that character can pass in one step (e.g. 100ms). It is only the base speed, which means, that it can be modified for each CurrentCharacter, depending of Skills, Buffs, etc.
 
-	__declspec(dllexport) void Abstr(void) { }; //Abstract class inheritance
+	void Abstr(void) { }; //Abstract class inheritance
 
-	__declspec(dllexport) void Update();
+	void Update();
 
-	__declspec(dllexport) Character(SqliteResult sqliteResult, char* modelPath);
-	__declspec(dllexport) ~Character(void);
+	Character(SqliteResult sqliteResult, char* modelPath);
+	~Character(void);
 };

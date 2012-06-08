@@ -53,19 +53,20 @@ int LuaFunctions::GetQuestState(lua_State* lua) //currentCharacterId, questId
 
 int LuaFunctions::AddNPC(lua_State* lua) //baseId, x, y, locationId, ...
 {
-	int baseId, x, y, locationId;
+	int baseId, locationId;
+	f32 x, y;
 	CurrentNPC* currentNPC;
 	char outPacket[256];
 	Location* currentLocation;
 
 	baseId = lua_tointeger(lua, 1);
-	x = lua_tointeger(lua, 2);
-	y = lua_tointeger(lua, 3);
+	x = (f32)lua_tointeger(lua, 2); //TODO: lua_todouble?
+	y = (f32)lua_tointeger(lua, 3);
 	locationId = lua_tointeger(lua, 4);
 
 	currentLocation = Universe::instance->game->data->GetLocation(locationId);
 	currentNPC = currentLocation->AddNPC(Universe::instance->game->resources->GetNPC(baseId), x, y);
-	CreatePacket(outPacket, NPCSpawned, "%i%i%i%i",
+	CreatePacket(outPacket, NPCSpawned, "%i%i%f%f",
 		currentNPC->id,
 		currentNPC->base->id,
 		currentNPC->x,
@@ -92,17 +93,18 @@ int LuaFunctions::AddItem(lua_State* lua) //baseId, spawnType, [x, y, locationId
 	{
 		case Ground:
 		{
-			int x, y, locationId;
+			int locationId;
+			f32 x, y;
 			Location* currentLocation;
 
-			x = lua_tointeger(lua, 3);
-			y = lua_tointeger(lua, 4);
+			x = (f32)lua_tointeger(lua, 3);
+			y = (f32)lua_tointeger(lua, 4);
 			locationId = lua_tointeger(lua, 5);
 			count = lua_tointeger(lua, 6);
 
 			currentLocation = Universe::instance->game->data->GetLocation(locationId);
 			currentItem = currentLocation->AddItem(Universe::instance->game->resources->GetItem(baseId), x, y, count);
-			CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
+			CreatePacket(outPacket, ItemSpawned, "%i%i%f%f%b%i",
 				currentItem->id,
 				currentItem->base->id,
 				currentItem->x,
@@ -124,7 +126,7 @@ int LuaFunctions::AddItem(lua_State* lua) //baseId, spawnType, [x, y, locationId
 
 			currentCharacter = Universe::instance->game->data->GetCharacter(characterId);
 			currentItem = currentCharacter->AddItem(Universe::instance->game->resources->GetItem(baseId), count);
-			CreatePacket(outPacket, ItemSpawned, "%i%i%i%i%b%i",
+			CreatePacket(outPacket, ItemSpawned, "%i%i%f%f%b%i",
 				currentItem->id,
 				currentItem->base->id,
 				0,

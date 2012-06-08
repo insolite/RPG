@@ -1,15 +1,15 @@
 #pragma once
 
-class CurrentSkill :
+class __declspec(dllexport) CurrentSkill :
 	public CurrentGameObject<Skill>
 {
 public:
 	CurrentCharacter* owner;
 
-	u32 lastUse;
-	__declspec(dllexport) void Update();
+	int lastUse;
+	void Update();
 
-	__declspec(dllexport) CurrentSkill(SqliteResult sqliteResult, CurrentCharacter* currentCharacter);
-	__declspec(dllexport) CurrentSkill(char* currentSkillInfoPacket);
-	__declspec(dllexport) ~CurrentSkill(void);
+	CurrentSkill(SqliteResult sqliteResult, CurrentCharacter* currentCharacter);
+	CurrentSkill(char* currentSkillInfoPacket);
+	~CurrentSkill(void);
 };

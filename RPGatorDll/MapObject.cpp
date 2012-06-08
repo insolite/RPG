@@ -12,13 +12,13 @@ MapObject::MapObject(SqliteResult sqliteResult, char* modelPath) :
 	if (modelPath) //if (Render::instance) //The same
 	{ //Client or Editor
 		ModelInit(modelPath);
-		scale = sqliteResult.integers["scale"];
+		scale = (f32)sqliteResult.integers["scale"];
 	}
 	else
 	{ //Server
 		mesh = NULL;
 		texture = NULL;
-		scale = 0;
+		scale = 0.0f;
 	}
 }
 

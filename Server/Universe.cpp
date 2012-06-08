@@ -30,11 +30,6 @@ void Universe::Run(char* gameName)
 	SOCKET tmp; //Socket for accepting clients. Used to initialize the element of 'clients'
 	int ci;
 
-	int testInt;
-	short testShort;
-	char testStr[10];
-	char testChar;
-	wchar_t testwStr[10];
 	int lastStepTime;
 	int currentTime;
 
@@ -272,7 +267,7 @@ void Universe::Run(char* gameName)
 							break;
 						case Move:
 						{
-							double newX, newY;
+							f32 newX, newY;
 							ScanPacket(inPacket, "%f%f", &newX, &newY);
 							if (newX > 0 && newX < clients[ci]->character->currentLocation->width //TODO: x >= 0
 							 && newY > 0 && newY < clients[ci]->character->currentLocation->height) //TODO: x >= 0
@@ -298,7 +293,7 @@ void Universe::Run(char* gameName)
 
 							if (currentSkill)
 							{
-								if (GetTickCount() - currentSkill->lastUse > currentSkill->base->useDelay)
+								if (((int)GetTickCount() - currentSkill->lastUse) > currentSkill->base->useDelay)
 								{
 									char str[512]; //For init script variables
 								
@@ -389,7 +384,7 @@ void Universe::Run(char* gameName)
 							CurrentNPC* currentNPC = clients[ci]->character->currentLocation->GetNPC(PacketGetInt(inPacket, 1));
 							if (currentNPC)
 							{
-								int distance = vector2d<f32>(currentNPC->x, currentNPC->y).getDistanceFrom(vector2d<f32>(clients[ci]->character->x, clients[ci]->character->y));
+								f32 distance = vector2d<f32>(currentNPC->x, currentNPC->y).getDistanceFrom(vector2d<f32>(clients[ci]->character->x, clients[ci]->character->y));
 								if (distance < 3.0f)
 								{
 									char str[512]; //For init script variables
@@ -431,7 +426,7 @@ void Universe::Run(char* gameName)
 							CurrentItem* currentItem = clients[ci]->character->currentLocation->GetItem(PacketGetInt(inPacket, 1));
 							if (currentItem)
 							{
-								int distance = vector2d<f32>(currentItem->x, currentItem->y).getDistanceFrom(vector2d<f32>(clients[ci]->character->x, clients[ci]->character->y));
+								f32 distance = vector2d<f32>(currentItem->x, currentItem->y).getDistanceFrom(vector2d<f32>(clients[ci]->character->x, clients[ci]->character->y));
 								if (distance < 3.0f)
 								{
 									CurrentItem* currentItemClone = new CurrentItem(*currentItem);
@@ -496,24 +491,9 @@ void Universe::Run(char* gameName)
 					Log(Warning, "Wrong packet from client %d", ci);
 				}
 			}
-
-			//CreateItemSpawnedPacket(outPacket, Ground, 3, 5, 3, 4);
-			//clients[0]->Send(outPacket);
 		}
 
 		//Simulating world
-		/*
-		printf("\nCharacters online:\n");
-		int i, j;
-		for (i = 0; i < game->data->locationsCount; i++)
-		{
-			for (j = 0; j < game->data->locations[i]->currentCharactersCount; j++)
-			{
-				printf("\t%s\n", game->data->locations[i]->currentCharacters[j]->login);
-			}
-		}
-		*/
-		
 		
 		currentTime = GetTickCount();
 		if ((currentTime - lastStepTime) > 100)

@@ -1,6 +1,6 @@
 #pragma once
 
-class Skill :
+class __declspec(dllexport) Skill :
 	public GameObject
 {
 public:
@@ -9,10 +9,10 @@ public:
 
 	int useDelay;
 
-	__declspec(dllexport) void Abstr(void) { }; //Abstract class inheritance
+	void Abstr(void) { }; //Abstract class inheritance
 
-	__declspec(dllexport) void Update();
+	void Update();
 
-	__declspec(dllexport) Skill(SqliteResult sqliteResult, char* iconPath);
-	__declspec(dllexport) ~Skill(void);
+	Skill(SqliteResult sqliteResult, char* iconPath);
+	~Skill(void);
 };

@@ -180,9 +180,9 @@ void CurrentCharacter::Update()
 
 void CurrentCharacter::RecalculateDelta()
 {
-	double distance = vector2d<f32>(x, y).getDistanceFrom(vector2d<f32>(movingX, movingY));
-	double cosL = -(x - movingX) / distance;
-	double sinL = -(y - movingY) / distance;
+	f32 distance = vector2d<f32>(x, y).getDistanceFrom(vector2d<f32>(movingX, movingY));
+	f32 cosL = -(x - movingX) / distance;
+	f32 sinL = -(y - movingY) / distance;
 	deltaX = base->speed * cosL;
 	deltaY = base->speed * sinL;
 }

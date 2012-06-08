@@ -121,7 +121,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 		}
 		else if (Mouse[EMIE_MOUSE_WHEEL])
 		{
-			int cameraNextY = Universe::instance->cameraY + (int)event.MouseInput.Wheel * 5;
+			f32 cameraNextY = Universe::instance->cameraY + event.MouseInput.Wheel * 5.0f;
 			if (cameraNextY > 5.0f && cameraNextY < 200.0f)
 				Universe::instance->cameraY = cameraNextY;
 		}
@@ -391,7 +391,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 						swscanf(wnd->getText(), L"[%d]", &mapObjectId);
 						
 						//Scale
-						f32 scale = ((IGUIScrollBar*)wnd->getElementFromId(MapObjectEditWindowScale))->getPos();
+						f32 scale = (f32)((IGUIScrollBar*)wnd->getElementFromId(MapObjectEditWindowScale))->getPos();
 						if (scale == 0)
 							break;
 
@@ -748,7 +748,7 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 							IGUIScrollBar* sb = Universe::instance->guienv->addScrollBar(true, rect< s32 >(32, 32 + 24 + 8 + 24 + 8, 32 + 128, 32 + 24 + 24 + 8 + 16 + 8), wnd, MapObjectEditWindowScale);
 							sb->setMax(100);
 							sb->setMin(-100);
-							sb->setPos(mapObject->scale);
+							sb->setPos((s32)mapObject->scale);
 							sb->setSmallStep(1);
 							swprintf(wstr, L"%.0f", mapObject->scale);
 							Universe::instance->guienv->addStaticText(wstr, rect< s32 >(8, 32 + 24 + 8 + 24 + 8, 32, 32 + 24 + 24 + 8 + 16 + 8), false, false, wnd, MapObjectEditWindowScaleStaticText, false);
@@ -789,7 +789,6 @@ bool EditorEventReceiver::OnEvent(const SEvent& event)
 					case LocationsEditSaveButton:
 					{
 						char str[256];
-						int width, height;
 						wcstombs(str, Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationNameEditBox)->getText(), 256);
 						//swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationWidthEditBox)->getText(), L"%d", &width);
 						//swscanf(Universe::instance->guienv->getRootGUIElement()->getElementFromId(LocationsEditWindow)->getElementFromId(LocationHeightEditBox)->getText(), L"%d", &height);

@@ -137,20 +137,8 @@ void Universe::EditorGUIDestroy()
 	delete editorEventReceiver;
 }
 
-void Universe::CameraMove(int x, int y)
-{
-	if ((cameraX + x) < 0 || ((cameraX + x) + render->screenWidth - toolbarWidth) >= currentLocation->width * CELL_SIZE)
-		x = 0;
-	if ((cameraY + y) < 0 || ((cameraY + y) + render->screenHeight) >= currentLocation->height * CELL_SIZE)
-		y = 0;
-	cameraX += x;
-	cameraY += y;
-	//Sleep(8);
-}
-
 void Universe::DrawScene()
 {
-	int i, j, drawWidth, drawHeight;
 	/*
 	//for (i = 0; i < currentLocation->height; i++)
 	for (i = 0; i < currentLocation->height; i++)
@@ -328,7 +316,7 @@ void Universe::CreateBrushMask(int r)
 	
 	for (i = 0; i <= brushRadius; i++)
 	{
-		y = sqrt((double)(brushRadius * brushRadius - i * i));
+		y = (int)sqrt((double)(brushRadius * brushRadius - i * i));
 		
 		for (j = brushRadius - y; j <= brushRadius + y; j++)
 		{

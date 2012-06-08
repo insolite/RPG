@@ -1,6 +1,6 @@
 #pragma once
 
-class GameObject
+class __declspec(dllexport) GameObject
 {
 public:
 	int id;
@@ -9,10 +9,10 @@ public:
 	int tagsCount;
 	ITexture* icon;
 
-	virtual __declspec(dllexport) void Abstr (void) = 0; //Abstract class
+	virtual void Abstr (void) = 0; //Abstract class
 
-	__declspec(dllexport) virtual void Update() = 0;
+	virtual void Update() = 0;
 
-	__declspec(dllexport) GameObject(SqliteResult sqliteResult, char* iconPath);
-	__declspec(dllexport) ~GameObject(void);
+	GameObject(SqliteResult sqliteResult, char* iconPath);
+	~GameObject(void);
 };

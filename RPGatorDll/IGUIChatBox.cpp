@@ -4,7 +4,7 @@
 #include "IGUIChatBox.h"
 
 IGUIChatBox::IGUIChatBox(IGUIEnvironment* environment, IGUIElement* parent, s32 id, s32 editBoxId, s32 chatInpuId, core::rect<s32> rectangle) :
-	IGUIElement(EGUI_ELEMENT_TYPE::EGUIET_ELEMENT, environment, parent, id, rectangle)
+	IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle)
 {
 	rect<s32> internatRect = rectangle;
 	internatRect.LowerRightCorner -= internatRect.UpperLeftCorner;
